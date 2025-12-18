@@ -1,0 +1,198 @@
+╔════════════════════════════════════════════════════════════════╗
+║          📋 ÖSYM ŞART MADDESİ SİSTEMİ - KURULUM               ║
+╚════════════════════════════════════════════════════════════════╝
+
+✅ SİSTEM HAZIRLANDı!
+
+📦 OLUŞTURULAN DOSYALAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. osym-guide-scraper.js      → ÖSYM verilerini yöneten modül
+2. setup-osym-data.js          → Kurulum script'i
+3. OSYM_SART_SISTEMI.md        → Detaylı dokümantasyon
+4. server.js (güncellendi)     → Şart entegrasyonu eklendi
+
+🎯 ÖZELLİKLER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Her üniversite için şart maddeleri gösterimi
+✓ 25+ farklı şart tanımı (Dil, Sağlık, Ücret, Burs, vs.)
+✓ Kategori bazlı şart sistemi
+✓ Admin panel entegrasyonu
+✓ Otomatik veri yenileme
+✓ API endpoint'leri
+
+📋 ŞART KATEGORİLERİ:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Cinsiyet    → Madde 1, 2, 3, 4
+• Sağlık      → Madde 5, 7
+• Fiziksel    → Madde 6
+• Dil         → Madde 12, 13, 14
+• Ücret       → Madde 16, 17
+• Burs        → Madde 23, 24
+• Öğretim     → Madde 18, 19, 20, 21
+• Ek Puan     → Madde 8, 9, 10, 15
+
+🚀 KURULUM ADIMLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ADIM 1: ÖSYM Verilerini Yükle
+─────────────────────────────
+cd backend
+node setup-osym-data.js
+
+Bu komut:
+• program_conditions tablosunu oluşturur
+• condition_definitions tablosunu oluşturur
+• 25 şart tanımı ekler
+• 13 popüler bölüm için örnek veriler yükler
+
+ADIM 2: Sunucuyu Başlat
+───────────────────────
+node server.js
+
+Sunucu başlatıldığında ÖSYM verileri otomatik yüklenir.
+
+📡 YENİ API ENDPOINTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Kullanıcı Endpoint'leri:
+------------------------
+GET  /api/conditions/definitions
+     → Tüm şart tanımlarını listeler
+
+GET  /api/conditions/:university/:program
+     → Belirli üniversite için şartları getirir
+     Örnek: /api/conditions/Boğaziçi%20Üniversitesi/Bilgisayar%20Mühendisliği
+
+Admin Endpoint'leri (Token Gerekli):
+------------------------------------
+POST /api/admin/refresh-osym
+     → ÖSYM verilerini yeniler
+
+GET  /api/admin/program-conditions
+     → Tüm program şartlarını listeler
+
+📊 NASIL ÇALIŞIR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Kullanıcı tercih analizi yapar
+2. Sistem uygun üniversiteleri bulur
+3. Her üniversite için ÖSYM şartları otomatik eklenir
+4. Sonuç JSON'unda şu bilgiler yer alır:
+
+{
+  "universities": [
+    {
+      "name": "Boğaziçi Üniversitesi",
+      "city": "İstanbul",
+      "ranking": 3000,
+      "conditions": [
+        {
+          "number": "14",
+          "text": "Program %100 İngilizce eğitim vermektedir",
+          "category": "Dil"
+        }
+      ],
+      "conditionNumbers": "14, 12"
+    }
+  ]
+}
+
+💡 KULLANIM ÖRNEĞİ:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Kullanıcı: Bilgisayar Mühendisliği, Sıralama: 10.000
+
+Sistem Yanıtı:
+┌─────────────────────────────────────────────────────────┐
+│ Boğaziçi Üniversitesi - İstanbul                       │
+│ Taban Sıralama: 3.000                                  │
+│                                                         │
+│ 📋 Şartlar:                                            │
+│ • Madde 14: %100 İngilizce eğitim                      │
+│ • Madde 12: İngilizce hazırlık zorunlu                 │
+│                                                         │
+│ [Tercih Et]                                            │
+└─────────────────────────────────────────────────────────┘
+
+🗄️ VERİTABANI YAPISI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2 yeni tablo oluşturuldu:
+
+1. condition_definitions
+   ├── conditionNumber (Şart numarası, örn: "14")
+   ├── conditionText (Şart açıklaması)
+   ├── category (Kategori, örn: "Dil")
+   └── year (Yıl, varsayılan: 2024)
+
+2. program_conditions
+   ├── universityName (Üniversite adı)
+   ├── programName (Program adı)
+   ├── city (Şehir)
+   ├── campus (Kampüs)
+   ├── conditionNumber (Şart numarası)
+   ├── type (Devlet/Vakıf)
+   └── year (Yıl)
+
+🔧 YÖNETİM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Yeni Şart Ekleme:
+-----------------
+INSERT INTO condition_definitions 
+(conditionNumber, conditionText, category)
+VALUES ('26', 'Yeni şart açıklaması', 'Kategori');
+
+Program-Şart Eşleştirme:
+-----------------------
+INSERT INTO program_conditions 
+(universityName, programName, conditionNumber, city, type, year)
+VALUES 
+('Üniversite Adı', 'Program Adı', '26', 'Şehir', 'Devlet', 2024);
+
+Admin Panelden Güncelleme:
+-------------------------
+POST /api/admin/refresh-osym
+(Admin token gerekli)
+
+📚 ÖRNEK ŞARTLAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Madde 1  → Kontenjanın %50'si kız öğrencilere aittir
+Madde 5  → Renk körlüğü olanlar kabul edilmez
+Madde 12 → İngilizce hazırlık sınıfı zorunludur
+Madde 14 → Program %100 İngilizce eğitim vermektedir
+Madde 16 → Ücretli (Vakıf) program, burs imkanları mevcuttur
+Madde 23 → Tam burslu öğrenci alınmaktadır
+
+⚠️ ÖNEMLİ NOTLAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. İlk kurulumda mutlaka "node setup-osym-data.js" çalıştırın
+2. Şartlar her yıl değişebilir, yıllık güncelleme yapın
+3. Gerçek ÖSYM verileri için manuel güncelleme gerekir
+4. Şu anda örnek veriler yüklüdür
+
+🎯 GELECEKTEKİ GELİŞTİRMELER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• ÖSYM PDF'lerinden otomatik veri çekme
+• Şart bazlı akıllı filtreler
+• Şart ihlali uyarıları (örn: sağlık durumu)
+• Frontend şart gösterimi
+• Şart değişiklik bildirimleri
+
+📖 DETAYLI DÖKÜMANTASYON:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OSYM_SART_SISTEMI.md dosyasını okuyun.
+
+✅ HAZIR!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Artık setup-osym-data.js çalıştırıp sunucuyu başlatabilirsiniz!
+
+node setup-osym-data.js
+node server.js
+
+Başarılar! 🎓📋

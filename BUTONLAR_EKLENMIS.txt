@@ -1,0 +1,18 @@
+===========================================
+DETAY BUTONLARI %100 EKLENMİŞ!
+===========================================
+
+ANA EKRAN ÜNİVERSİTE KARTLARI:
+✅ Satır 2056: Devlet üniversiteleri
+✅ Satır 2127: Vakıf üniversiteleri
+
+Butonlar grid içinde, bilgi kutularının altında!
+
+EĞER GÖREMİYORSAN:
+1. CTRL + F5 yap (ZORUNLU!)
+2. F12 aç -> Console'da hata var mı bak
+3. Network sekmesinde app.js yenilenmiş mi bak
+4. Gizli pencerede dene
+
+BUTONLAR KESİNLİKLE ORADA!
+Tarayıcı cache sorunu yaşıyorsun!

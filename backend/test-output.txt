@@ -1,0 +1,393 @@
+­şğ¬ AKILLI ALTERNAT─░F S─░STEM─░ TEST
+
+================================================================================
+
+
+­şôï Senaryo 1: Bilgisayar M├╝hendisli─şi (AYT Yetmiyor, TYT Yetiyor)
+
+--------------------------------------------------------------------------------
+AYT S─▒ralamas─▒: 350.000
+TYT S─▒ralamas─▒: 450.000
+Hedef B├Âl├╝m: Bilgisayar M├╝hendisli─şi
+┼Şehir: ─░stanbul
+--------------------------------------------------------------------------------
+
+­şÄô 4 YILLIK ALTERNAT─░FLER (AYT Bazl─▒):
+
+1. Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó Benzerlik: %95
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 50.000
+   ÔÇó S─▒ralama Fark─▒: 300.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Yaz─▒l─▒m geli┼ştirme odakl─▒, Bilgisayar M├╝hendisli─şine ├ğok benzer kariyer f─▒rsatlar─▒
+
+2. Bilgisayar Teknolojisi ve Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %85
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 180.000
+   ÔÇó S─▒ralama Fark─▒: 170.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Uygulamal─▒ bilgisayar teknolojileri, sistem y├Ânetimi
+
+3. Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó Benzerlik: %80
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 120.000
+   ÔÇó S─▒ralama Fark─▒: 230.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Teknoloji ve e─şitim, hem yaz─▒l─▒m hem ├Â─şretmenlik se├ğene─şi
+
+4. Y├Ânetim Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %75
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 150.000
+   ÔÇó S─▒ralama Fark─▒: 200.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: ─░┼ş d├╝nyas─▒ + teknoloji, y├Ânetim ve yaz─▒l─▒m birle┼şimi
+
+­şÄ» 2 YILLIK ALTERNAT─░FLER + DGS (TYT Bazl─▒):
+
+1. Bilgisayar Programc─▒l─▒─ş─▒
+   ÔÇó Benzerlik: %70
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 450.000
+   ÔÇó S─▒ralama Fark─▒: 0
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%65
+   ÔÇó G├╝ven: ­şşí Orta (%65)
+
+2. Bilgisayar Teknolojileri
+   ÔÇó Benzerlik: %65
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 520.000
+   ÔÇó S─▒ralama Fark─▒: -70.000
+   ÔÇó DGS Hedef: Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó DGS Ba┼şar─▒: ~%60
+   ÔÇó G├╝ven: ­şşó Y├╝ksek (%85)
+
+3. Web Tasar─▒m ve Kodlama
+   ÔÇó Benzerlik: %60
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 500.000
+   ÔÇó S─▒ralama Fark─▒: -50.000
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%55
+   ÔÇó G├╝ven: ­şşó Y├╝ksek (%85)
+
+­şôï TERC─░H STRATEJ─░S─░:
+
+­şÄô DGS YOLU (13-24):
+   ÔÇó Bilgisayar Programc─▒l─▒─ş─▒ ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     70% benzerlik, DGS ile Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     Ba┼şar─▒ Oran─▒: ~%65
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+   ÔÇó Bilgisayar Teknolojileri ÔåÆ Bilgisayar ve ├û─şretim Teknolojileri
+     65% benzerlik, DGS ile Bilgisayar ve ├û─şretim Teknolojileri
+     Ba┼şar─▒ Oran─▒: ~%60
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+   ÔÇó Web Tasar─▒m ve Kodlama ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     60% benzerlik, DGS ile Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     Ba┼şar─▒ Oran─▒: ~%55
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+
+================================================================================
+
+
+­şôï Senaryo 2: Bilgisayar M├╝hendisli─şi (Her ─░kisi de Yetmiyor)
+
+--------------------------------------------------------------------------------
+AYT S─▒ralamas─▒: 500.000
+TYT S─▒ralamas─▒: 600.000
+Hedef B├Âl├╝m: Bilgisayar M├╝hendisli─şi
+┼Şehir: ─░stanbul
+--------------------------------------------------------------------------------
+
+­şÄô 4 YILLIK ALTERNAT─░FLER (AYT Bazl─▒):
+
+1. Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó Benzerlik: %95
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 50.000
+   ÔÇó S─▒ralama Fark─▒: 450.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Yaz─▒l─▒m geli┼ştirme odakl─▒, Bilgisayar M├╝hendisli─şine ├ğok benzer kariyer f─▒rsatlar─▒
+
+2. Bilgisayar Teknolojisi ve Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %85
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 180.000
+   ÔÇó S─▒ralama Fark─▒: 320.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Uygulamal─▒ bilgisayar teknolojileri, sistem y├Ânetimi
+
+3. Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó Benzerlik: %80
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 120.000
+   ÔÇó S─▒ralama Fark─▒: 380.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Teknoloji ve e─şitim, hem yaz─▒l─▒m hem ├Â─şretmenlik se├ğene─şi
+
+4. Y├Ânetim Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %75
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 150.000
+   ÔÇó S─▒ralama Fark─▒: 350.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: ─░┼ş d├╝nyas─▒ + teknoloji, y├Ânetim ve yaz─▒l─▒m birle┼şimi
+
+­şÄ» 2 YILLIK ALTERNAT─░FLER + DGS (TYT Bazl─▒):
+
+1. Bilgisayar Programc─▒l─▒─ş─▒
+   ÔÇó Benzerlik: %70
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 450.000
+   ÔÇó S─▒ralama Fark─▒: 150.000
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%65
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+
+2. Bilgisayar Teknolojileri
+   ÔÇó Benzerlik: %65
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 520.000
+   ÔÇó S─▒ralama Fark─▒: 80.000
+   ÔÇó DGS Hedef: Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó DGS Ba┼şar─▒: ~%60
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+
+3. Web Tasar─▒m ve Kodlama
+   ÔÇó Benzerlik: %60
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 500.000
+   ÔÇó S─▒ralama Fark─▒: 100.000
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%55
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+
+­şôï TERC─░H STRATEJ─░S─░:
+
+   ÔÜá´©Å Uygun alternatif bulunamad─▒. S─▒ralama ├ğok d├╝┼ş├╝k olabilir.
+
+
+================================================================================
+
+
+­şôï Senaryo 3: Yaz─▒l─▒m M├╝hendisli─şi (AYT Yetmiyor, TYT Yetiyor)
+
+--------------------------------------------------------------------------------
+AYT S─▒ralamas─▒: 200.000
+TYT S─▒ralamas─▒: 400.000
+Hedef B├Âl├╝m: Yaz─▒l─▒m M├╝hendisli─şi
+┼Şehir: ─░stanbul
+--------------------------------------------------------------------------------
+
+­şÄô 4 YILLIK ALTERNAT─░FLER (AYT Bazl─▒):
+
+1. Bilgisayar M├╝hendisli─şi
+   ÔÇó Benzerlik: %95
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 45.000
+   ÔÇó S─▒ralama Fark─▒: 155.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Daha geni┼ş kapsaml─▒, hem donan─▒m hem yaz─▒l─▒m
+
+2. Bilgisayar Teknolojisi ve Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %80
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 180.000
+   ÔÇó S─▒ralama Fark─▒: 20.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Uygulamal─▒ teknoloji ve sistem geli┼ştirme
+
+­şÄ» 2 YILLIK ALTERNAT─░FLER + DGS (TYT Bazl─▒):
+
+1. Bilgisayar Programc─▒l─▒─ş─▒
+   ÔÇó Benzerlik: %75
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 450.000
+   ÔÇó S─▒ralama Fark─▒: -50.000
+   ÔÇó DGS Hedef: Yaz─▒l─▒m M├╝hendisli─şi, Bilgisayar M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%70
+   ÔÇó G├╝ven: ­şşó Y├╝ksek (%85)
+
+­şôï TERC─░H STRATEJ─░S─░:
+
+­şÄô DGS YOLU (13-24):
+   ÔÇó Bilgisayar Programc─▒l─▒─ş─▒ ÔåÆ Yaz─▒l─▒m M├╝hendisli─şi, Bilgisayar M├╝hendisli─şi
+     75% benzerlik, DGS ile Yaz─▒l─▒m M├╝hendisli─şi, Bilgisayar M├╝hendisli─şi
+     Ba┼şar─▒ Oran─▒: ~%70
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+
+================================================================================
+
+
+­şôï Senaryo 4: Bilgisayar M├╝hendisli─şi (─░yi S─▒ralama)
+
+--------------------------------------------------------------------------------
+AYT S─▒ralamas─▒: 100.000
+TYT S─▒ralamas─▒: 350.000
+Hedef B├Âl├╝m: Bilgisayar M├╝hendisli─şi
+┼Şehir: ─░stanbul
+--------------------------------------------------------------------------------
+
+­şÄô 4 YILLIK ALTERNAT─░FLER (AYT Bazl─▒):
+
+1. Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó Benzerlik: %95
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó Taban E┼şik: 50.000
+   ÔÇó S─▒ralama Fark─▒: 50.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k (%15)
+   ÔÇó A├ğ─▒klama: Yaz─▒l─▒m geli┼ştirme odakl─▒, Bilgisayar M├╝hendisli─şine ├ğok benzer kariyer f─▒rsatlar─▒
+
+­şÄ» 2 YILLIK ALTERNAT─░FLER + DGS (TYT Bazl─▒):
+
+1. Bilgisayar Programc─▒l─▒─ş─▒
+   ÔÇó Benzerlik: %70
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 450.000
+   ÔÇó S─▒ralama Fark─▒: -100.000
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%65
+   ÔÇó G├╝ven: ­şşó ├çok Y├╝ksek (%95)
+
+2. Bilgisayar Teknolojileri
+   ÔÇó Benzerlik: %65
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 520.000
+   ÔÇó S─▒ralama Fark─▒: -170.000
+   ÔÇó DGS Hedef: Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó DGS Ba┼şar─▒: ~%60
+   ÔÇó G├╝ven: ­şşó ├çok Y├╝ksek (%95)
+
+3. Web Tasar─▒m ve Kodlama
+   ÔÇó Benzerlik: %60
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó Taban E┼şik: 500.000
+   ÔÇó S─▒ralama Fark─▒: -150.000
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒: ~%55
+   ÔÇó G├╝ven: ­şşó ├çok Y├╝ksek (%95)
+
+­şôï TERC─░H STRATEJ─░S─░:
+
+­şÄô DGS YOLU (13-24):
+   ÔÇó Bilgisayar Programc─▒l─▒─ş─▒ ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     70% benzerlik, DGS ile Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     Ba┼şar─▒ Oran─▒: ~%65
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+   ÔÇó Bilgisayar Teknolojileri ÔåÆ Bilgisayar ve ├û─şretim Teknolojileri
+     65% benzerlik, DGS ile Bilgisayar ve ├û─şretim Teknolojileri
+     Ba┼şar─▒ Oran─▒: ~%60
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+   ÔÇó Web Tasar─▒m ve Kodlama ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     60% benzerlik, DGS ile Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+     Ba┼şar─▒ Oran─▒: ~%55
+     ÔŞí´©Å  Son 6-8 tercihte g├╝venli se├ğenek olarak ekleyin
+
+
+================================================================================
+
+
+­şñû AI FORMAT ├ûRNE─Ş─░:
+
+================================================================================
+
+
+­şÄ» AKILLI ALTERNAT─░F ANAL─░Z SONU├çLARI
+ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+­şôè KULLANICI DURUMU:
+ÔÇó Hedef B├Âl├╝m: Bilgisayar M├╝hendisli─şi
+ÔÇó AYT S─▒ras─▒: 350.000
+ÔÇó TYT S─▒ras─▒: 450.000
+
+ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+Ô£à 4 YILLIK ALTERNAT─░FLER (AYT Bazl─▒):
+
+1. Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó Benzerlik: %95
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó S─▒ralama Fark─▒: 300.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k
+   ÔÇó A├ğ─▒klama: Yaz─▒l─▒m geli┼ştirme odakl─▒, Bilgisayar M├╝hendisli─şine ├ğok benzer kariyer f─▒rsatlar─▒
+
+
+2. Bilgisayar Teknolojisi ve Bili┼şim Sistemleri
+   ÔÇó Benzerlik: %85
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó S─▒ralama Fark─▒: 170.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k
+   ÔÇó A├ğ─▒klama: Uygulamal─▒ bilgisayar teknolojileri, sistem y├Ânetimi
+
+
+3. Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó Benzerlik: %80
+   ÔÇó Durum: ÔØî YETM─░YOR
+   ÔÇó S─▒ralama Fark─▒: 230.000
+   ÔÇó G├╝ven: ­şö┤ ├çok D├╝┼ş├╝k
+   ÔÇó A├ğ─▒klama: Teknoloji ve e─şitim, hem yaz─▒l─▒m hem ├Â─şretmenlik se├ğene─şi
+
+
+ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+­şÄô 2 YILLIK + DGS STRATEJ─░S─░ (TYT Bazl─▒):
+
+1. Bilgisayar Programc─▒l─▒─ş─▒
+   ÔÇó Benzerlik: %70
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒ Oran─▒: ~%65
+   ÔÇó A├ğ─▒klama: 2 y─▒ll─▒k programc─▒l─▒k e─şitimi, DGS ile Bilgisayar M├╝hendisli─şine ge├ği┼ş
+   
+   ÔÇó Uygun ├£niversite Say─▒s─▒: 0 (0 Devlet, 0 Vak─▒f)
+   ÔÇó En ─░yi Taban: 0
+   
+   ─░lk 5 Se├ğenek:
+   
+
+
+2. Bilgisayar Teknolojileri
+   ÔÇó Benzerlik: %65
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó DGS Hedef: Bilgisayar ve ├û─şretim Teknolojileri
+   ÔÇó DGS Ba┼şar─▒ Oran─▒: ~%60
+   ÔÇó A├ğ─▒klama: Genel bilgisayar teknolojileri, DGS f─▒rsat─▒
+   
+
+
+3. Web Tasar─▒m ve Kodlama
+   ÔÇó Benzerlik: %60
+   ÔÇó Durum: Ô£à YETERL─░
+   ÔÇó DGS Hedef: Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi
+   ÔÇó DGS Ba┼şar─▒ Oran─▒: ~%55
+   ÔÇó A├ğ─▒klama: Frontend ve backend web geli┼ştirme, DGS ile 4 y─▒ll─▒─şa ge├ği┼ş
+   
+
+
+ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+­şôï TERC─░H STRATEJ─░S─░:
+
+
+
+
+
+­şÄô DGS YOLU (13-24):
+   ÔÇó Bilgisayar Programc─▒l─▒─ş─▒ ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi (Ba┼şar─▒: ~%65)
+   ÔÇó Bilgisayar Teknolojileri ÔåÆ Bilgisayar ve ├û─şretim Teknolojileri (Ba┼şar─▒: ~%60)
+   ÔÇó Web Tasar─▒m ve Kodlama ÔåÆ Bilgisayar M├╝hendisli─şi, Yaz─▒l─▒m M├╝hendisli─şi (Ba┼şar─▒: ~%55)
+
+
+
+Ô£à Test tamamland─▒!
+

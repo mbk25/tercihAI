@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tercih AI - Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-logo">🎓</div>
+            <h1>Tercih AI</h1>
+            <h2>Admin Paneli</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Kullanıcı Adı</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Giriş Yap</button>
+                
+                <div class="login-hint">
+                    <small>Varsayılan: admin / admin123</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container" id="adminContainer" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Tercih AI Admin</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-page="analyses">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    Analizler
+                </a>
+                <a href="#" class="nav-item" data-page="universities">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                    Üniversiteler
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m-6-6h6m6 0h-6"></path>
+                    </svg>
+                    Ayarlar
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" id="logoutBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    Çıkış Yap
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Tercih AI sistem özeti ve istatistikler</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            📊
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalAnalyses">0</h3>
+                            <p>Toplam Analiz</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            👥
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsers">0</h3>
+                            <p>Toplam Kullanıcı</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            🏛️
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUniversities">0</h3>
+                            <p>Üniversite Verisi</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            ✅
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="successRate">0%</h3>
+                            <p>Başarı Oranı</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activities">
+                    <h2>Son Analizler</h2>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Sıralama</th>
+                                    <th>Bölüm</th>
+                                    <th>Şehir</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentAnalysesTable">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2rem;">Yükleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyses Page -->
+            <div class="page" id="analyses">
+                <div class="page-header">
+                    <h1>Tüm Analizler</h1>
+                    <button class="refresh-btn" onclick="loadAnalyses()">🔄 Yenile</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tarih</th>
+                                <th>Sıralama</th>
+                                <th>Cinsiyet</th>
+                                <th>Bölüm</th>
+                                <th>Şehir</th>
+                                <th>Sonuç</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allAnalysesTable">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem;">Yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Universities Page -->
+            <div class="page" id="universities">
+                <div class="page-header">
+                    <h1>Üniversite Verileri</h1>
+                    <button class="refresh-btn" onclick="updateUniversityData()">🔄 YÖK Atlas'tan Güncelle</button>
+                </div>
+
+                <div class="update-form">
+                    <h3>Yeni Veri Çek</h3>
+                    <form id="updateDataForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bölüm</label>
+                                <select id="updateDepartment">
+                                    <option>Bilgisayar Mühendisliği</option>
+                                    <option>Makine Mühendisliği</option>
+                                    <option>Tıp</option>
+                                    <option>Hukuk</option>
+                                    <option>İşletme</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Yıl</label>
+                                <input type="number" id="updateYear" value="2024" min="2020" max="2024">
+                            </div>
+                            <button type="submit" class="update-btn">Verileri Çek</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="universityDataDisplay"></div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page" id="settings">
+                <div class="page-header">
+                    <h1>Ayarlar</h1>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Sistem Ayarları</h3>
+                    <div class="setting-item">
+                        <label>YÖK Atlas Güncellemeleri</label>
+                        <select>
+                            <option>Otomatik</option>
+                            <option>Manuel</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Önbellek Süresi (saat)</label>
+                        <input type="number" value="24">
+                    </div>
+                    <button class="save-btn">Kaydet</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Güvenlik</h3>
+                    <button class="danger-btn">Şifre Değiştir</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

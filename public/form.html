@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tercih Analizi - Bilgilerinizi Girin</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 1rem;
+        }
+
+        .form-content {
+            background: var(--bg-surface);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .form-header p {
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group label .required {
+            color: #ef4444;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .cities-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .city-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .city-tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .popular-cities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .popular-city {
+            padding: 0.5rem 1rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .popular-city:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-modal" id="formModal">
+        <div class="form-content">
+            <div class="form-header">
+                <h2>📋 Tercih Analizi Formu</h2>
+                <p>Bilgilerinizi girerek size özel üniversite önerilerini alın</p>
+            </div>
+
+            <form id="analysisForm">
+                <div class="form-group">
+                    <label>
+                        🎯 Sıralamalarınız <span class="required">*</span>
+                    </label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label for="tytRanking" style="font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem;">
+                                📘 TYT Sıralamanız
+                            </label>
+                            <input 
+                                type="number" 
+                                id="tytRanking" 
+                                name="tytRanking"
+                                placeholder="Örn: 450000"
+                                required
+                                min="1"
+                                max="3000000"
+                                style="width: 100%;"
+                            >
+                            <small style="font-size: 0.8rem;">2 yıllık programlar için</small>
+                        </div>
+                        <div>
+                            <label for="aytRanking" style="font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem;">
+                                📗 AYT Sıralamanız
+                            </label>
+                            <input 
+                                type="number" 
+                                id="aytRanking" 
+                                name="aytRanking"
+                                placeholder="Örn: 150000"
+                                required
+                                min="1"
+                                max="3000000"
+                                style="width: 100%;"
+                            >
+                            <small style="font-size: 0.8rem;">4 yıllık programlar için</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">
+                        👤 Cinsiyet <span class="required">*</span>
+                    </label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Seçiniz</option>
+                        <option value="Erkek">Erkek</option>
+                        <option value="Kadın">Kadın</option>
+                        <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dreamDept">
+                        💭 Hayalinizdeki Bölüm <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="dreamDept" 
+                        name="dreamDept"
+                        placeholder="Örn: Bilgisayar Mühendisliği"
+                        required
+                        list="departments"
+                    >
+                    <datalist id="departments">
+                        <option value="Bilgisayar Mühendisliği">
+                        <option value="Makine Mühendisliği">
+                        <option value="Elektrik-Elektronik Mühendisliği">
+                        <option value="Endüstri Mühendisliği">
+                        <option value="İnşaat Mühendisliği">
+                        <option value="Tıp">
+                        <option value="Diş Hekimliği">
+                        <option value="Hukuk">
+                        <option value="İşletme">
+                        <option value="İktisat">
+                        <option value="Mimarlık">
+                        <option value="Psikoloji">
+                    </datalist>
+                    <small>Okumak istediğiniz bölümü yazın</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">
+                        🏙️ Tercih Ettiğiniz Şehirler <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="cityInput" 
+                        placeholder="Şehir adı yazıp Enter'a basın"
+                    >
+                    <div class="cities-input" id="selectedCities"></div>
+                    <input type="hidden" id="city" name="city" required>
+                    
+                    <small>Popüler Şehirler:</small>
+                    <div class="popular-cities">
+                        <span class="popular-city" data-city="İstanbul">İstanbul</span>
+                        <span class="popular-city" data-city="Ankara">Ankara</span>
+                        <span class="popular-city" data-city="İzmir">İzmir</span>
+                        <span class="popular-city" data-city="Bursa">Bursa</span>
+                        <span class="popular-city" data-city="Antalya">Antalya</span>
+                        <span class="popular-city" data-city="Adana">Adana</span>
+                        <span class="popular-city" data-city="Gaziantep">Gaziantep</span>
+                        <span class="popular-city" data-city="Konya">Konya</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentLocation">
+                        📍 Bulunduğunuz İl <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="currentLocation" 
+                        name="currentLocation"
+                        placeholder="Örn: İzmir"
+                        required
+                    >
+                    <small>Ulaşım bilgileri için</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="educationType">
+                        🏫 Üniversite Tercihi <span class="required">*</span>
+                    </label>
+                    <select id="educationType" name="educationType" required>
+                        <option value="Tümü">Devlet + Vakıf (Tümü)</option>
+                        <option value="Devlet">Sadece Devlet Üniversiteleri</option>
+                        <option value="Vakıf">Sadece Vakıf/Özel Üniversiteler</option>
+                    </select>
+                    <small>Hangi tip üniversiteleri görmek istersiniz?</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">
+                        İptal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        🤖 Analiz Et
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const cities = [];
+        const cityInput = document.getElementById('cityInput');
+        const selectedCitiesDiv = document.getElementById('selectedCities');
+        const cityHiddenInput = document.getElementById('city');
+
+        // Şehir ekleme
+        cityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const city = cityInput.value.trim();
+                if (city && !cities.includes(city)) {
+                    addCity(city);
+                    cityInput.value = '';
+                }
+            }
+        });
+
+        // Popüler şehir tıklama
+        document.querySelectorAll('.popular-city').forEach(el => {
+            el.addEventListener('click', () => {
+                const city = el.dataset.city;
+                if (!cities.includes(city)) {
+                    addCity(city);
+                }
+            });
+        });
+
+        function addCity(city) {
+            cities.push(city);
+            updateCitiesDisplay();
+        }
+
+        function removeCity(city) {
+            const index = cities.indexOf(city);
+            if (index > -1) {
+                cities.splice(index, 1);
+                updateCitiesDisplay();
+            }
+        }
+
+        function updateCitiesDisplay() {
+            selectedCitiesDiv.innerHTML = cities.map(city => `
+                <div class="city-tag">
+                    <span>${city}</span>
+                    <button type="button" onclick="removeCity('${city}')">×</button>
+                </div>
+            `).join('');
+            cityHiddenInput.value = cities.join(', ');
+        }
+
+        // Form gönderme
+        document.getElementById('analysisForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (cities.length === 0) {
+                alert('Lütfen en az bir şehir seçin!');
+                return;
+            }
+
+            const formData = {
+                tytRanking: parseInt(document.getElementById('tytRanking').value),
+                aytRanking: parseInt(document.getElementById('aytRanking').value),
+                gender: document.getElementById('gender').value,
+                dreamDept: document.getElementById('dreamDept').value,
+                city: cities.join(', '),
+                currentLocation: document.getElementById('currentLocation').value,
+                educationType: document.getElementById('educationType').value
+            };
+
+            // Parent window'a gönder
+            if (window.opener) {
+                window.opener.postMessage({ type: 'ANALYSIS_FORM', data: formData }, '*');
+                window.close();
+            } else {
+                // Fallback: localStorage kullan
+                localStorage.setItem('analysisFormData', JSON.stringify(formData));
+                window.location.href = '/';
+            }
+        });
+
+        // İptal butonu
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            if (window.opener) {
+                window.close();
+            } else {
+                window.location.href = '/';
+            }
+        });
+
+        // Global fonksiyon
+        window.removeCity = removeCity;
+    </script>
+</body>
+</html>
