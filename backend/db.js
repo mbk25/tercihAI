@@ -1,5 +1,12 @@
 const mysql = require('mysql2/promise');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
+
+// SSL yapılandırması
+const sslConfig = process.env.DB_SSL_CA ? {
+    ca: fs.readFileSync(path.join(__dirname, process.env.DB_SSL_CA))
+} : undefined;
 
 // MySQL bağlantı havuzu
 const pool = mysql.createPool({
@@ -8,6 +15,7 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'tercihAI',
     port: process.env.DB_PORT || 3306,
+    ssl: sslConfig,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
