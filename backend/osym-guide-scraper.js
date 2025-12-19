@@ -274,21 +274,66 @@ async function scrapeProgramConditions(department = 'Bilgisayar Mühendisliği')
 async function getUniversityConditions(universityName, programName, year = 2024) {
     const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query(`
+        console.log(`🔍 Şart aranıyor: ${universityName} - ${programName}`);
+        
+        // Önce tam eşleşme dene
+        let [rows] = await connection.query(`
             SELECT DISTINCT
                 pc.conditionNumber,
                 cd.conditionText,
-                cd.category
+                cd.category,
+                pc.universityName,
+                pc.programName,
+                pc.city,
+                pc.campus
             FROM program_conditions pc
             LEFT JOIN condition_definitions cd ON pc.conditionNumber = cd.conditionNumber
             WHERE pc.universityName = ? 
-            AND pc.programName = ?
+            AND pc.programName LIKE ?
             AND pc.year = ?
-            GROUP BY pc.conditionNumber, cd.conditionText, cd.category
             ORDER BY CAST(pc.conditionNumber AS UNSIGNED)
-        `, [universityName, programName, year]);
+        `, [universityName, `%${programName}%`, year]);
 
-        return rows;
+        // Eğer tam eşleşme bulunamazsa, benzer isimlerde ara
+        if (rows.length === 0) {
+            console.log(`⚠️ Tam eşleşme bulunamadı, benzer isimde aranıyor...`);
+            
+            // Üniversite ismini normalize et (kısaltma vs için)
+            const normalizedUniName = universityName
+                .replace(/Üniversitesi/g, '')
+                .replace(/Üniv\./g, '')
+                .replace(/Ü\./g, '')
+                .trim();
+                
+            [rows] = await connection.query(`
+                SELECT DISTINCT
+                    pc.conditionNumber,
+                    cd.conditionText,
+                    cd.category,
+                    pc.universityName,
+                    pc.programName,
+                    pc.city,
+                    pc.campus
+                FROM program_conditions pc
+                LEFT JOIN condition_definitions cd ON pc.conditionNumber = cd.conditionNumber
+                WHERE pc.universityName LIKE ?
+                AND pc.programName LIKE ?
+                AND pc.year = ?
+                ORDER BY CAST(pc.conditionNumber AS UNSIGNED)
+                LIMIT 10
+            `, [`%${normalizedUniName}%`, `%${programName}%`, year]);
+        }
+
+        console.log(`✅ ${rows.length} şart maddesi bulundu`);
+        return rows.map(row => ({
+            conditionNumber: row.conditionNumber,
+            conditionText: row.conditionText,
+            category: row.category,
+            universityName: row.universityName,
+            programName: row.programName,
+            city: row.city,
+            campus: row.campus
+        }));
     } finally {
         connection.release();
     }

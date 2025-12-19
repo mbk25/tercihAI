@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkbox Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a2e; color: white; }
+        .card { background: #16213e; padding: 20px; border-radius: 12px; margin: 10px 0; position: relative; }
+        .checkbox-label { position: absolute; top: 10px; right: 10px; cursor: pointer; display: flex; gap: 5px; align-items: center; }
+        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #10a37f; }
+        #count { margin: 20px 0; padding: 15px; background: #0f3460; border-radius: 8px; }
+        button { background: linear-gradient(135deg, #34A853, #0F9D58); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🎓 Üniversite Seçim Testi</h1>
+    
+    <div class="card">
+        <label class="checkbox-label">
+            <input type="checkbox" onchange="updateCount()">
+            <span>Seç</span>
+        </label>
+        <h3>İstanbul Teknik Üniversitesi</h3>
+        <p>📍 İstanbul - Ayazağa</p>
+        <p>🎯 Taban: 1.234</p>
+    </div>
+    
+    <div class="card">
+        <label class="checkbox-label">
+            <input type="checkbox" onchange="updateCount()">
+            <span>Seç</span>
+        </label>
+        <h3>Boğaziçi Üniversitesi</h3>
+        <p>📍 İstanbul - Bebek</p>
+        <p>🎯 Taban: 987</p>
+    </div>
+    
+    <div class="card">
+        <label class="checkbox-label">
+            <input type="checkbox" onchange="updateCount()">
+            <span>Seç</span>
+        </label>
+        <h3>ODTÜ</h3>
+        <p>📍 Ankara</p>
+        <p>🎯 Taban: 1.500</p>
+    </div>
+    
+    <div id="count">
+        <span id="selectedCount">0</span> üniversite seçildi
+    </div>
+    
+    <button onclick="exportToSheets()">
+        📊 Seçilenleri Google Sheets'e Aktar
+    </button>
+    
+    <script>
+        function updateCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            document.getElementById('selectedCount').textContent = checkboxes.length;
+        }
+        
+        function exportToSheets() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert('⚠️ Lütfen en az bir üniversite seçin!');
+            } else {
+                alert('✅ ' + checkboxes.length + ' üniversite Google Sheets\'e aktarılacak!');
+            }
+        }
+    </script>
+</body>
+</html>

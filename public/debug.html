@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug - Checkbox Testi</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #0a0a0a; color: #0f0; }
+        .check { color: #0f0; }
+        .cross { color: #f00; }
+        pre { background: #1a1a1a; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        button { background: #0f0; color: #000; padding: 10px 20px; margin: 10px 0; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔍 TercihAI Debug Panel</h1>
+    <p>Tarih: 2025-12-19 11:31:59</p>
+    
+    <h2>📋 Fonksiyon Kontrolleri:</h2>
+    <div id="checks"></div>
+    
+    <h2>📊 Konsol Testleri:</h2>
+    <button onclick="runTests()">🧪 Testleri Çalıştır</button>
+    <pre id="results"></pre>
+    
+    <h2>🔗 Linkler:</h2>
+    <button onclick="window.location.href='/'">Ana Sayfa</button>
+    <button onclick="window.location.href='/test-checkbox.html'">Checkbox Test</button>
+    
+    <script src="/app.js"></script>
+    <script>
+        function checkFunction(name) {
+            const exists = typeof window[name] !== 'undefined';
+            return exists ? 
+                '<span class="check">✅</span> ' + name + ' - MEVCUT' : 
+                '<span class="cross">❌</span> ' + name + ' - EKSİK!';
+        }
+        
+        window.onload = function() {
+            const checks = document.getElementById('checks');
+            checks.innerHTML = '<ul>' +
+                '<li>' + checkFunction('toggleUniversitySelection') + '</li>' +
+                '<li>' + checkFunction('exportSelectedToGoogleSheets') + '</li>' +
+                '<li>' + checkFunction('showEligibleUniversityModal') + '</li>' +
+                '<li>' + checkFunction('updateSelectedCount') + '</li>' +
+                '<li>' + (typeof selectedUniversities !== 'undefined' ? 
+                    '<span class="check">✅</span> selectedUniversities - MEVCUT (Set)' : 
+                    '<span class="cross">❌</span> selectedUniversities - EKSİK!') + '</li>' +
+            '</ul>';
+        };
+        
+        function runTests() {
+            const results = document.getElementById('results');
+            let output = '=== TEST SONUÇLARI ===\n\n';
+            
+            // Test 1: selectedUniversities
+            if (typeof selectedUniversities !== 'undefined') {
+                output += '✅ selectedUniversities mevcut\n';
+                output += '   Tip: ' + typeof selectedUniversities + '\n';
+                output += '   Boyut: ' + selectedUniversities.size + '\n\n';
+            } else {
+                output += '❌ selectedUniversities BULUNAMADI!\n\n';
+            }
+            
+            // Test 2: toggleUniversitySelection
+            if (typeof toggleUniversitySelection === 'function') {
+                output += '✅ toggleUniversitySelection fonksiyonu mevcut\n\n';
+            } else {
+                output += '❌ toggleUniversitySelection BULUNAMADI!\n\n';
+            }
+            
+            // Test 3: exportSelectedToGoogleSheets
+            if (typeof exportSelectedToGoogleSheets === 'function') {
+                output += '✅ exportSelectedToGoogleSheets fonksiyonu mevcut\n\n';
+            } else {
+                output += '❌ exportSelectedToGoogleSheets BULUNAMADI!\n\n';
+            }
+            
+            // Test 4: showEligibleUniversityModal
+            if (typeof showEligibleUniversityModal === 'function') {
+                output += '✅ showEligibleUniversityModal fonksiyonu mevcut\n\n';
+            } else {
+                output += '❌ showEligibleUniversityModal BULUNAMADI!\n\n';
+            }
+            
+            results.textContent = output;
+        }
+    </script>
+</body>
+</html>

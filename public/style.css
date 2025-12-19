@@ -44,6 +44,96 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Modal Animasyonları */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutToTop {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    #detailedConditionsModal > div {
+        margin: 10px;
+        max-height: 95vh;
+    }
+    
+    #detailedConditionsModal > div > div:nth-child(2) {
+        padding: 15px !important;
+        display: block !important;
+    }
+    
+    #detailedConditionsModal iframe {
+        height: 300px;
+    }
+    
+    #universityDetailModal > div {
+        margin: 10px;
+        max-height: 95vh;
+    }
+    
+    #universityDetailModal > div > div:nth-child(2) {
+        padding: 15px !important;
+    }
+}
+
+/* Scroll bar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-surface);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
 .chat-container {
     display: flex;
     height: 100vh;
@@ -825,6 +915,37 @@ body {
     box-shadow: 0 6px 20px var(--shadow-lg);
 }
 
+/* Seçimlerim Butonu */
+.selections-btn {
+    position: fixed;
+    top: 1rem;
+    right: 5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #34a853, #0f9d58);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(52, 168, 83, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.selections-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 168, 83, 0.6);
+    background: linear-gradient(135deg, #2d8f47, #0d7d48);
+}
+
+.selections-btn:active {
+    transform: translateY(0);
+}
+
 /* Result Cards Animation */
 .result-card {
     background: var(--bg-surface);
@@ -1164,6 +1285,14 @@ body {
         width: 45px;
         height: 45px;
     }
+    
+    .selections-btn {
+        top: 4rem;
+        right: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
 }
 
 /* University Detail Modal Animations */

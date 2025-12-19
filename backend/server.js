@@ -10,12 +10,14 @@ const { scrapeYokAtlasReal, scrapeYokAtlasSimple, generateMockData } = require('
 const { connectMongoDB, University, User, Analysis, ChatHistory } = require('./mongodb');
 const { chatWithAI, analyzeDepartment } = require('./openai-service');
 const { chatWithGemini, analyzeDepartmentWithGemini } = require('./gemini-service');
+const { chatWithGroq, analyzeDepartmentWithGroq } = require('./groq-service');
 const { findSmartAlternatives, generateStrategy, formatForAI } = require('./smart-alternatives');
 const { getUniversityConditions, createConditionsTable, refreshAllData } = require('./osym-guide-scraper');
+const { createSpreadsheet, appendToSpreadsheet } = require('./google-sheets-service');
 require('dotenv').config();
 
-// AI Provider seçimi (Gemini ücretsiz, OpenAI ücretli)
-const AI_PROVIDER = process.env.AI_PROVIDER || 'gemini';
+// AI Provider seçimi (Groq en hızlı ve ücretsiz, Gemini ücretsiz ama yavaş, OpenAI ücretli)
+const AI_PROVIDER = process.env.AI_PROVIDER || 'groq';
 
 // MongoDB artık kullanılmıyor - sadece MySQL yeterli!
 // YÖK Atlas verileri yılda 1 kez değişiyor, buluta gerek yok ✅
@@ -511,7 +513,9 @@ async function generateAIResponse(message, history) {
         }
         
         let aiResponse;
-        if (AI_PROVIDER === 'gemini') {
+        if (AI_PROVIDER === 'groq') {
+            aiResponse = await chatWithGroq(enrichedMessage, history);
+        } else if (AI_PROVIDER === 'gemini') {
             aiResponse = await chatWithGemini(enrichedMessage, history);
         } else {
             aiResponse = await chatWithAI(enrichedMessage, history);
@@ -790,7 +794,10 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
 
             let aiRecommendation = '';
             try {
-                if (AI_PROVIDER === 'gemini') {
+                if (AI_PROVIDER === 'groq') {
+                    const aiResponse = await chatWithGroq(aiPrompt, []);
+                    aiRecommendation = aiResponse.text;
+                } else if (AI_PROVIDER === 'gemini') {
                     const aiResponse = await chatWithGemini(aiPrompt, []);
                     aiRecommendation = aiResponse.text;
                 } else {
@@ -1103,7 +1110,10 @@ ${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
 
             let aiRecommendation = '';
             try {
-                if (AI_PROVIDER === 'gemini') {
+                if (AI_PROVIDER === 'groq') {
+                    const aiResponse = await chatWithGroq(aiPrompt, []);
+                    aiRecommendation = aiResponse.text;
+                } else if (AI_PROVIDER === 'gemini') {
                     const aiResponse = await chatWithGemini(aiPrompt, []);
                     aiRecommendation = aiResponse.text;
                 } else {
@@ -1657,7 +1667,9 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
 `;
 
         let aiResponse;
-        if (AI_PROVIDER === 'gemini') {
+        if (AI_PROVIDER === 'groq') {
+            aiResponse = await chatWithGroq(aiPrompt, []);
+        } else if (AI_PROVIDER === 'gemini') {
             aiResponse = await chatWithGemini(aiPrompt, []);
         } else {
             aiResponse = await chatWithAI(aiPrompt, []);
@@ -1697,6 +1709,111 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
         res.status(500).json({ 
             error: error.message,
             details: 'Akıllı alternatif sistemi şu anda kullanılamıyor. Lütfen manuel tercih analizini deneyin.'
+        });
+    }
+});
+
+// Google Sheets - Seçili üniversiteleri aktar
+app.post('/api/export-to-sheets', async (req, res) => {
+    try {
+        const { universities, userEmail, title } = req.body;
+        
+        if (!universities || !Array.isArray(universities) || universities.length === 0) {
+            return res.status(400).json({ error: 'Üniversite listesi boş olamaz' });
+        }
+        
+        console.log('📊 Google Sheets\'e aktarılıyor:', {
+            count: universities.length,
+            userEmail: userEmail || 'Belirtilmedi',
+            title: title || 'Seçtiğim Üniversiteler'
+        });
+        
+        const sheetTitle = title || `Seçtiğim Üniversiteler - ${new Date().toLocaleDateString('tr-TR')}`;
+        
+        const result = await createSpreadsheet(sheetTitle, universities, userEmail);
+        
+        res.json(result);
+        
+    } catch (error) {
+        console.error('Google Sheets export hatası:', error);
+        res.status(500).json({ 
+            error: 'Google Sheets oluşturulamadı',
+            message: error.message,
+            hint: 'backend/google-credentials.json dosyasını ekleyin'
+        });
+    }
+});
+
+// Kullanıcı seçimlerini kaydetme endpoint'i
+app.post('/api/save-selections', async (req, res) => {
+    try {
+        const { userEmail, universities, timestamp } = req.body;
+        
+        if (!universities || !Array.isArray(universities) || universities.length === 0) {
+            return res.status(400).json({ error: 'Üniversite listesi boş olamaz' });
+        }
+        
+        console.log('💾 Kullanıcı seçimleri kaydediliyor:', {
+            userEmail: userEmail || 'Anonim',
+            count: universities.length,
+            timestamp
+        });
+        
+        const connection = await pool.getConnection();
+        
+        try {
+            // user_selections tablosuna kaydet
+            await connection.query(`
+                CREATE TABLE IF NOT EXISTS user_selections (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_email VARCHAR(255),
+                    university_name VARCHAR(500),
+                    city VARCHAR(100),
+                    campus VARCHAR(200),
+                    department VARCHAR(500),
+                    type VARCHAR(50),
+                    ranking VARCHAR(50),
+                    quota VARCHAR(50),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_user_email (user_email),
+                    INDEX idx_created_at (created_at)
+                )
+            `);
+            
+            // Her üniversite için kayıt ekle
+            for (const uni of universities) {
+                await connection.query(
+                    `INSERT INTO user_selections 
+                    (user_email, university_name, city, campus, department, type, ranking, quota) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        userEmail || 'anonim',
+                        uni.name,
+                        uni.city,
+                        uni.campus,
+                        uni.department,
+                        uni.type,
+                        uni.ranking || '',
+                        uni.quota || ''
+                    ]
+                );
+            }
+            
+            res.json({ 
+                success: true, 
+                message: `${universities.length} üniversite kaydedildi`,
+                savedCount: universities.length
+            });
+            
+        } finally {
+            connection.release();
+        }
+        
+    } catch (error) {
+        console.error('❌ Seçim kaydetme hatası:', error);
+        res.status(500).json({ 
+            error: 'Seçimler kaydedilemedi',
+            message: error.message
         });
     }
 });

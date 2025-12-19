@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Modal Test</title>
+    <script src="/app.js"></script>
+</head>
+<body style="background: #1a1a2e; color: white; padding: 20px;">
+    <h1>Modal Test</h1>
+    <button onclick="testModal()" style="background: #10a37f; color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
+        Test Modal'ı Aç
+    </button>
+    
+    <div id="info" style="margin-top: 20px; padding: 15px; background: #0f1419; border-radius: 8px;">
+        <h3>Kontroller:</h3>
+        <ul id="checks"></ul>
+    </div>
+    
+    <script>
+        function testModal() {
+            const testData = [
+                {
+                    name: 'İstanbul Teknik Üniversitesi',
+                    city: 'İstanbul',
+                    campus: 'Ayazağa',
+                    type: 'Devlet',
+                    ranking: 1234,
+                    quota: 150,
+                    conditionNumbers: '5'
+                },
+                {
+                    name: 'Boğaziçi Üniversitesi',
+                    city: 'İstanbul',
+                    campus: 'Bebek',
+                    type: 'Devlet',
+                    ranking: 987,
+                    quota: 120,
+                    conditionNumbers: '3'
+                },
+                {
+                    name: 'Yıldız Teknik Üniversitesi',
+                    city: 'İstanbul',
+                    campus: 'Davutpaşa',
+                    type: 'Devlet',
+                    ranking: 380000,
+                    quota: 30,
+                    conditionNumbers: '18'
+                }
+            ];
+            
+            console.log('🧪 Test modal açılıyor...');
+            console.log('📊 Test verisi:', testData);
+            
+            showEligibleUniversityModal('Bilgisayar Mühendisliği', testData);
+            
+            // 1 saniye sonra kontrol et
+            setTimeout(() => {
+                const checks = [];
+                
+                // Modal var mı?
+                const modal = document.querySelector('.modal-overlay');
+                checks.push(modal ? '✅ Modal açıldı' : '❌ Modal açılmadı');
+                
+                // Checkbox'lar var mı?
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checks.push(`${checkboxes.length > 0 ? '✅' : '❌'} ${checkboxes.length} checkbox bulundu`);
+                
+                // Üniversite kartları var mı?
+                const cards = document.querySelectorAll('[style*="border-left: 4px solid"]');
+                checks.push(`${cards.length > 0 ? '✅' : '❌'} ${cards.length} üniversite kartı bulundu`);
+                
+                // Export butonu var mı?
+                const exportBtn = document.querySelector('#exportToSheetsBtn');
+                checks.push(exportBtn ? '✅ Export butonu bulundu' : '❌ Export butonu yok');
+                
+                // Sayaç var mı?
+                const counter = document.querySelector('#selectedCount');
+                checks.push(counter ? `✅ Sayaç bulundu (${counter.textContent})` : '❌ Sayaç yok');
+                
+                // Sonuçları göster
+                console.log('📋 Kontrol Sonuçları:');
+                checks.forEach(c => console.log(c));
+                
+                document.getElementById('checks').innerHTML = checks.map(c => `<li>${c}</li>`).join('');
+                
+                // Eğer checkbox yoksa HTML'i incele
+                if (checkboxes.length === 0) {
+                    console.error('❌ CHECKBOX YOK! Modal HTML:');
+                    console.log(modal ? modal.innerHTML : 'Modal bulunamadı');
+                }
+            }, 1000);
+        }
+        
+        // Sayfa yüklenince fonksiyonları kontrol et
+        window.onload = function() {
+            const funcs = [
+                'showEligibleUniversityModal',
+                'toggleUniversitySelection',
+                'exportSelectedToGoogleSheets',
+                'updateSelectedCount'
+            ];
+            
+            console.log('🔍 Fonksiyon Kontrolleri:');
+            funcs.forEach(fname => {
+                const exists = typeof window[fname] !== 'undefined';
+                console.log(`${exists ? '✅' : '❌'} ${fname}`);
+            });
+        };
+    </script>
+</body>
+</html>

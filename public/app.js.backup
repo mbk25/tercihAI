@@ -9,9 +9,6 @@ let chatSessions = []; // Tüm sohbet oturumlarını sakla
 let userProfile = null;
 let selectedChats = new Set(); // Seçilen sohbetler
 let isSelectionMode = false; // Seçim modu aktif mi?
-let currentDepartment = null; // Analiz edilen bölümü sakla
-let globalSelectedUniversities = []; // TÜM programlardan seçilen üniversiteler (Google Sheets için)
-let aiInitialized = false;
 
 // DOM Elements
 const chatMessages = document.getElementById('chatMessages');
@@ -22,105 +19,11 @@ const welcomeScreen = document.getElementById('welcomeScreen');
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
 const sidebar = document.getElementById('sidebar');
 
-// Sayfa yüklendiğinde
-document.addEventListener('DOMContentLoaded', () => {
-    // User profile kontrol
-    checkUserProfile();
-    
-    // Google login butonuna event listener ekle
-    setupGoogleLoginButton();
-    
-    // Seçimler butonuna event listener ekle
-    const selectionsBtn = document.getElementById('selectionsBtn');
-    if (selectionsBtn) {
-        selectionsBtn.addEventListener('click', showSelectionsModal);
-    }
-    
-    // AI'ı başlat
-    initializeAI();
-});
-
-// AI'ı başlat (Google AI Studio kullanarak)
-async function initializeAI() {
-    console.log('🤖 AI başlatılıyor...');
-    aiInitialized = true;
-    addMessage('🤖 Tercih AI - Akıllı Üniversite Tercih Danışmanı\n\nMerhaba! Size üniversite tercihinizde yardımcı olacağım. Google AI Studio ile çalışıyorum.\n\nNe yapmak istersiniz?', 'ai', ['Analiz Yap', 'Nasıl kullanırım?']);
-}
-
-// Mock AI yanıt oluşturucu
-function generateMockResponse(message) {
-    const lowerMsg = message.toLowerCase();
-    
-    // DGS soruları
-    if (lowerMsg.includes('dgs')) {
-        return 'DGS (Dikey Geçiş Sınavı), ön lisans mezunlarının lisans programlarına geçiş yapabilmesi için ÖSYM tarafından düzenlenen bir sınavdır.\n\n📚 İçeriği:\n- Sözel Bölüm (60 soru)\n- Sayısal Bölüm (60 soru)\n\n📅 Yılda 1 kez yapılır.\n\nDaha detaylı bilgi ister misiniz?';
-    }
-    
-    // Tercih soruları
-    if (lowerMsg.includes('tercih') || lowerMsg.includes('nasıl')) {
-        return 'Üniversite tercihi yaparken şunlara dikkat edin:\n\n1️⃣ Sıralama durumunuzu kontrol edin\n2️⃣ Hedef bölümlerin taban puanlarına bakın\n3️⃣ Şehir tercihinizi belirleyin\n4️⃣ Alternatif bölümler düşünün\n\nAnaliz yapmak için "Analiz Yap" butonuna tıklayın!';
-    }
-    
-    // Bölüm soruları
-    if (lowerMsg.includes('bölüm') || lowerMsg.includes('mühendislik') || lowerMsg.includes('tıp')) {
-        return 'Tercih edebileceğiniz bölümler sıralama durumunuza göre değişir.\n\n💡 Analiz yapmak için:\n- TYT ve AYT sıralama bilgilerinizi girin\n- Hayalinizdeki bölümü söyleyin\n- Size uygun alternatifleri göstereyim!\n\nHemen başlamak ister misiniz?';
-    }
-    
-    // Genel sorular
-    if (lowerMsg.includes('merhaba') || lowerMsg.includes('selam')) {
-        return 'Merhaba! 👋\n\nSize üniversite tercihinizde yardımcı olacağım.\n\nNe yapmak istersiniz?\n- 📊 Tercih Analizi\n- 📚 DGS Bilgisi\n- 🎯 Bölüm Önerileri';
-    }
-    
-    // Varsayılan yanıt
-    return 'Anladım. Size daha iyi yardımcı olabilmem için lütfen daha detaylı bilgi verin.\n\nŞunları yapabilirim:\n✅ Üniversite tercih analizi\n✅ DGS hakkında bilgi\n✅ Bölüm önerileri\n\nNe hakkında konuşmak istersiniz?';
-}
-
 // User profile kontrol
 checkUserProfile();
 
 // Sohbet geçmişini yükle
 loadChatHistory();
-
-// Google login buton kurulumu
-function setupGoogleLoginButton() {
-    const googleBtn = document.getElementById('googleLoginBtn');
-    if (!googleBtn) {
-        console.warn('Google login butonu bulunamadı');
-        return;
-    }
-    
-    // Eğer kullanıcı giriş yapmışsa
-    if (userProfile && userProfile.name) {
-        googleBtn.innerHTML = `
-            <svg style="width: 16px; height: 16px; margin-right: 0.5rem; vertical-align: middle;" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z"/>
-            </svg>
-            Çıkış Yap
-        `;
-        googleBtn.style.background = '#ea4335';
-        googleBtn.onclick = () => {
-            console.log('🚪 Çıkış yapılıyor...');
-            StorageHelper.removeItem('userProfile');
-            StorageHelper.removeItem('authToken');
-            window.location.reload();
-        };
-    } else {
-        // Giriş yapmamışsa
-        googleBtn.onclick = (e) => {
-            e.preventDefault();
-            console.log('🔐 Google OAuth açılıyor...');
-            const width = 500;
-            const height = 600;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
-            window.open(
-                `${API_URL}/auth/google`,
-                'GoogleOAuth',
-                `width=${width},height=${height},left=${left},top=${top}`
-            );
-        };
-    }
-}
 
 // Artık buton yok, sadece context menu
 
@@ -888,50 +791,32 @@ async function sendMessage() {
             const formData = parseFormData(message);
             await handleAnalysis(formData);
         } else {
-            // AI kullan (WebLLM veya Mock)
-            if (!webllmInitialized) {
-                removeTypingIndicator(typingId);
-                addMessage('⏳ AI henüz hazır değil...', 'ai');
-                return;
-            }
-            
+            // Regular chat
+            const response = await fetch(`${API_URL}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message,
+                    conversationHistory
+                })
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
             removeTypingIndicator(typingId);
-            const streamingTypingId = showTypingIndicator();
-            
-            try {
-                // WebLLM mevcutsa kullan, yoksa basit yanıt ver
-                let aiResponse;
-                
-                if (window.webLLMService && window.webLLMService.isReady) {
-                    console.log('💬 WebLLM kullanılıyor');
-                    aiResponse = await window.webLLMService.chatStream(
-                        message,
-                        conversationHistory,
-                        (chunk, fullText) => {}
-                    );
-                } else {
-                    // Mock AI - Basit yanıtlar
-                    console.log('💬 Mock AI kullanılıyor');
-                    aiResponse = generateMockResponse(message);
-                }
-                
-                removeTypingIndicator(streamingTypingId);
-                addMessage(aiResponse, 'ai', ['Devam et', 'Başka soru', 'Analiz yap']);
-                
-                conversationHistory.push(
-                    { role: 'user', content: message },
-                    { role: 'assistant', content: aiResponse }
-                );
-                
-            } catch (error) {
-                removeTypingIndicator(streamingTypingId);
-                console.error('❌ AI hatası:', error);
-                
-                // Fallback yanıt
-                const fallbackResponse = generateMockResponse(message);
-                addMessage(fallbackResponse, 'ai', ['Devam et']);
-            }
+
+            // Add AI response
+            addMessage(data.response.text, 'ai', data.response.suggestions);
         }
+
+        // Update conversation history
+        conversationHistory.push(
+            { role: 'user', content: message },
+            { role: 'assistant', content: message }
+        );
 
     } catch (error) {
         removeTypingIndicator(typingId);
@@ -1159,29 +1044,38 @@ function checkUserProfile() {
 function updateUserUI() {
     const userNameEl = document.querySelector('.user-name');
     const avatarEl = document.querySelector('.avatar');
+    const googleBtn = document.getElementById('googleLoginBtn');
     
     if (userProfile && userProfile.name) {
-        // Kullanıcı adını güncelle
         if (userNameEl) userNameEl.textContent = userProfile.name;
-        
-        // Avatar'ı güncelle
-        if (avatarEl) {
-            if (userProfile.picture) {
-                // Google'dan gelen profil fotoğrafı varsa kullan
-                avatarEl.innerHTML = `<img src="${userProfile.picture}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            } else {
-                // Profil fotoğrafı yoksa varsayılan emoji kullan
-                avatarEl.textContent = '👤';
-            }
+        if (avatarEl && userProfile.picture) {
+            avatarEl.innerHTML = `<img src="${userProfile.picture}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        }
+        if (googleBtn) {
+            googleBtn.textContent = 'Çıkış Yap';
+            googleBtn.style.background = '#ea4335';
+            googleBtn.onclick = () => {
+                StorageHelper.removeItem('userProfile');
+                StorageHelper.removeItem('authToken');
+                window.location.reload();
+            };
         }
     } else {
-        // Giriş yapmamış kullanıcı
-        if (userNameEl) userNameEl.textContent = 'Misafir';
-        if (avatarEl) avatarEl.textContent = '👤';
+        if (googleBtn) {
+            googleBtn.onclick = () => {
+                console.log('🔐 Google OAuth açılıyor...');
+                const width = 500;
+                const height = 600;
+                const left = (screen.width - width) / 2;
+                const top = (screen.height - height) / 2;
+                window.open(
+                    `${API_URL}/auth/google`,
+                    'Google OAuth',
+                    `width=${width},height=${height},left=${left},top=${top}`
+                );
+            };
+        }
     }
-    
-    // Google login butonunu her zaman kuruluma gönder
-    setupGoogleLoginButton();
 }
 
 // Bilgi formu açma
@@ -2019,9 +1913,6 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
     const contentDiv = document.getElementById('universitiesListContent');
     contentDiv.innerHTML = '<p style="text-align: center; color: #94a3b8;">⏳ Üniversiteler yükleniyor...</p>';
 
-    // Analiz edilen bölümü sakla
-    window.currentDepartment = dreamDept;
-
     try {
         // API'den üniversiteleri çek
         const response = await fetch(`${API_URL}/api/universities`, {
@@ -2770,18 +2661,8 @@ function addUniversityCardsInBoxes(universities, formData) {
 
 // Yeni fonksiyon: Uygun üniversiteler için detaylı modal
 function showEligibleUniversityModal(deptName, universities) {
-    // Debug: Gelen verileri logla
-    console.log('🔍 showEligibleUniversityModal çağrıldı');
-    console.log('📊 Bölüm:', deptName);
-    console.log('📊 Üniversite sayısı:', universities ? universities.length : 0);
-    console.log('📊 İlk üniversite:', universities && universities[0] ? universities[0] : 'YOK');
-    
-    // Seçili üniversiteleri temizle
-    selectedUniversities.clear();
-    
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
-    modalOverlay.id = 'universitySelectionModal';
     modalOverlay.style.cssText = `
         position: fixed;
         top: 0;
@@ -2838,17 +2719,9 @@ function showEligibleUniversityModal(deptName, universities) {
                 🏛️ Devlet Üniversiteleri (${devletUnis.length})
             </h3>
             <div style="display: grid; gap: 1rem;">
-                ${devletUnis.map((uni, idx) => `
-                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #10a37f; position: relative;">
-                        <label style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" 
-                                id="uni-check-devlet-` + idx + `" 
-                                data-uni='` + JSON.stringify(uni).replace(/'/g, "&#39;") + `' 
-                                onchange="toggleUniversitySelection(this)"
-                                style="width: 20px; height: 20px; cursor: pointer; accent-color: #10a37f;">
-                            <span style="font-size: 0.85rem; color: var(--text-secondary);">Seç</span>
-                        </label>
-                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem; padding-right: 70px;">${uni.name}</div>
+                ${devletUnis.map(uni => `
+                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #10a37f;">
+                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem;">${uni.name}</div>
                         <div style="display: grid; gap: 0.5rem; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
                             <div>📍 ${uni.city}</div>
                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
@@ -2863,7 +2736,7 @@ function showEligibleUniversityModal(deptName, universities) {
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(16, 163, 127, 0.3)'">
                                 📋 Genel Bilgi
                             </button>
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Devlet', ${JSON.stringify(uni).replace(/"/g, '&quot;')}), 300)" 
+                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Devlet'), 300)" 
                                 style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(102, 126, 234, 0.4)'" 
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(102, 126, 234, 0.3)'">
@@ -2882,17 +2755,9 @@ function showEligibleUniversityModal(deptName, universities) {
                 💼 Vakıf Üniversiteleri (${vakifUnis.length})
             </h3>
             <div style="display: grid; gap: 1rem;">
-                ${vakifUnis.map((uni, idx) => `
-                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #f59e0b; position: relative;">
-                        <label style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" 
-                                id="uni-check-vakif-` + idx + `" 
-                                data-uni='` + JSON.stringify(uni).replace(/'/g, "&#39;") + `' 
-                                onchange="toggleUniversitySelection(this)"
-                                style="width: 20px; height: 20px; cursor: pointer; accent-color: #f59e0b;">
-                            <span style="font-size: 0.85rem; color: var(--text-secondary);">Seç</span>
-                        </label>
-                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem; padding-right: 70px;">${uni.name}</div>
+                ${vakifUnis.map(uni => `
+                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem;">${uni.name}</div>
                         <div style="display: grid; gap: 0.5rem; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
                             <div>📍 ${uni.city}</div>
                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
@@ -2907,7 +2772,7 @@ function showEligibleUniversityModal(deptName, universities) {
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(245, 158, 11, 0.3)'">
                                 📋 Genel Bilgi
                             </button>
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Vakıf', ${JSON.stringify(uni).replace(/"/g, '&quot;')}), 300)" 
+                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Vakıf'), 300)" 
                                 style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(102, 126, 234, 0.4)'" 
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(102, 126, 234, 0.3)'">
@@ -2919,38 +2784,6 @@ function showEligibleUniversityModal(deptName, universities) {
             </div>
         </div>
         ` : ''}
-        
-        <!-- Google Sheets Export Butonu -->
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
-            <div id="selectedCountInfo" style="text-align: center; margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
-                <span id="selectedCount">0</span> üniversite seçildi
-            </div>
-            <button id="exportToSheetsBtn" onclick="exportSelectedToGoogleSheets('${deptName.replace(/'/g, "\\'")}', ${JSON.stringify(universities).replace(/"/g, '&quot;')})" 
-                style="
-                    width: 100%;
-                    background: linear-gradient(135deg, #34A853, #0F9D58);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 12px;
-                    font-size: 1rem;
-                    font-weight: 700;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.75rem;
-                "
-                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(52, 168, 83, 0.4)'" 
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(52, 168, 83, 0.3)'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
-                </svg>
-                Seçilenleri Google Sheets'e Aktar
-            </button>
-        </div>
     `;
     
     modalOverlay.appendChild(modalContent);
@@ -3021,34 +2854,15 @@ function showUniversityModal(deptName, universities) {
                 🏛️ Devlet Üniversiteleri (${devletUnis.length})
             </h3>
             <div style="display: grid; gap: 1rem;">
-                ${devletUnis.map((uni, idx) => `
-                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #10a37f; position: relative;">
-                        <div style="display: flex; align-items: start; gap: 1rem;">
-                            <input type="checkbox" class="uni-checkbox" data-uni-id="devlet-${idx}" 
-                                data-uni-name="${uni.name}" 
-                                data-uni-city="${uni.city}" 
-                                data-uni-campus="${uni.campus || 'Ana Kampüs'}"
-                                data-uni-ranking="${uni.ranking || ''}"
-                                data-uni-quota="${uni.quota || ''}"
-                                data-uni-type="Devlet"
-                                data-uni-dept="${deptName}"
-                                style="width: 20px; height: 20px; cursor: pointer; margin-top: 4px; flex-shrink: 0;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
-                                <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                                    <div>📍 ${uni.city}</div>
-                                    ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
-                                    ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
-                                    ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
-                                    ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
-                                </div>
-                                <button onclick="showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Devlet')" 
-                                    style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
-                                    🔍 ÖSYM Şartları ve Harita Detayı
-                                </button>
-                            </div>
+                ${devletUnis.map(uni => `
+                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #10a37f;">
+                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
+                        <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            <div>📍 ${uni.city}</div>
+                            ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
+                            ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
+                            ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
+                            ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
                     </div>
                 `).join('')}
@@ -3062,54 +2876,21 @@ function showUniversityModal(deptName, universities) {
                 💼 Vakıf Üniversiteleri (${vakifUnis.length})
             </h3>
             <div style="display: grid; gap: 1rem;">
-                ${vakifUnis.map((uni, idx) => `
-                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #f59e0b; position: relative;">
-                        <div style="display: flex; align-items: start; gap: 1rem;">
-                            <input type="checkbox" class="uni-checkbox" data-uni-id="vakif-${idx}" 
-                                data-uni-name="${uni.name}" 
-                                data-uni-city="${uni.city}" 
-                                data-uni-campus="${uni.campus || 'Ana Kampüs'}"
-                                data-uni-ranking="${uni.ranking || ''}"
-                                data-uni-quota="${uni.quota || ''}"
-                                data-uni-type="Vakıf"
-                                data-uni-dept="${deptName}"
-                                style="width: 20px; height: 20px; cursor: pointer; margin-top: 4px; flex-shrink: 0;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
-                                <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                                    <div>📍 ${uni.city}</div>
-                                    ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
-                                    ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
-                                    ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
-                                    ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
-                                </div>
-                                <button onclick="showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Vakıf')" 
-                                    style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
-                                    🔍 ÖSYM Şartları ve Harita Detayı
-                                </button>
-                            </div>
+                ${vakifUnis.map(uni => `
+                    <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                        <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
+                        <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            <div>📍 ${uni.city}</div>
+                            ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
+                            ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
+                            ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
+                            ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
                     </div>
                 `).join('')}
             </div>
         </div>
         ` : ''}
-        
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <div style="color: var(--text-secondary); font-size: 0.95rem;">
-                    <span id="selectedCountText">Seçili: 0 üniversite</span>
-                </div>
-                <button id="selectAllBtn" style="background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
-                    Tümünü Seç
-                </button>
-            </div>
-            <button id="exportToSheetsBtn" disabled style="width: 100%; background: linear-gradient(135deg, #10a37f, #0d8a6a); color: white; border: none; padding: 16px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(16, 163, 127, 0.3); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                ➕ Seçilenleri Listemde Ekle
-            </button>
-        </div>
     `;
     
     modal.appendChild(modalContent);
@@ -3119,315 +2900,10 @@ function showUniversityModal(deptName, universities) {
     });
     
     document.body.appendChild(modal);
-    
-    // Checkbox event listeners ekle
-    const checkboxes = modalContent.querySelectorAll('.uni-checkbox');
-    const exportBtn = modalContent.querySelector('#exportToSheetsBtn');
-    const selectedCountText = modalContent.querySelector('#selectedCountText');
-    const selectAllBtn = modalContent.querySelector('#selectAllBtn');
-    
-    function updateExportButton() {
-        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-        selectedCountText.textContent = `Seçili: ${checkedCount} üniversite`;
-        exportBtn.disabled = checkedCount === 0;
-        exportBtn.style.opacity = checkedCount === 0 ? '0.5' : '1';
-        exportBtn.style.cursor = checkedCount === 0 ? 'not-allowed' : 'pointer';
-    }
-    
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateExportButton);
-    });
-    
-    selectAllBtn.addEventListener('click', () => {
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        selectAllBtn.textContent = allChecked ? 'Tümünü Seç' : 'Tümünü Kaldır';
-        updateExportButton();
-    });
-    
-    exportBtn.addEventListener('click', () => {
-        const selectedFromThisModal = Array.from(checkboxes)
-            .filter(cb => cb.checked)
-            .map(cb => ({
-                name: cb.dataset.uniName,
-                city: cb.dataset.uniCity,
-                campus: cb.dataset.uniCampus,
-                ranking: cb.dataset.uniRanking,
-                quota: cb.dataset.uniQuota,
-                type: cb.dataset.uniType,
-                department: cb.dataset.uniDept
-            }));
-        
-        if (selectedFromThisModal.length > 0) {
-            // Global listeye ekle (tekrar eklemeden önce kontrol et)
-            selectedFromThisModal.forEach(uni => {
-                const exists = globalSelectedUniversities.find(u => 
-                    u.name === uni.name && u.department === uni.department
-                );
-                if (!exists) {
-                    globalSelectedUniversities.push(uni);
-                }
-            });
-            
-            // Kullanıcıya bilgi ver
-            addMessage(`✅ ${selectedFromThisModal.length} üniversite seçim listenize eklendi!\n\nToplam seçili: ${globalSelectedUniversities.length} üniversite\n\n💡 Sol üst köşedeki "📋 Seçimlerim (${globalSelectedUniversities.length})" butonuna tıklayarak tüm seçimlerinizi görüntüleyebilir ve Google Sheets'e aktarabilirsiniz.`, 'ai');
-            
-            // Modal'ı kapat
-            modal.remove();
-            
-            // Seçimler butonunu güncelle
-            updateSelectionButton();
-        }
-    });
 }
 
 // Global scope'a ekle
 window.showUniversityModal = showUniversityModal;
-
-// Google Sheets'e veri aktarma fonksiyonu
-async function exportToGoogleSheets(universities) {
-    try {
-        // Kullanıcı giriş yapmış mı kontrol et
-        if (!userProfile || !userProfile.email) {
-            addMessage('❌ Google Sheets\'e aktarmak için önce Google ile giriş yapmanız gerekiyor.', 'ai');
-            return;
-        }
-
-        // CSV formatında veri hazırla
-        const csvHeaders = ['Sıra', 'Üniversite Adı', 'Şehir', 'Kampüs', 'Bölüm', 'Tür', 'Taban Sıralama', 'Kontenjan'];
-        const csvRows = universities.map((uni, index) => [
-            index + 1,
-            uni.name,
-            uni.city,
-            uni.campus,
-            uni.department,
-            uni.type,
-            uni.ranking || '-',
-            uni.quota || '-'
-        ]);
-        
-        const csvContent = [
-            csvHeaders.join(','),
-            ...csvRows.map(row => row.map(cell => `"${cell}"`).join(','))
-        ].join('\n');
-
-        // Google Sheets URL'ini oluştur
-        const encodedData = encodeURIComponent(csvContent);
-        const sheetTitle = `Tercih Listesi - ${new Date().toLocaleDateString('tr-TR')}`;
-        
-        // CSV dosyasını indirme alternatifi sunalım
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `tercih_listesi_${Date.now()}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        
-        // Kullanıcıya seçenek sun
-        const message = `
-            ✅ ${universities.length} üniversite seçildi!\n\n
-            📊 Seçenekler:\n
-            1️⃣ CSV dosyası indirildi - Bu dosyayı Google Sheets'e yükleyebilirsiniz\n
-            2️⃣ Ya da Google Sheets'i açıp "Dosya > İçe Aktar > Yükle" seçeneğiyle CSV'yi içe aktarabilirsiniz\n\n
-            💡 İpucu: İndirilen CSV dosyasını doğrudan Google Drive'a sürükleyip Sheets olarak açabilirsiniz!
-        `;
-        
-        addMessage(message, 'ai', ['Yeni analiz yap', 'Başka bölüm sor']);
-        
-        // CSV'yi indir
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        // Ayrıca backend'e kaydet (opsiyonel)
-        try {
-            await fetch(`${API_URL}/api/save-selections`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userEmail: userProfile.email,
-                    universities: universities,
-                    timestamp: new Date().toISOString()
-                })
-            });
-            console.log('✅ Seçimler backend\'e kaydedildi');
-        } catch (backendError) {
-            console.warn('⚠️ Backend\'e kaydedilemedi:', backendError);
-        }
-        
-    } catch (error) {
-        console.error('❌ Export hatası:', error);
-        addMessage('❌ Veri aktarımında bir hata oluştu. Lütfen tekrar deneyin.', 'ai');
-    }
-}
-
-window.exportToGoogleSheets = exportToGoogleSheets;
-
-// Seçimler butonunu güncelle
-function updateSelectionButton() {
-    const selectionsBtn = document.getElementById('selectionsBtn');
-    const selectionCount = document.getElementById('selectionCount');
-    
-    if (selectionsBtn && selectionCount) {
-        selectionCount.textContent = globalSelectedUniversities.length;
-        
-        if (globalSelectedUniversities.length > 0) {
-            selectionsBtn.style.display = 'flex';
-        } else {
-            selectionsBtn.style.display = 'none';
-        }
-    }
-}
-
-// Seçimler modalını göster
-function showSelectionsModal() {
-    if (globalSelectedUniversities.length === 0) {
-        addMessage('❌ Henüz hiç üniversite seçmediniz. Önce bir analiz yapıp üniversiteleri seçin.', 'ai');
-        return;
-    }
-    
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        padding: 20px;
-        animation: fadeIn 0.3s ease;
-    `;
-    
-    // Bölümlere göre grupla
-    const byDepartment = {};
-    globalSelectedUniversities.forEach(uni => {
-        if (!byDepartment[uni.department]) {
-            byDepartment[uni.department] = [];
-        }
-        byDepartment[uni.department].push(uni);
-    });
-    
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-        background: var(--bg-dark);
-        border-radius: 20px;
-        padding: 2rem;
-        max-width: 1000px;
-        width: 100%;
-        max-height: 85vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        border: 2px solid var(--border);
-    `;
-    
-    const departmentSections = Object.entries(byDepartment).map(([dept, unis]) => `
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                🎯 ${dept} (${unis.length})
-            </h3>
-            <div style="display: grid; gap: 0.75rem;">
-                ${unis.map((uni, idx) => `
-                    <div style="background: var(--bg-surface); padding: 1rem; border-radius: 10px; border-left: 4px solid ${uni.type === 'Devlet' ? '#10a37f' : '#f59e0b'}; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem;">${uni.name}</div>
-                            <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap;">
-                                <span>📍 ${uni.city}</span>
-                                <span>🏫 ${uni.campus}</span>
-                                <span>🏢 ${uni.type}</span>
-                                ${uni.ranking ? `<span>📊 ${uni.ranking}</span>` : ''}
-                            </div>
-                        </div>
-                        <button onclick="removeFromGlobalSelections('${dept}', ${idx})" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-                            Kaldır
-                        </button>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `).join('');
-    
-    modalContent.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 style="color: var(--primary); margin: 0; font-size: 1.8rem;">📋 Seçtiğim Üniversiteler</h2>
-            <button onclick="this.closest('.selections-modal-overlay').remove()" style="background: transparent; border: none; font-size: 2rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-        </div>
-        
-        <div style="background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), rgba(16, 163, 127, 0.05)); padding: 1rem; border-radius: 12px; border: 2px solid #10a37f; margin-bottom: 2rem;">
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">Toplam Seçili Üniversite</div>
-            <div style="color: var(--primary); font-size: 2rem; font-weight: 800;">${globalSelectedUniversities.length}</div>
-        </div>
-        
-        ${departmentSections}
-        
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border); display: flex; gap: 1rem;">
-            <button onclick="clearAllSelections()" style="flex: 1; background: #ef4444; color: white; border: none; padding: 16px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">
-                🗑️ Tümünü Temizle
-            </button>
-            <button onclick="exportAllSelectionsToSheets()" style="flex: 2; background: linear-gradient(135deg, #34a853, #0f9d58); color: white; border: none; padding: 16px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                </svg>
-                Tüm Seçimlerimi Google Sheets'e Aktar
-            </button>
-        </div>
-    `;
-    
-    modal.appendChild(modalContent);
-    modal.className = 'selections-modal-overlay';
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-    });
-    
-    document.body.appendChild(modal);
-}
-
-// Global seçimlerden kaldır
-function removeFromGlobalSelections(department, index) {
-    const filtered = globalSelectedUniversities.filter(u => u.department === department);
-    const toRemove = filtered[index];
-    
-    globalSelectedUniversities = globalSelectedUniversities.filter(u => 
-        !(u.name === toRemove.name && u.department === toRemove.department)
-    );
-    
-    updateSelectionButton();
-    
-    // Modal'ı yeniden aç
-    document.querySelector('.selections-modal-overlay')?.remove();
-    showSelectionsModal();
-}
-
-// Tüm seçimleri temizle
-function clearAllSelections() {
-    if (confirm('Tüm seçimlerinizi silmek istediğinizden emin misiniz?')) {
-        globalSelectedUniversities = [];
-        updateSelectionButton();
-        document.querySelector('.selections-modal-overlay')?.remove();
-        addMessage('✅ Tüm seçimler temizlendi.', 'ai');
-    }
-}
-
-// Tüm seçimleri Sheets'e aktar
-function exportAllSelectionsToSheets() {
-    if (globalSelectedUniversities.length > 0) {
-        exportToGoogleSheets(globalSelectedUniversities);
-        document.querySelector('.selections-modal-overlay')?.remove();
-    }
-}
-
-// Global fonksiyonlar
-window.showSelectionsModal = showSelectionsModal;
-window.removeFromGlobalSelections = removeFromGlobalSelections;
-window.clearAllSelections = clearAllSelections;
-window.exportAllSelectionsToSheets = exportAllSelectionsToSheets;
-window.updateSelectionButton = updateSelectionButton;
 
 // TYT ve AYT input'larına otomatik formatlama ekle
 document.addEventListener('DOMContentLoaded', function() {
@@ -3525,7 +3001,7 @@ function showUniversityDetailModal(uni, program) {
                     <button onclick="closeUniversityDetailModal()" style="
                         position: absolute;
                         top: 20px;
-                        right: 70px;
+                        right: 20px;
                         background: rgba(255, 255, 255, 0.2);
                         color: white;
                         border: none;
@@ -3543,30 +3019,6 @@ function showUniversityDetailModal(uni, program) {
                         ×
                     </button>
                     
-                    <!-- Checkbox -->
-                    <label style="
-                        position: absolute;
-                        top: 20px;
-                        right: 20px;
-                        cursor: pointer;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 5px;
-                        background: rgba(255, 255, 255, 0.15);
-                        padding: 10px;
-                        border-radius: 10px;
-                        backdrop-filter: blur(10px);
-                        transition: all 0.3s ease;
-                    " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-                        <input type="checkbox" 
-                            id="uni-detail-check" 
-                            data-uni='` + JSON.stringify(uni).replace(/'/g, "&#39;") + `' 
-                            onchange="toggleUniversitySelection(this)"
-                            style="width: 24px; height: 24px; cursor: pointer; accent-color: white;">
-                        <span style="font-size: 0.75rem; color: white; font-weight: 600;">Seç</span>
-                    </label>
-                    
                     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
                         <div style="
                             background: rgba(255, 255, 255, 0.2);
@@ -3576,7 +3028,7 @@ function showUniversityDetailModal(uni, program) {
                         ">
                             <span style="font-size: 2.5rem;">${uni.type === 'Devlet' ? '🏛️' : '💼'}</span>
                         </div>
-                        <div style="flex: 1; padding-right: 120px;">
+                        <div style="flex: 1;">
                             <h2 style="color: white; margin: 0 0 8px 0; font-size: 1.8rem; font-weight: 800;">${uni.name}</h2>
                             <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 1rem;">
                                 📍 ${uni.city} • ${uni.campus || 'Ana Kampüs'}
@@ -3808,52 +3260,29 @@ function closeUniversityModal() {
 }
 
 // Detaylı ÖSYM Şartları ve Harita Modal
-async function showDetailedConditionsModal(uniName, conditions, conditionNumbers, city, campus, uniType, uni = null) {
+function showDetailedConditionsModal(uniName, conditions, conditionNumbers, city, campus, uniType) {
     console.log('📋 Detaylı Şartlar Modal Açılıyor:', uniName);
     
-    // Loading modal göster
-    showLoadingModal('ÖSYM şartları yükleniyor...');
-    
-    // Gerçek ÖSYM şartlarını API'den çek
+    // Şartları parse et
     let parsedConditions = [];
-    let realConditions = [];
-    
     try {
-        // Backend'den gerçek ÖSYM şartlarını çek
-        const response = await fetch(`${API_URL}/api/conditions/${encodeURIComponent(uniName)}/${encodeURIComponent(window.currentDepartment || 'Bilgisayar Mühendisliği')}`);
-        if (response.ok) {
-            const data = await response.json();
-            realConditions = data.conditions || [];
-            console.log('✅ Gerçek ÖSYM şartları alındı:', realConditions);
-        }
-    } catch (error) {
-        console.warn('⚠️ ÖSYM şartları alınamadı:', error);
+        parsedConditions = typeof conditions === 'string' ? JSON.parse(conditions) : conditions;
+    } catch (e) {
+        parsedConditions = Array.isArray(conditions) ? conditions : [conditions];
     }
     
-    // Gerçek şartları kullan, yoksa mevcut şartları parse et
-    if (realConditions.length > 0) {
-        parsedConditions = realConditions.map(c => c.conditionText || c.text || c);
-        conditionNumbers = realConditions.map(c => c.conditionNumber || c.number).join(', ');
-    } else {
-        try {
-            parsedConditions = typeof conditions === 'string' ? JSON.parse(conditions) : conditions;
-        } catch (e) {
-            parsedConditions = Array.isArray(conditions) ? conditions : [conditions];
-        }
-    }
-    
-    // Eğer hiç şart yoksa genel ÖSYM şartlarını göster
-    if (parsedConditions.length === 0 || (parsedConditions.length === 1 && !parsedConditions[0])) {
+    // Eğer şartlar yoksa örnek şartlar ekle
+    if (parsedConditions.length === 0) {
         parsedConditions = [
             "Adayların yerleştirme puan türlerinden aldıkları puanlar sıfırdan büyük olmalıdır.",
-            "Bu programa özel tercih şartı bulunmamaktadır.",
-            "Genel ÖSYM tercih kuralları geçerlidir.",
-            "Ön kayıt yaptırmayan adaylar yerleştirme işlemlerinde dikkate alınmazlar."
+            "İngilizce öğretimi yapılan programlardır.",
+            "Bu program ERASMUS değişim programına dahildir.",
+            "Lisans mezunlarının başvurabileceği programdır.",
+            "Ön kayıt yaptırmayan adaylar yerleştirme işlemlerinde dikkate alınmazlar.",
+            "Sağlık raporu istenen programlardır.",
+            "Mesleki yabancı dil sınavı (MYDS) veya eşdeğer sınavlardan en az 50 puan almış olmak gerekir."
         ];
     }
-    
-    // Loading modal'ı kapat
-    closeLoadingModal();
     
     const modalHTML = `
         <div id="detailedConditionsModal" style="
@@ -3892,7 +3321,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                     <button onclick="closeDetailedConditionsModal()" style="
                         position: absolute;
                         top: 20px;
-                        right: 75px;
+                        right: 20px;
                         background: rgba(255, 255, 255, 0.2);
                         color: white;
                         border: none;
@@ -3910,32 +3339,6 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                         ×
                     </button>
                     
-                    ${uni ? `
-                    <!-- Checkbox -->
-                    <label style="
-                        position: absolute;
-                        top: 20px;
-                        right: 20px;
-                        cursor: pointer;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 5px;
-                        background: rgba(255, 255, 255, 0.15);
-                        padding: 10px;
-                        border-radius: 10px;
-                        backdrop-filter: blur(10px);
-                        transition: all 0.3s ease;
-                    " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-                        <input type="checkbox" 
-                            id="uni-detailed-check" 
-                            data-uni='` + JSON.stringify(uni).replace(/'/g, "&#39;") + `' 
-                            onchange="toggleUniversitySelection(this)"
-                            style="width: 24px; height: 24px; cursor: pointer; accent-color: white;">
-                        <span style="font-size: 0.75rem; color: white; font-weight: 600;">Seç</span>
-                    </label>
-                    ` : ''}
-                    
                     <div style="display: flex; align-items: center; gap: 20px;">
                         <div style="
                             background: rgba(255, 255, 255, 0.2);
@@ -3945,7 +3348,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                         ">
                             <span style="font-size: 3rem;">📋</span>
                         </div>
-                        <div style="flex: 1; padding-right: ${uni ? '100px' : '60px'};">
+                        <div style="flex: 1;">
                             <h1 style="color: white; margin: 0 0 10px 0; font-size: 2.2rem; font-weight: 800;">
                                 ${uniName}
                             </h1>
@@ -4014,92 +3417,33 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                                 font-size: 14px;
                                 line-height: 1.8;
                             ">
-                                ${parsedConditions.map((condition, index) => {
-                                    // Şart numarasını ve metnini tespit et
-                                    let conditionText, conditionNumber, category;
-                                    
-                                    if (typeof condition === 'object') {
-                                        conditionText = condition.conditionText || condition.text || condition;
-                                        conditionNumber = condition.conditionNumber || condition.number || '';
-                                        category = condition.category || '';
-                                    } else {
-                                        conditionText = condition;
-                                        conditionNumber = '';
-                                        category = '';
-                                    }
-                                    
-                                    // Kategori ikonları
-                                    const categoryIcon = {
-                                        'Öğretim': '🎓',
-                                        'Ücret': '💰',
-                                        'Dil': '🌍',
-                                        'Özel': '⭐',
-                                        'Genel': '📋'
-                                    }[category] || '📋';
-                                    
-                                    return `
+                                ${parsedConditions.map((condition, index) => `
                                     <div style="
                                         display: flex;
                                         align-items: flex-start;
-                                        gap: 15px;
-                                        margin-bottom: 16px;
-                                        padding: 18px;
-                                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
-                                        border-radius: 12px;
-                                        border-left: 4px solid ${uniType === 'Devlet' ? '#10a37f' : '#f59e0b'};
-                                        border: 1px solid rgba(255, 255, 255, 0.1);
-                                        transition: all 0.3s ease;
-                                    " onmouseover="this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03))'; this.style.transform='translateX(4px)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01))'; this.style.transform='translateX(0)'">
-                                        <div style="
-                                            background: ${uniType === 'Devlet' ? 'linear-gradient(135deg, #10a37f, #0d8a6a)' : 'linear-gradient(135deg, #f59e0b, #d97706)'};
+                                        gap: 12px;
+                                        margin-bottom: 15px;
+                                        padding: 12px;
+                                        background: rgba(255, 255, 255, 0.03);
+                                        border-radius: 8px;
+                                        border-left: 3px solid ${uniType === 'Devlet' ? '#10a37f' : '#f59e0b'};
+                                    ">
+                                        <span style="
+                                            background: ${uniType === 'Devlet' ? '#10a37f' : '#f59e0b'};
                                             color: white;
-                                            min-width: 36px;
-                                            height: 36px;
-                                            border-radius: 10px;
+                                            width: 24px;
+                                            height: 24px;
+                                            border-radius: 50%;
                                             display: flex;
                                             align-items: center;
                                             justify-content: center;
-                                            font-size: 14px;
-                                            font-weight: 800;
+                                            font-size: 12px;
+                                            font-weight: 700;
                                             flex-shrink: 0;
-                                            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                                        ">${conditionNumber || (index + 1)}</div>
-                                        <div style="flex: 1;">
-                                            <div style="
-                                                color: #e2e8f0; 
-                                                font-weight: 500; 
-                                                line-height: 1.7;
-                                                font-size: 14px;
-                                                margin-bottom: 8px;
-                                            ">${conditionText}</div>
-                                            <div style="display: flex; gap: 12px; align-items: center; margin-top: 8px;">
-                                                ${conditionNumber ? `
-                                                    <div style="
-                                                        background: rgba(${uniType === 'Devlet' ? '16, 163, 127' : '245, 158, 11'}, 0.2);
-                                                        color: ${uniType === 'Devlet' ? '#10a37f' : '#f59e0b'};
-                                                        padding: 4px 8px;
-                                                        border-radius: 6px;
-                                                        font-size: 11px;
-                                                        font-weight: 700;
-                                                        border: 1px solid ${uniType === 'Devlet' ? '#10a37f' : '#f59e0b'};
-                                                    ">📄 ÖSYM Madde ${conditionNumber}</div>
-                                                ` : ''}
-                                                ${category ? `
-                                                    <div style="
-                                                        background: rgba(102, 126, 234, 0.2);
-                                                        color: #667eea;
-                                                        padding: 4px 8px;
-                                                        border-radius: 6px;
-                                                        font-size: 11px;
-                                                        font-weight: 600;
-                                                        border: 1px solid #667eea;
-                                                    ">${categoryIcon} ${category}</div>
-                                                ` : ''}
-                                            </div>
-                                        </div>
+                                        ">${index + 1}</span>
+                                        <span style="color: #e2e8f0; font-weight: 500;">${condition}</span>
                                     </div>
-                                    `;
-                                }).join('')}
+                                `).join('')}
                             </div>
                         </div>
                         
@@ -4111,11 +3455,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                             border-left: 4px solid #667eea;
                         ">
                             <p style="color: #e2e8f0; margin: 0; font-size: 13px; line-height: 1.6;">
-                                ${realConditions.length > 0 ? 
-                                    `✅ <strong style="color: #10a37f;">Güncel Veriler:</strong> Bu şartlar ÖSYM 2025 Yükseköğretim Programları ve Kontenjanları Kılavuzu'ndan gerçek zamanlı olarak alınmıştır. Son güncelleme: ${new Date().toLocaleDateString('tr-TR')}` 
-                                    : 
-                                    `💡 <strong style="color: #667eea;">Önemli Not:</strong> Bu üniversite için özel şart bulunamadı. Genel ÖSYM kuralları geçerlidir. Güncel şartlar için mutlaka resmi ÖSYM kılavuzunu kontrol ediniz.`
-                                }
+                                💡 <strong style="color: #667eea;">Önemli Not:</strong> Bu şartlar ÖSYM 2025 Yükseköğretim Programları ve Kontenjanları Kılavuzu'ndan alınmıştır. Güncel şartlar için mutlaka resmi ÖSYM kılavuzunu kontrol ediniz.
                             </p>
                         </div>
                     </div>
@@ -4232,64 +3572,6 @@ function closeDetailedConditionsModal() {
     }
 }
 
-// Loading Modal Functions
-function showLoadingModal(message = 'Yükleniyor...') {
-    const loadingHTML = `
-        <div id="loadingModal" style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10003;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        ">
-            <div style="
-                background: linear-gradient(135deg, #1e293b, #0f172a);
-                border-radius: 20px;
-                padding: 40px;
-                text-align: center;
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-                border: 2px solid #10a37f;
-                max-width: 400px;
-            ">
-                <div style="
-                    width: 50px;
-                    height: 50px;
-                    border: 4px solid #334155;
-                    border-top: 4px solid #10a37f;
-                    border-radius: 50%;
-                    margin: 0 auto 20px auto;
-                    animation: spin 1s linear infinite;
-                "></div>
-                <h3 style="color: #fff; margin: 0 0 10px 0; font-size: 1.2rem;">${message}</h3>
-                <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">ÖSYM 2025 verilerinden çekiliyor...</p>
-            </div>
-        </div>
-        
-        <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        </style>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', loadingHTML);
-}
-
-function closeLoadingModal() {
-    const modal = document.getElementById('loadingModal');
-    if (modal) {
-        modal.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => modal.remove(), 300);
-    }
-}
-
 // Global scope'a ekle
 window.showUniversityDetailModal = showUniversityDetailModal;
 window.closeUniversityDetailModal = closeUniversityDetailModal;
@@ -4303,186 +3585,6 @@ console.log('🎯 Detaylı modal fonksiyonları yüklendi:', {
     closeDetailedConditionsModal: typeof closeDetailedConditionsModal
 });
 
-// ============================================
-// GOOGLE SHEETS ENTEGRASYONU
-// ============================================
-
-// Üniversite seçim toggle
-function toggleUniversitySelection(checkbox) {
-    const uniData = JSON.parse(checkbox.getAttribute('data-uni').replace(/&#39;/g, "'"));
-    
-    if (checkbox.checked) {
-        selectedUniversities.add(JSON.stringify(uniData));
-    } else {
-        selectedUniversities.delete(JSON.stringify(uniData));
-    }
-    
-    // Seçili sayısını güncelle
-    updateSelectedCount();
-}
-
-// Seçili üniversite sayısını güncelle
-function updateSelectedCount() {
-    const countElement = document.getElementById('selectedCount');
-    const exportBtn = document.getElementById('exportToSheetsBtn');
-    
-    if (countElement) {
-        countElement.textContent = selectedUniversities.size;
-    }
-    
-    if (exportBtn) {
-        if (selectedUniversities.size === 0) {
-            exportBtn.style.opacity = '0.5';
-            exportBtn.style.cursor = 'not-allowed';
-            exportBtn.disabled = true;
-        } else {
-            exportBtn.style.opacity = '1';
-            exportBtn.style.cursor = 'pointer';
-            exportBtn.disabled = false;
-        }
-    }
-}
-
-// Google Sheets'e aktar
-async function exportSelectedToGoogleSheets(deptName, allUniversities) {
-    if (selectedUniversities.size === 0) {
-        showNotification('⚠️ Lütfen en az bir üniversite seçin!', 'warning');
-        return;
-    }
-    
-    // Seçili üniversiteleri parse et
-    const selectedUnis = Array.from(selectedUniversities).map(uniStr => JSON.parse(uniStr));
-    
-    console.log('📊 Google Sheets\'e aktarılıyor:', {
-        department: deptName,
-        selectedCount: selectedUnis.length,
-        universities: selectedUnis.map(u => u.name)
-    });
-    
-    // Loading göster
-    const exportBtn = document.getElementById('exportToSheetsBtn');
-    const originalContent = exportBtn.innerHTML;
-    exportBtn.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="animation: spin 1s linear infinite;">
-            <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Google Sheets oluşturuluyor...
-    `;
-    exportBtn.disabled = true;
-    exportBtn.style.cursor = 'not-allowed';
-    
-    try {
-        const response = await fetch(`${API_URL}/api/export-to-sheets`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: `${deptName} - Seçtiğim Üniversiteler - ${new Date().toLocaleDateString('tr-TR')}`,
-                universities: selectedUnis,
-                userEmail: userProfile?.email || null
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok && result.success) {
-            console.log('✅ Google Sheets oluşturuldu:', result.spreadsheetUrl);
-            
-            // Başarı mesajı göster
-            showNotification('✅ Google Sheets başarıyla oluşturuldu!', 'success');
-            
-            // Modal kapat ve Google Sheets'i aç
-            document.getElementById('universitySelectionModal')?.remove();
-            
-            // Yeni sekmede aç
-            window.open(result.spreadsheetUrl, '_blank');
-            
-            // Seçimi temizle
-            selectedUniversities.clear();
-            
-        } else {
-            throw new Error(result.message || result.error || 'Bilinmeyen hata');
-        }
-        
-    } catch (error) {
-        console.error('❌ Google Sheets export hatası:', error);
-        
-        let errorMessage = '❌ Google Sheets oluşturulamadı!';
-        if (error.message.includes('google-credentials.json')) {
-            errorMessage += ' Google Service Account credentials dosyası bulunamadı.';
-        } else {
-            errorMessage += ' ' + error.message;
-        }
-        
-        showNotification(errorMessage, 'error');
-        
-        // Butonu eski haline getir
-        exportBtn.innerHTML = originalContent;
-        exportBtn.disabled = false;
-        exportBtn.style.cursor = 'pointer';
-    }
-}
-
-// Bildirim göster
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 2rem;
-        right: 2rem;
-        background: ${type === 'success' ? '#10a37f' : type === 'error' ? '#ef4444' : '#f59e0b'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        z-index: 100000;
-        font-weight: 600;
-        animation: slideInRight 0.3s ease;
-        max-width: 400px;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
-}
-
-// CSS animasyonları ekle
-if (!document.getElementById('googleSheetsAnimations')) {
-    const style = document.createElement('style');
-    style.id = 'googleSheetsAnimations';
-    style.textContent = `
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
 
 
 

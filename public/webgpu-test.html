@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>WebGPU Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        .success {
+            background: #10a37f;
+        }
+        .error {
+            background: #ef4444;
+        }
+        .info {
+            background: #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 WebGPU & WebLLM Kontrol</h1>
+    
+    <div id="result"></div>
+    
+    <script>
+        const result = document.getElementById('result');
+        
+        async function checkWebGPU() {
+            let html = '';
+            
+            // 1. WebGPU Kontrolü
+            html += '<h2>1. WebGPU Desteği</h2>';
+            if (navigator.gpu) {
+                html += '<div class="status success">✅ WebGPU MEVCUT</div>';
+                
+                try {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    if (adapter) {
+                        html += '<div class="info">GPU Adapter: ' + (adapter.name || 'Bilinmeyen') + '</div>';
+                        
+                        const device = await adapter.requestDevice();
+                        html += '<div class="info">GPU Device: Başarıyla oluşturuldu</div>';
+                        
+                        const limits = device.limits;
+                        html += '<div class="info">Max Buffer Size: ' + (limits.maxBufferSize / 1024 / 1024).toFixed(2) + ' MB</div>';
+                    } else {
+                        html += '<div class="status error">❌ GPU Adapter bulunamadı</div>';
+                    }
+                } catch (e) {
+                    html += '<div class="status error">❌ GPU Hatası: ' + e.message + '</div>';
+                }
+            } else {
+                html += '<div class="status error">❌ WebGPU YOK</div>';
+                html += '<div class="info">⚠️ Chrome ayarlarından etkinleştirin:<br><br>';
+                html += '<strong>chrome://flags/#enable-unsafe-webgpu</strong><br><br>';
+                html += 'Enabled yapın ve tarayıcıyı yeniden başlatın.</div>';
+            }
+            
+            // 2. Tarayıcı Bilgisi
+            html += '<h2>2. Tarayıcı Bilgisi</h2>';
+            html += '<div class="info">User Agent: ' + navigator.userAgent + '</div>';
+            html += '<div class="info">Platform: ' + navigator.platform + '</div>';
+            
+            // 3. Bellek Bilgisi
+            html += '<h2>3. Bellek Bilgisi</h2>';
+            if (performance.memory) {
+                const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+                const total = (performance.memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
+                const limit = (performance.memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2);
+                
+                html += '<div class="info">Kullanılan: ' + used + ' MB</div>';
+                html += '<div class="info">Toplam: ' + total + ' MB</div>';
+                html += '<div class="info">Limit: ' + limit + ' MB</div>';
+            } else {
+                html += '<div class="info">Bellek bilgisi mevcut değil</div>';
+            }
+            
+            // 4. WebLLM Import Testi
+            html += '<h2>4. WebLLM Import Testi</h2>';
+            try {
+                html += '<div class="info">⏳ WebLLM import ediliyor...</div>';
+                const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
+                html += '<div class="status success">✅ WebLLM BAŞARILI</div>';
+                html += '<div class="info">CreateMLCEngine: ' + typeof CreateMLCEngine + '</div>';
+            } catch (e) {
+                html += '<div class="status error">❌ WebLLM Import HATASI: ' + e.message + '</div>';
+                html += '<div class="info">Stack: ' + e.stack + '</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+        
+        checkWebGPU();
+    </script>
+</body>
+</html>

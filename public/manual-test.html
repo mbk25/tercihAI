@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel Checkbox Test</title>
+    <style>
+        :root {
+            --primary: #10a37f;
+            --bg-dark: #1a1a2e;
+            --bg-surface: #0f1419;
+            --text-primary: #e1e8ed;
+            --text-secondary: #8899a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 20px;
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .modal-content {
+            background: var(--bg-dark);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 2px solid var(--primary);
+        }
+        
+        .uni-card {
+            background: var(--bg-surface);
+            padding: 1.2rem;
+            border-radius: 12px;
+            border-left: 4px solid #10a37f;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .checkbox-label {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10a37f;
+        }
+        
+        .checkbox-label span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .uni-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            padding-right: 70px;
+        }
+        
+        .uni-info {
+            display: grid;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+        
+        .export-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #333;
+        }
+        
+        .count-info {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        #selectedCount {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .export-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #34A853, #0F9D58);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+        }
+        
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); margin-bottom: 2rem; font-size: 1.8rem;">
+                🎓 Bilgisayar Mühendisliği - Manuel Test
+            </h2>
+            
+            <h3 style="color: #10a37f; margin-bottom: 1rem;">
+                🏛️ Devlet Üniversiteleri (3)
+            </h3>
+            
+            <!-- Üniversite 1 -->
+            <div class="uni-card">
+                <label class="checkbox-label">
+                    <input type="checkbox" onchange="updateCount()" data-uni="İstanbul Teknik Üniversitesi">
+                    <span>Seç</span>
+                </label>
+                <div class="uni-name">İstanbul Teknik Üniversitesi</div>
+                <div class="uni-info">
+                    <div>📍 İstanbul</div>
+                    <div>🏫 Ayazağa Kampüsü</div>
+                    <div>🎯 Taban Sıralama: 1.234</div>
+                    <div>👥 Kontenjan: 150</div>
+                </div>
+            </div>
+            
+            <!-- Üniversite 2 -->
+            <div class="uni-card">
+                <label class="checkbox-label">
+                    <input type="checkbox" onchange="updateCount()" data-uni="Boğaziçi Üniversitesi">
+                    <span>Seç</span>
+                </label>
+                <div class="uni-name">Boğaziçi Üniversitesi</div>
+                <div class="uni-info">
+                    <div>📍 İstanbul</div>
+                    <div>🏫 Bebek Kampüsü</div>
+                    <div>🎯 Taban Sıralama: 987</div>
+                    <div>👥 Kontenjan: 120</div>
+                </div>
+            </div>
+            
+            <!-- Üniversite 3 -->
+            <div class="uni-card">
+                <label class="checkbox-label">
+                    <input type="checkbox" onchange="updateCount()" data-uni="Yıldız Teknik Üniversitesi">
+                    <span>Seç</span>
+                </label>
+                <div class="uni-name">Yıldız Teknik Üniversitesi</div>
+                <div class="uni-info">
+                    <div>📍 İstanbul</div>
+                    <div>🏫 Davutpaşa</div>
+                    <div>🎯 Taban Sıralama: 380.000</div>
+                    <div>👥 Kontenjan: 30</div>
+                    <div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde 18</div>
+                </div>
+            </div>
+            
+            <!-- Export Section -->
+            <div class="export-section">
+                <div class="count-info">
+                    <span id="selectedCount">0</span> üniversite seçildi
+                </div>
+                <button class="export-btn" id="exportBtn" onclick="exportToSheets()" disabled>
+                    📊 Seçilenleri Google Sheets'e Aktar
+                </button>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(52, 168, 83, 0.1); border-radius: 8px; border: 1px solid #34A853;">
+                <h4 style="color: #34A853; margin-bottom: 0.5rem;">✅ Bu Sayfa Test İçin</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Eğer burada checkbox'ları görebiliyorsanız, ana sayfada da görmeniz gerekir.
+                    Eğer burada bile göremiyorsanız, tarayıcı sorunu var olabilir.
+                </p>
+                <button onclick="window.location.href='/'" style="margin-top: 1rem; background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+                    Ana Sayfaya Dön
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedUniversities = new Set();
+        
+        function updateCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            selectedUniversities.clear();
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedUniversities.add(cb.getAttribute('data-uni'));
+                }
+            });
+            
+            document.getElementById('selectedCount').textContent = selectedUniversities.size;
+            
+            const exportBtn = document.getElementById('exportBtn');
+            if (selectedUniversities.size === 0) {
+                exportBtn.disabled = true;
+                exportBtn.style.opacity = '0.5';
+            } else {
+                exportBtn.disabled = false;
+                exportBtn.style.opacity = '1';
+            }
+        }
+        
+        function exportToSheets() {
+            if (selectedUniversities.size === 0) {
+                alert('⚠️ Lütfen en az bir üniversite seçin!');
+                return;
+            }
+            
+            const universities = Array.from(selectedUniversities);
+            alert('✅ Seçilen Üniversiteler:\n\n' + universities.join('\n') + '\n\n(Bu bir test sayfasıdır. Gerçek sayfada Google Sheets oluşturulacak.)');
+        }
+    </script>
+</body>
+</html>

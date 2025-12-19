@@ -1,27 +1,24 @@
-// Google Gemini AI Entegrasyonu (Ücretsiz!)
+// Groq AI Entegrasyonu (HIZLI VE ÜCRETSİZ!)
 const axios = require('axios');
 require('dotenv').config();
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_MODEL = 'gemini-1.5-flash'; // Daha stabil ve ücretsiz model
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent`;
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const GROQ_MODEL = 'llama-3.3-70b-versatile'; // Çok hızlı ve akıllı model
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-// Gemini ile chat yapma
-async function chatWithGemini(message, conversationHistory = []) {
+// Groq ile chat yapma
+async function chatWithGroq(message, conversationHistory = []) {
     try {
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === '') {
-            console.log('⚠️ Gemini API key bulunamadı, fallback yanıt kullanılıyor');
+        if (!GROQ_API_KEY || GROQ_API_KEY === '') {
+            console.log('⚠️ Groq API key bulunamadı, fallback yanıt kullanılıyor');
             return generateFallbackResponse(message);
         }
 
         // Konuşma geçmişini hazırla
-        const conversationContext = conversationHistory
-            .slice(-6) // Son 6 mesaj
-            .map(msg => `${msg.role === 'user' ? 'Kullanıcı' : 'TercihAI'}: ${msg.content}`)
-            .join('\n');
-
-        // Sistem talimatları + mesaj
-        const fullPrompt = `Sen TercihAI adında bir üniversite tercih danışmanısın. Türkiye'deki üniversiteler, YKS, bölümler ve kariyer planlaması konusunda uzmansın.
+        const messages = [
+            {
+                role: 'system',
+                content: `Sen TercihAI adında bir üniversite tercih danışmanısın. Türkiye'deki üniversiteler, YKS, bölümler ve kariyer planlaması konusunda uzmansın.
 
 Görevlerin:
 1. Öğrencilere tercih danışmanlığı yapmak
@@ -30,88 +27,73 @@ Görevlerin:
 4. Samimi, yardımsever ve motive edici bir dil kullanmak
 5. Türkçe konuşmak ve Türk eğitim sistemi hakkında bilgi vermek
 
-${conversationContext ? 'Önceki konuşma:\n' + conversationContext + '\n\n' : ''}
+Kısa ve öz yanıtlar ver, maksimum 300 kelime. Emoji kullan.`
+            }
+        ];
 
-Kullanıcı: ${message}
+        // Konuşma geçmişini ekle
+        conversationHistory.slice(-6).forEach(msg => {
+            messages.push({
+                role: msg.role === 'user' ? 'user' : 'assistant',
+                content: msg.content
+            });
+        });
 
-TercihAI (kısa ve öz yanıt ver, emoji kullan):`;
+        // Kullanıcı mesajını ekle
+        messages.push({
+            role: 'user',
+            content: message
+        });
 
-        // Gemini API çağrısı
+        // Groq API çağrısı
         const response = await axios.post(
-            `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
+            GROQ_API_URL,
             {
-                contents: [{
-                    parts: [{
-                        text: fullPrompt
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 500,
-                }
+                model: GROQ_MODEL,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 500,
+                top_p: 1,
+                stream: false
             },
             {
                 headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 10000
+                timeout: 30000
             }
         );
 
         // Güvenli yanıt kontrolü
-        if (!response.data) {
-            console.log('⚠️ Gemini yanıt verisi yok, fallback kullanılıyor');
+        if (!response.data || !response.data.choices || response.data.choices.length === 0) {
+            console.log('⚠️ Groq boş yanıt döndü, fallback kullanılıyor');
             return generateFallbackResponse(message);
         }
 
-        if (!response.data.candidates || !Array.isArray(response.data.candidates) || response.data.candidates.length === 0) {
-            console.log('⚠️ Gemini boş candidates döndü, fallback kullanılıyor');
-            console.log('Response data:', JSON.stringify(response.data, null, 2));
-            return generateFallbackResponse(message);
-        }
-
-        const candidate = response.data.candidates[0];
-        if (!candidate || !candidate.content || !candidate.content.parts || !Array.isArray(candidate.content.parts) || candidate.content.parts.length === 0) {
-            console.log('⚠️ Gemini içerik bulunamadı, fallback kullanılıyor');
-            console.log('Candidate:', JSON.stringify(candidate, null, 2));
-            return generateFallbackResponse(message);
-        }
-
-        const aiResponse = candidate.content.parts[0].text;
+        const aiResponse = response.data.choices[0].message.content;
         const suggestions = generateSmartSuggestions(message, aiResponse);
 
         return {
             text: aiResponse,
             suggestions: suggestions,
-            source: 'gemini'
+            source: 'groq'
         };
 
     } catch (error) {
-        console.error('❌ Gemini API hatası:', error.message);
+        console.error('❌ Groq API hatası:', error.message);
         if (error.response) {
             console.error('API Response Status:', error.response.status);
             console.error('API Response Data:', JSON.stringify(error.response.data, null, 2));
-            
-            // Rate limit hatası için özel mesaj
-            if (error.response.status === 429) {
-                console.log('⚠️ Rate limit aşıldı - Fallback yanıt kullanılıyor');
-                return {
-                    text: '⚠️ Şu anda çok fazla istek geldiği için kısa bir süre beklemeniz gerekiyor.\n\nAlternatif olarak basit yanıtlar verebilirim. Ne sormak istersiniz?',
-                    suggestions: ['Analiz Yap', 'DGS Nedir?', 'Tercih Nasıl Yapılır?'],
-                    source: 'fallback-ratelimit'
-                };
-            }
         }
         return generateFallbackResponse(message);
     }
 }
 
-// Bölüm analizi için Gemini kullan
-async function analyzeDepartmentWithGemini(department, userRanking) {
+// Bölüm analizi için Groq kullan
+async function analyzeDepartmentWithGroq(department, userRanking) {
     try {
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === '') {
+        if (!GROQ_API_KEY || GROQ_API_KEY === '') {
             return null;
         }
 
@@ -129,49 +111,32 @@ YKS sıralaması: ${userRanking}
 Kısa ve öz, maksimum 300 kelime. Türkçe yaz.`;
 
         const response = await axios.post(
-            `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
+            GROQ_API_URL,
             {
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 400,
-                }
+                model: GROQ_MODEL,
+                messages: [
+                    { role: 'user', content: prompt }
+                ],
+                temperature: 0.5,
+                max_tokens: 800
             },
             {
                 headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 10000
+                timeout: 30000
             }
         );
 
-        // Güvenli yanıt kontrolü
-        if (!response.data) {
-            console.log('⚠️ Gemini bölüm analizi yanıt verisi yok');
+        if (!response.data || !response.data.choices || response.data.choices.length === 0) {
             return null;
         }
 
-        if (!response.data.candidates || !Array.isArray(response.data.candidates) || response.data.candidates.length === 0) {
-            console.log('⚠️ Gemini bölüm analizi boş candidates döndü');
-            console.log('Response data:', JSON.stringify(response.data, null, 2));
-            return null;
-        }
-
-        const candidate = response.data.candidates[0];
-        if (!candidate || !candidate.content || !candidate.content.parts || !Array.isArray(candidate.content.parts) || candidate.content.parts.length === 0) {
-            console.log('⚠️ Gemini bölüm analizi içerik bulunamadı');
-            console.log('Candidate:', JSON.stringify(candidate, null, 2));
-            return null;
-        }
-
-        return candidate.content.parts[0].text;
+        return response.data.choices[0].message.content;
 
     } catch (error) {
-        console.error('❌ Bölüm analizi hatası:', error.message);
+        console.error('❌ Groq bölüm analizi hatası:', error.message);
         return null;
     }
 }
@@ -241,6 +206,18 @@ function generateFallbackResponse(message) {
         };
     }
     
+    if (lowerMessage.includes('dgs')) {
+        return {
+            text: "📚 DGS (Dikey Geçiş Sınavı) Nedir?\n\nÖnlisans mezunlarının lisans programlarına geçiş yapabilmesi için ÖSYM tarafından düzenlenen bir sınavdır.\n\n📝 İçerik:\n• Sözel Bölüm (60 soru)\n• Sayısal Bölüm (60 soru)\n\n📅 Yılda 1 kez yapılır.\n\nDaha fazla bilgi ister misiniz?",
+            suggestions: [
+                "DGS puan hesaplama",
+                "Hangi bölümlere geçiş yapabilirim?",
+                "DGS tercih stratejisi"
+            ],
+            source: 'fallback'
+        };
+    }
+    
     return {
         text: "Size yardımcı olmak için buradayım! 😊\n\nTercih danışmanlığı, bölüm karşılaştırması, kariyer planlaması ve YKS stratejileri konularında size rehberlik edebilirim.\n\nNe öğrenmek istersiniz?",
         suggestions: [
@@ -253,7 +230,6 @@ function generateFallbackResponse(message) {
 }
 
 module.exports = {
-    chatWithGemini,
-    analyzeDepartmentWithGemini,
-    generateFallbackResponse
+    chatWithGroq,
+    analyzeDepartmentWithGroq
 };
