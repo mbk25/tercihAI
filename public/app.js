@@ -12,6 +12,8 @@ let isSelectionMode = false; // Seçim modu aktif mi?
 let currentDepartment = null; // Analiz edilen bölümü sakla
 let globalSelectedUniversities = []; // TÜM programlardan seçilen üniversiteler (Google Sheets için)
 let aiInitialized = false;
+let currentEligibleUniversities = []; // Uygun üniversiteleri sakla
+let selectedUniversities = new Set(); // Seçilen üniversiteler
 
 // DOM Elements
 const chatMessages = document.getElementById('chatMessages');
@@ -2745,7 +2747,7 @@ function addUniversityCardsInBoxes(universities, formData) {
                 <span style="color: var(--text-primary); font-weight: 700; font-size: 1.05rem;">
                     🏛️ ${universities.length} Üniversite Bulundu
                 </span>
-                <button style="background: #10a37f; color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 0.9rem;" onclick="showEligibleUniversityModal('${formData.dreamDept.replace(/'/g, "\\'")}', ${JSON.stringify(universities).replace(/"/g, '&quot;')})">
+                <button id="detailsBtn-${Date.now()}" style="background: #10a37f; color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
                     Detaylar
                 </button>
             </div>
@@ -2766,6 +2768,17 @@ function addUniversityCardsInBoxes(universities, formData) {
     
     chatMessages.appendChild(summaryCard);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Detaylar butonuna event listener ekle
+    currentEligibleUniversities = universities;
+    setTimeout(() => {
+        const detailsBtn = summaryCard.querySelector('[id^="detailsBtn-"]');
+        if (detailsBtn) {
+            detailsBtn.addEventListener('click', () => {
+                showEligibleUniversityModal(formData.dreamDept, currentEligibleUniversities);
+            });
+        }
+    }, 100);
 }
 
 // Yeni fonksiyon: Uygun üniversiteler için detaylı modal
@@ -2856,20 +2869,32 @@ function showEligibleUniversityModal(deptName, universities) {
                             <div>👥 Kontenjan: ${uni.quota}</div>
                             ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem;">
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showUniversityDetailModal(${JSON.stringify(uni).replace(/"/g, '&quot;')}, {name: uni.programs?.[0]?.name || '', minRanking: ${uni.ranking || uni.minRanking}, quota: '${uni.quota}'}), 300)" 
-                                style="background: linear-gradient(135deg, #10a37f, #0d8a6a); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(16, 163, 127, 0.3);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(16, 163, 127, 0.4)'" 
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(16, 163, 127, 0.3)'">
-                                📋 Genel Bilgi
-                            </button>
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Devlet', ${JSON.stringify(uni).replace(/"/g, '&quot;')}), 300)" 
-                                style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(102, 126, 234, 0.4)'" 
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(102, 126, 234, 0.3)'">
-                                🔍 Detay + Harita
-                            </button>
-                        </div>
+                        <button 
+                            data-uni-name="${uni.name}" 
+                            data-uni-city="${uni.city}" 
+                            data-uni-campus="${uni.campus || 'Ana Kampüs'}" 
+                            data-uni-type="Devlet" 
+                            data-uni-condition-numbers="${uni.conditionNumbers || ''}" 
+                            onclick="
+                                event.stopPropagation(); 
+                                console.log('🎯 BUTONA TIKLANDI!', event.currentTarget.dataset);
+                                const modal = document.getElementById('universitySelectionModal');
+                                if (modal) modal.remove();
+                                const btn = event.currentTarget;
+                                showDetailedConditionsModal(
+                                    btn.dataset.uniName, 
+                                    [], 
+                                    btn.dataset.uniConditionNumbers, 
+                                    btn.dataset.uniCity, 
+                                    btn.dataset.uniCampus, 
+                                    btn.dataset.uniType
+                                );
+                            " 
+                            style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); margin-top: 1rem;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
+                            🔍 ÖSYM Şartları ve Harita Detayı
+                        </button>
                     </div>
                 `).join('')}
             </div>
@@ -2900,20 +2925,32 @@ function showEligibleUniversityModal(deptName, universities) {
                             <div>👥 Kontenjan: ${uni.quota}</div>
                             ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem;">
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showUniversityDetailModal(${JSON.stringify(uni).replace(/"/g, '&quot;')}, {name: uni.programs?.[0]?.name || '', minRanking: ${uni.ranking || uni.minRanking}, quota: '${uni.quota}'}), 300)" 
-                                style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(245, 158, 11, 0.4)'" 
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(245, 158, 11, 0.3)'">
-                                📋 Genel Bilgi
-                            </button>
-                            <button onclick="event.stopPropagation(); closeUniversityModal(); setTimeout(() => showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Vakıf', ${JSON.stringify(uni).replace(/"/g, '&quot;')}), 300)" 
-                                style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 12px rgba(102, 126, 234, 0.4)'" 
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(102, 126, 234, 0.3)'">
-                                🔍 Detay + Harita
-                            </button>
-                        </div>
+                        <button 
+                            data-uni-name="${uni.name}" 
+                            data-uni-city="${uni.city}" 
+                            data-uni-campus="${uni.campus || 'Ana Kampüs'}" 
+                            data-uni-type="Vakıf" 
+                            data-uni-condition-numbers="${uni.conditionNumbers || ''}" 
+                            onclick="
+                                event.stopPropagation(); 
+                                console.log('🎯 BUTONA TIKLANDI!', event.currentTarget.dataset);
+                                const modal = document.getElementById('universitySelectionModal');
+                                if (modal) modal.remove();
+                                const btn = event.currentTarget;
+                                showDetailedConditionsModal(
+                                    btn.dataset.uniName, 
+                                    [], 
+                                    btn.dataset.uniConditionNumbers, 
+                                    btn.dataset.uniCity, 
+                                    btn.dataset.uniCampus, 
+                                    btn.dataset.uniType
+                                );
+                            " 
+                            style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); margin-top: 1rem;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
+                            🔍 ÖSYM Şartları ve Harita Detayı
+                        </button>
                     </div>
                 `).join('')}
             </div>
@@ -3042,7 +3079,7 @@ function showUniversityModal(deptName, universities) {
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
                                     ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                                 </div>
-                                <button onclick="showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Devlet')" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Devlet" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
@@ -3083,7 +3120,7 @@ function showUniversityModal(deptName, universities) {
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
                                     ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                                 </div>
-                                <button onclick="showDetailedConditionsModal('${uni.name.replace(/'/g, "\\'")}', ${JSON.stringify(uni.conditions || []).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', 'Vakıf')" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Vakıf" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
@@ -3657,7 +3694,7 @@ function showUniversityDetailModal(uni, program) {
                                     ÖSYM 2025 Tercih Şartları
                                 </h3>
                             </div>
-                            <button onclick="showDetailedConditionsModal('${uni.name}', ${JSON.stringify(conditions).replace(/"/g, '&quot;')}, '${uni.conditionNumbers || ''}', '${uni.city}', '${uni.campus || 'Ana Kampüs'}', '${uni.type}')" 
+                            <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="${uni.type}" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                 style="
                                     background: ${uni.type === 'Devlet' ? '#10a37f' : '#f59e0b'};
                                     color: white;
@@ -3809,7 +3846,9 @@ function closeUniversityModal() {
 
 // Detaylı ÖSYM Şartları ve Harita Modal
 async function showDetailedConditionsModal(uniName, conditions, conditionNumbers, city, campus, uniType, uni = null) {
+    console.log('🔥🔥🔥 BUTON ÇALIŞTI! showDetailedConditionsModal çağrıldı 🔥🔥🔥');
     console.log('📋 Detaylı Şartlar Modal Açılıyor:', uniName);
+    console.log('Parametreler:', { uniName, conditions, conditionNumbers, city, campus, uniType });
     
     // Loading modal göster
     showLoadingModal('ÖSYM şartları yükleniyor...');
@@ -4188,11 +4227,42 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                                 text-align: center;
                             ">
                                 <p style="color: #e2e8f0; margin: 0; font-size: 12px;">
-                                    🚍 <strong>Ulaşım</strong><br>
-                                    <span style="color: #94a3b8;">Rotayı planlayın</span>
+                                    📍 <strong>Kampüs Konumu</strong><br>
+                                    <span style="color: #94a3b8;">Haritada görüntüle</span>
                                 </p>
                             </div>
                         </div>
+                        
+                        <!-- Ulaşım Rotası Planlayın Butonu -->
+                        <button 
+                            id="planRouteBtn"
+                            onclick="planRoute('${uniName}', '${city}', '${campus}')"
+                            style="
+                                width: 100%;
+                                background: linear-gradient(135deg, #10a37f, #0d8a6a);
+                                color: white;
+                                border: none;
+                                padding: 15px 20px;
+                                border-radius: 12px;
+                                font-size: 15px;
+                                font-weight: 700;
+                                cursor: pointer;
+                                margin-top: 20px;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 12px rgba(16, 163, 127, 0.3);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 10px;
+                            "
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(16, 163, 127, 0.4)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 163, 127, 0.3)'">
+                            🚍 Ulaşım Rotası Planlayın
+                        </button>
+                        
+                        <p style="color: #94a3b8; margin: 10px 0 0 0; font-size: 12px; text-align: center;">
+                            📱 Konumunuzdan kampüse otobüs, tramvay ve yürüyüş rotası
+                        </p>
                     </div>
                 </div>
             </div>
@@ -4231,6 +4301,130 @@ function closeDetailedConditionsModal() {
         setTimeout(() => modal.remove(), 300);
     }
 }
+
+// Ulaşım Rotası Planlama Fonksiyonu
+async function planRoute(uniName, city, campus) {
+    console.log('🚍 Ulaşım rotası planlanıyor:', { uniName, city, campus });
+    
+    const destination = `${uniName} ${city} ${campus}`;
+    
+    // Konum izni kontrolü
+    if (!navigator.geolocation) {
+        alert('❌ Tarayıcınız konum hizmetlerini desteklemiyor.');
+        return;
+    }
+    
+    // Butonu devre dışı bırak ve yükleniyor göster
+    const btn = document.getElementById('planRouteBtn');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    btn.innerHTML = '📍 Konumunuz alınıyor...';
+    
+    // Kullanıcının konumunu al
+    navigator.geolocation.getCurrentPosition(
+        // Başarılı
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            console.log('✅ Konum alındı:', { lat, lng });
+            
+            // Google Maps yol tarifi URL'i (toplu taşıma modu ile)
+            const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${encodeURIComponent(destination)}&travelmode=transit`;
+            
+            // Yeni sekmede aç
+            window.open(mapsUrl, '_blank');
+            
+            // Butonu eski haline getir
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.innerHTML = originalHTML;
+            
+            // Başarı mesajı göster
+            showTemporaryMessage('✅ Yol tarifi Google Maps\'te açıldı!', 'success');
+        },
+        // Hata
+        (error) => {
+            console.error('❌ Konum hatası:', error);
+            
+            let errorMessage = '';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = '❌ Konum izni reddedildi. Lütfen tarayıcı ayarlarınızdan konum iznini etkinleştirin.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = '❌ Konum bilgisi alınamıyor. İnternet bağlantınızı kontrol edin.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = '❌ Konum alma zaman aşımına uğradı. Lütfen tekrar deneyin.';
+                    break;
+                default:
+                    errorMessage = '❌ Konum alınırken bir hata oluştu.';
+            }
+            
+            // Konum olmadan da Google Maps'i aç
+            const mapsUrlNoOrigin = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}&travelmode=transit`;
+            
+            if (confirm(errorMessage + '\n\nKonumunuzu manuel olarak girmek için Google Maps\'i açmak ister misiniz?')) {
+                window.open(mapsUrlNoOrigin, '_blank');
+            }
+            
+            // Butonu eski haline getir
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.innerHTML = originalHTML;
+        },
+        // Seçenekler
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Geçici mesaj göster
+function showTemporaryMessage(message, type = 'info') {
+    const bgColors = {
+        'success': 'linear-gradient(135deg, #10a37f, #0d8a6a)',
+        'error': 'linear-gradient(135deg, #ef4444, #dc2626)',
+        'info': 'linear-gradient(135deg, #667eea, #764ba2)'
+    };
+    
+    const messageHTML = `
+        <div id="tempMessage" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${bgColors[type]};
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10004;
+            font-size: 14px;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease;
+        ">
+            ${message}
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', messageHTML);
+    
+    // 3 saniye sonra kaldır
+    setTimeout(() => {
+        const msg = document.getElementById('tempMessage');
+        if (msg) {
+            msg.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => msg.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Global scope'a ekle
+window.planRoute = planRoute;
 
 // Loading Modal Functions
 function showLoadingModal(message = 'Yükleniyor...') {
@@ -4296,6 +4490,7 @@ window.closeUniversityDetailModal = closeUniversityDetailModal;
 window.closeUniversityModal = closeUniversityModal;
 window.showDetailedConditionsModal = showDetailedConditionsModal;
 window.closeDetailedConditionsModal = closeDetailedConditionsModal;
+window.showEligibleUniversityModal = showEligibleUniversityModal;
 
 // Test log
 console.log('🎯 Detaylı modal fonksiyonları yüklendi:', {

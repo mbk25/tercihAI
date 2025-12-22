@@ -1264,9 +1264,11 @@ app.post('/api/universities', async (req, res) => {
         }
         
         // Sıralama filtreleme
+        // Kullanıcının sıralaması, üniversitenin taban sıralamasından BÜYÜK OLMALI
+        // Örnek: Kullanıcı 20.000, Üni taban 65.000 → GİREBİLİR (20.000 < 65.000)
         if (ranking) {
             filteredUniversities = filteredUniversities.filter(uni => 
-                ranking <= (uni.ranking || uni.minRanking || Infinity)
+                (uni.ranking || uni.minRanking || 999999) >= ranking
             );
             console.log(`🎯 Sıralama filtresi (${ranking}): ${filteredUniversities.length} üniversite`);
         }
