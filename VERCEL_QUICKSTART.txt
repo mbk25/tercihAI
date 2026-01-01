@@ -1,0 +1,67 @@
+┌─────────────────────────────────────────────────────────────┐
+│  🚀 VERCEL HIZLI BAŞLANGIÇ                                  │
+└─────────────────────────────────────────────────────────────┘
+
+📍 REPO: https://github.com/mbk25/tercihAI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 3 ADIMDA DEPLOY:
+
+1. https://vercel.com/new → GitHub ile giriş
+   
+2. "tercihAI" reposunu import et
+   
+3. Environment Variables ekle + Deploy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ BUILD AYARLARI:
+
+   Framework:        Node.js / Other
+   Build Command:    (boş bırak)
+   Output Directory: public
+   Install Command:  npm install
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 ENVIRONMENT VARIABLES (.env'den kopyala):
+
+   ✅ DB_HOST
+   ✅ DB_USER
+   ✅ DB_PASSWORD
+   ✅ DB_NAME
+   ✅ DB_PORT
+   ✅ MONGODB_URI
+   ✅ JWT_SECRET
+   ✅ SESSION_SECRET
+   ✅ GOOGLE_CLIENT_ID
+   ✅ GOOGLE_CLIENT_SECRET
+   ✅ GOOGLE_CALLBACK_URL (domain deploy sonrası güncelle)
+   ✅ AI_PROVIDER=groq
+   ✅ GROQ_API_KEY
+
+   ⚠️  Her variable için Production, Preview, Development SEÇ!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ DEPLOY SONRASI:
+
+   1. Domain'i kopyala (örn: tercih-ai.vercel.app)
+   
+   2. Google OAuth Callback güncelle:
+      Google Cloud Console → OAuth 2.0 → Redirect URIs
+      → https://[domain].vercel.app/auth/google/callback
+   
+   3. Vercel Environment Variable güncelle:
+      GOOGLE_CALLBACK_URL → yeni domain
+   
+   4. Redeploy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 DETAYLI REHBER: VERCEL_MANUEL_DEPLOY.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 Başarılar!
