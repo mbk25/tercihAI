@@ -13,11 +13,17 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
     },
+    {
+      "source": "/auth/:path*",
+      "destination": "/api/index.js"
+    }
+  ],
+  "routes": [
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html))",
       "dest": "/public/$1"

@@ -2142,21 +2142,30 @@ async function startServer() {
 
 // Sadece localhost'ta server başlat (Vercel'de serverless olarak çalışacak)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    // Localhost development mode
     startServer();
-} else {
-    console.log('🌐 Vercel serverless mode - Initializing databases');
-    // Vercel için DB bağlantılarını kur (non-blocking)
-    (async () => {
-        try {
-            await connectMongoDB().catch(e => console.warn('MongoDB skip:', e.message));
-            await testConnection().catch(e => console.warn('MySQL skip:', e.message));
-            await initDatabase().catch(e => console.warn('DB init skip:', e.message));
-            await createConditionsTable().catch(e => console.warn('Conditions table skip:', e.message));
-            console.log('✅ Vercel initialization complete');
-        } catch (err) {
-            console.warn('⚠️ Partial initialization:', err.message);
-        }
-    })();
+} else if (process.env.VERCEL) {
+    // Vercel serverless mode
+    console.log('🌐 Vercel serverless mode detected');
+    console.log('📊 Initializing databases in background...');
+    
+    // DB'yi arka planda başlat (non-blocking)
+    setImmediate(() => {
+        (async () => {
+            try {
+                console.log('🔄 Starting DB connections...');
+                await connectMongoDB().catch(e => console.warn('⚠️ MongoDB:', e.message));
+                await testConnection().catch(e => console.warn('⚠️ MySQL:', e.message));
+                await initDatabase().catch(e => console.warn('⚠️ DB init:', e.message));
+                await createConditionsTable().catch(e => console.warn('⚠️ Conditions:', e.message));
+                console.log('✅ Database initialization complete');
+            } catch (err) {
+                console.error('❌ DB initialization error:', err.message);
+            }
+        })();
+    });
+    
+    console.log('✅ App exported for Vercel');
 }
 
 // ============================================
