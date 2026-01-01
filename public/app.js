@@ -28,51 +28,73 @@ const sidebar = document.getElementById('sidebar');
 document.addEventListener('DOMContentLoaded', () => {
     // User profile kontrol
     checkUserProfile();
-    
+
     // Google login butonuna event listener ekle
     setupGoogleLoginButton();
-    
+
     // Seçimler butonuna event listener ekle
     const selectionsBtn = document.getElementById('selectionsBtn');
     if (selectionsBtn) {
         selectionsBtn.addEventListener('click', showSelectionsModal);
     }
-    
+
     // AI'ı başlat
     initializeAI();
+
+    // Analiz seçim kartları
+    setupAnalysisChoiceCards();
+
+    // AYT alan seçimi değiştiğinde dinamik alanları göster
+    const aytAlanSelect = document.getElementById('aytAlan');
+    if (aytAlanSelect) {
+        aytAlanSelect.addEventListener('change', showAytNets);
+    }
+
+    // Hedef analizi form submit
+    const hedefForm = document.getElementById('hedefAnalysisFormSubmit');
+    if (hedefForm) {
+        hedefForm.addEventListener('submit', handleHedefAnalysis);
+    }
+
+    // TYT net input validasyonları
+    setupNetValidation('tytTurkce', 40);
+    setupNetValidation('tytMat', 40);
+    setupNetValidation('tytSosyal', 20);
+    setupNetValidation('tytFen', 20);
 });
 
 // AI'ı başlat (Google AI Studio kullanarak)
 async function initializeAI() {
     console.log('🤖 AI başlatılıyor...');
     aiInitialized = true;
-    addMessage('🤖 Tercih AI - Akıllı Üniversite Tercih Danışmanı\n\nMerhaba! Size üniversite tercihinizde yardımcı olacağım. Google AI Studio ile çalışıyorum.\n\nNe yapmak istersiniz?', 'ai', ['Analiz Yap', 'Nasıl kullanırım?']);
+    // Hoş geldin mesajını kaldırdık - Welcome screen zaten var
+    // Her sayfa yenilemede boş sohbet eklenmesini önlemek için
 }
 
 // Mock AI yanıt oluşturucu
 function generateMockResponse(message) {
     const lowerMsg = message.toLowerCase();
-    
+
     // DGS soruları
     if (lowerMsg.includes('dgs')) {
         return 'DGS (Dikey Geçiş Sınavı), ön lisans mezunlarının lisans programlarına geçiş yapabilmesi için ÖSYM tarafından düzenlenen bir sınavdır.\n\n📚 İçeriği:\n- Sözel Bölüm (60 soru)\n- Sayısal Bölüm (60 soru)\n\n📅 Yılda 1 kez yapılır.\n\nDaha detaylı bilgi ister misiniz?';
     }
-    
+
     // Tercih soruları
     if (lowerMsg.includes('tercih') || lowerMsg.includes('nasıl')) {
         return 'Üniversite tercihi yaparken şunlara dikkat edin:\n\n1️⃣ Sıralama durumunuzu kontrol edin\n2️⃣ Hedef bölümlerin taban puanlarına bakın\n3️⃣ Şehir tercihinizi belirleyin\n4️⃣ Alternatif bölümler düşünün\n\nAnaliz yapmak için "Analiz Yap" butonuna tıklayın!';
     }
-    
+
     // Bölüm soruları
     if (lowerMsg.includes('bölüm') || lowerMsg.includes('mühendislik') || lowerMsg.includes('tıp')) {
         return 'Tercih edebileceğiniz bölümler sıralama durumunuza göre değişir.\n\n💡 Analiz yapmak için:\n- TYT ve AYT sıralama bilgilerinizi girin\n- Hayalinizdeki bölümü söyleyin\n- Size uygun alternatifleri göstereyim!\n\nHemen başlamak ister misiniz?';
     }
-    
+
     // Genel sorular
     if (lowerMsg.includes('merhaba') || lowerMsg.includes('selam')) {
         return 'Merhaba! 👋\n\nSize üniversite tercihinizde yardımcı olacağım.\n\nNe yapmak istersiniz?\n- 📊 Tercih Analizi\n- 📚 DGS Bilgisi\n- 🎯 Bölüm Önerileri';
     }
-    
+
     // Varsayılan yanıt
     return 'Anladım. Size daha iyi yardımcı olabilmem için lütfen daha detaylı bilgi verin.\n\nŞunları yapabilirim:\n✅ Üniversite tercih analizi\n✅ DGS hakkında bilgi\n✅ Bölüm önerileri\n\nNe hakkında konuşmak istersiniz?';
 }
@@ -80,8 +102,8 @@ function generateMockResponse(message) {
 // User profile kontrol
 checkUserProfile();
 
-// Sohbet geçmişini yükle
-loadChatHistory();
+// Sohbet geçmişini yükle - Kaldırıldı: Her sayfa yenilediğinde boş sohbet eklenmesini önlemek için
+// loadChatHistory();
 
 // Google login buton kurulumu
 function setupGoogleLoginButton() {
@@ -90,7 +112,7 @@ function setupGoogleLoginButton() {
         console.warn('Google login butonu bulunamadı');
         return;
     }
-    
+
     // Eğer kullanıcı giriş yapmışsa
     if (userProfile && userProfile.name) {
         googleBtn.innerHTML = `
@@ -102,8 +124,22 @@ function setupGoogleLoginButton() {
         googleBtn.style.background = '#ea4335';
         googleBtn.onclick = () => {
             console.log('🚪 Çıkış yapılıyor...');
+            
+            // Kullanıcıya özel sohbet geçmişini temizle
+            if (userProfile) {
+                const storageKey = getChatStorageKey();
+                console.log(`🗑️ Kullanıcı sohbet geçmişi temizleniyor: ${storageKey}`);
+                // NOT: Sohbet geçmişini SİLMİYORUZ - sadece profili temizliyoruz
+                // Kullanıcı tekrar giriş yaptığında aynı key ile sohbetleri geri gelecek
+            }
+            
+            // Profil ve token'ı temizle
             StorageHelper.removeItem('userProfile');
             StorageHelper.removeItem('authToken');
+            console.log('✅ Profil ve token temizlendi');
+            console.log('ℹ️ Sohbet geçmişi korundu - Tekrar giriş yaptığınızda geri gelecek');
+            
+            // Sayfayı yenile - misafir moduna dön
             window.location.reload();
         };
     } else {
@@ -166,35 +202,62 @@ document.addEventListener('click', (e) => {
     }
 
     if (e.target.closest('.suggestion-btn')) {
-        const prompt = e.target.closest('.suggestion-btn').textContent.trim();
-        
+        const buttonText = e.target.closest('.suggestion-btn').textContent.trim();
+
         // DGS ile ilgili butonlar
-        if (prompt.includes('DGS')) {
+        if (buttonText.includes('DGS')) {
             showDGSInfo();
             return;
         }
-        
+
         // Yeni analiz butonu
-        if (prompt.includes('Yeni analiz')) {
+        if (buttonText.includes('Yeni analiz')) {
             window.location.reload();
             return;
         }
-        
+
         // Üniversiteleri göster butonuna tıklanırsa
-        if (prompt.includes('Üniversiteleri Göster')) {
+        if (buttonText.includes('Üniversiteleri Göster')) {
             showUniversitiesListModal();
             return;
         }
-        
-        // Diğer butonlar için normal mesaj gönder
-        chatInput.value = prompt;
+
+        // Kullanıcının önceki analiz verilerini al
+        const lastAnalysis = window.lastAnalysisData || userProfile;
+
+        // Kişiselleştirilmiş prompt oluştur
+        let personalizedPrompt = buttonText;
+
+        if (lastAnalysis) {
+            // "Tercih analizi yapmak istiyorum" butonuna basıldıysa
+            if (buttonText.includes('Tercih analizi')) {
+                if (lastAnalysis.tytRanking || lastAnalysis.aytRanking || lastAnalysis.dreamDept) {
+                    personalizedPrompt = `Benim TYT sıralamam: ${lastAnalysis.tytRanking || 'Belirtilmedi'}, AYT sıralamam: ${lastAnalysis.aytRanking || 'Belirtilmedi'}, hedef bölümüm: ${lastAnalysis.dreamDept || 'Belirtilmedi'}, tercih ettiğim şehirler: ${lastAnalysis.city || 'Fark etmez'}. Bu bilgilere göre detaylı bir tercih analizi yapar mısın?`;
+                }
+            }
+            // "Hangi bölümü seçmeliyim?" butonuna basıldıysa
+            else if (buttonText.includes('bölüm') || buttonText.includes('seçmeliyim')) {
+                if (lastAnalysis.tytRanking || lastAnalysis.aytRanking) {
+                    personalizedPrompt = `TYT sıralamam: ${lastAnalysis.tytRanking || 'Belirtilmedi'}, AYT sıralamam: ${lastAnalysis.aytRanking || 'Belirtilmedi'}. Bu sıralamalarla hangi bölümü seçmeliyim? İlgi alanlarım: ${lastAnalysis.dreamDept || 'Henüz karar vermedim'}`;
+                }
+            }
+            // "En iyi üniversiteler hangileri?" butonuna basıldıysa
+            else if (buttonText.includes('üniversite')) {
+                if (lastAnalysis.aytRanking || lastAnalysis.tytRanking) {
+                    personalizedPrompt = `TYT: ${lastAnalysis.tytRanking || 'Belirtilmedi'}, AYT: ${lastAnalysis.aytRanking || 'Belirtilmedi'} sıralamalı bir öğrenci için ${lastAnalysis.dreamDept || 'genel olarak'} bölümünde en iyi üniversiteler hangileri? Tercih ettiğim şehirler: ${lastAnalysis.city || 'Tüm Türkiye'}`;
+                }
+            }
+        }
+
+        // Personalized prompt'u mesaj alanına yaz ve gönder
+        chatInput.value = personalizedPrompt;
         sendMessage();
     }
 });
 
 function startNewChat() {
     console.log('🔄 Yeni sohbet başlatılıyor...');
-    
+
     // Mevcut sohbeti kaydet (sadece daha önce kaydedilmemişse)
     if (currentSession.messages.length > 0) {
         const existingIndex = chatSessions.findIndex(s => s.id === currentSession.id);
@@ -216,51 +279,69 @@ function startNewChat() {
         saveChatHistory();
         updateChatHistory();
     }
-    
+
     // Yeni sohbet başlat
     conversationHistory = [];
     currentSession = {
         id: Date.now(),
         messages: []
     };
-    
+
     // History'yi güncelle ki aktif sohbet gösterilsin
     updateChatHistory();
-    
+
     // Chat mesajlarını temizle ve welcome screen'i göster
     if (chatMessages) {
         chatMessages.innerHTML = '';
-        
-        // Welcome screen'i yeniden oluştur ve göster
+
+        // Welcome screen'i yeniden oluştur ve göster (Ana seçim ekranı ile)
         const welcomeHTML = `
             <div class="welcome-screen" id="welcomeScreen" style="display: block;">
                 <div class="welcome-logo">🎓</div>
-                <h1>Tercih AI'ya Hoş Geldiniz</h1>
+                <h1 class="gradient-text">Tercih AI'ya Hoş Geldiniz</h1>
                 <p>Yapay zeka destekli üniversite tercih danışmanınız. Hemen başlayalım!</p>
-                
-                <div class="quick-start-form">
-                    <h3>🚀 Tercih Analizi - Tüm Bilgilerinizi Girin</h3>
+
+                <!-- Ana Seçim Kutuları -->
+                <div class="analysis-choice-container" id="analysisChoiceContainer">
+                    <div class="analysis-card" id="tercihAnalysisCard">
+                        <div class="card-icon">🎯</div>
+                        <h3>Tercih Analizi Yap</h3>
+                        <p>Sıralama bilgilerinle kazanabileceğin üniversite ve bölümleri keşfet</p>
+                        <button class="choice-btn">Başla</button>
+                    </div>
+
+                    <div class="analysis-card" id="hedefAnalysisCard">
+                        <div class="card-icon">🚀</div>
+                        <h3>Hedef Analizi Yap</h3>
+                        <p>Mevcut net durumunla hedefindeki bölümlere olan mesafeni öğren</p>
+                        <button class="choice-btn">Başla</button>
+                    </div>
+                </div>
+
+                <!-- Tercih Analizi Formu -->
+                <div class="quick-start-form" id="tercihAnalysisForm" style="display: none;">
+                    <button class="back-btn" id="backFromTercih">← Geri</button>
+                    <h3>🎯 Tercih Analizi - Bilgilerinizi Girin</h3>
                     <form id="quickAnalysisForm">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>📘 TYT Sıralamanız *</label>
-                                <input type="number" id="quickTytRanking" placeholder="Örn: 600000" min="1" max="3000000" required>
+                                <input type="text" id="quickTytRanking" placeholder="Örn: 600.000" inputmode="numeric" required>
                                 <small>2 yıllık programlar için</small>
                             </div>
                             
                             <div class="form-group">
                                 <label>📗 AYT Sıralamanız *</label>
-                                <input type="number" id="quickAytRanking" placeholder="Örn: 400000" min="1" max="3000000" required>
+                                <input type="text" id="quickAytRanking" placeholder="Örn: 400.000" inputmode="numeric" required>
                                 <small>4 yıllık programlar için</small>
                             </div>
                             
                             <div class="form-group">
                                 <label>👤 Cinsiyet *</label>
                                 <select id="quickGender" required>
-                                    <option value="">Seçiniz</option>
+                                    <option value="" disabled selected>Seçiniz</option>
                                     <option value="Erkek">Erkek</option>
                                     <option value="Kadın">Kadın</option>
-                                    <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
                                 </select>
                             </div>
                             
@@ -310,18 +391,95 @@ function startNewChat() {
                         </button>
                     </form>
                 </div>
+
+                <!-- Hedef Analizi Formu -->
+                <div class="quick-start-form" id="hedefAnalysisForm" style="display: none;">
+                    <button class="back-btn" id="backFromHedef">← Geri</button>
+                    <h3>🚀 Hedef Analizi - Mevcut Durumunuzu Girin</h3>
+                    <form id="hedefAnalysisFormSubmit">
+                        <div class="form-grid">
+                            <!-- TYT Netleri -->
+                            <div class="form-section">
+                                <h4>📘 TYT Netleriniz</h4>
+                                <div class="form-group">
+                                    <label>Türkçe (Max: 40)</label>
+                                    <input type="number" id="tytTurkce" placeholder="Örn: 25.75" min="0" max="40" step="0.01" required>
+                                    <small>Ondalıklı net girebilirsiniz</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Matematik (Max: 40)</label>
+                                    <input type="number" id="tytMat" placeholder="Örn: 30.5" min="0" max="40" step="0.01" required>
+                                    <small>Ondalıklı net girebilirsiniz</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sosyal Bilgiler (Max: 20)</label>
+                                    <input type="number" id="tytSosyal" placeholder="Örn: 15.25" min="0" max="20" step="0.01" required>
+                                    <small>Ondalıklı net girebilirsiniz</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fen Bilimleri (Max: 20)</label>
+                                    <input type="number" id="tytFen" placeholder="Örn: 18.5" min="0" max="20" step="0.01" required>
+                                    <small>Ondalıklı net girebilirsiniz</small>
+                                </div>
+                            </div>
+
+                            <!-- AYT Alan Seçimi -->
+                            <div class="form-section">
+                                <h4>📗 AYT Alan Seçimi</h4>
+                                <div class="form-group">
+                                    <label>Alanınız *</label>
+                                    <select id="aytAlan" required>
+                                        <option value="" disabled selected>Seçiniz</option>
+                                        <option value="sayisal">Sayısal (MF)</option>
+                                        <option value="esit">Eşit Ağırlık (TM)</option>
+                                        <option value="sozel">Sözel (TS)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- AYT Netleri (Dinamik) -->
+                            <div class="form-section" id="aytNetsSection" style="display: none;">
+                                <h4>📗 AYT Netleriniz</h4>
+                                <div id="aytNetsContainer"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="quick-start-btn">
+                            🎯 Hedef Analizi Yap
+                        </button>
+                    </form>
+                </div>
+
             </div>
         `;
-        
+
         chatMessages.innerHTML = welcomeHTML;
+
+        // Event listener'ları yeniden bağla
+        setupAnalysisChoiceCards();
         
-        // Form event listener'ını yeniden bağla
         const quickForm = document.getElementById('quickAnalysisForm');
         if (quickForm) {
             quickForm.addEventListener('submit', handleQuickStart);
         }
+
+        const hedefForm = document.getElementById('hedefAnalysisFormSubmit');
+        if (hedefForm) {
+            hedefForm.addEventListener('submit', handleHedefAnalysis);
+        }
+
+        const aytAlanSelect = document.getElementById('aytAlan');
+        if (aytAlanSelect) {
+            aytAlanSelect.addEventListener('change', showAytNets);
+        }
+
+        // TYT validasyonları
+        setupNetValidation('tytTurkce', 40);
+        setupNetValidation('tytMat', 40);
+        setupNetValidation('tytSosyal', 20);
+        setupNetValidation('tytFen', 20);
     }
-    
+
     console.log('✅ Yeni sohbet başlatıldı');
 }
 
@@ -343,7 +501,7 @@ function updateChatHistory() {
         const isPinned = session.pinned ? '📌 ' : '';
         const isActive = currentSession.id === session.id ? 'active' : '';
         const isSelected = selectedChats.has(actualIndex) ? 'selected' : '';
-        
+
         return `
         <div class="history-item ${session.pinned ? 'pinned' : ''} ${isActive} ${isSelected}"
              data-index="${actualIndex}"
@@ -362,18 +520,18 @@ function updateChatHistory() {
         </div>
     `;
     }).join('');
-    
+
     // Seçim modu butonlarını güncelle
     updateSelectionModeButtons();
 }
 
 // Global wrapper fonksiyonlar
-window.loadChatSessionWrapper = function(sessionIndex) {
+window.loadChatSessionWrapper = function (sessionIndex) {
     loadChatSession(sessionIndex);
 };
 
 // History item click handler
-window.handleHistoryItemClick = function(event, sessionIndex) {
+window.handleHistoryItemClick = function (event, sessionIndex) {
     if (isSelectionMode) {
         toggleChatSelection(sessionIndex);
     } else {
@@ -382,7 +540,7 @@ window.handleHistoryItemClick = function(event, sessionIndex) {
 };
 
 // Toggle chat selection
-window.toggleChatSelection = function(sessionIndex) {
+window.toggleChatSelection = function (sessionIndex) {
     if (selectedChats.has(sessionIndex)) {
         selectedChats.delete(sessionIndex);
         console.log(`➖ Sohbet ${sessionIndex} seçimden çıkarıldı. Toplam: ${selectedChats.size}`);
@@ -412,37 +570,37 @@ function exitSelectionMode() {
 // Delete selected chats
 function deleteSelectedChats() {
     console.log('🗑️ Silme fonksiyonu çağrıldı. Seçili sayı:', selectedChats.size);
-    
+
     if (selectedChats.size === 0) {
         showToast('Lütfen silinecek sohbetleri seçin', 'error');
         return;
     }
-    
+
     const count = selectedChats.size;
     if (!confirm(`${count} sohbeti silmek istediğinizden emin misiniz?`)) {
         console.log('❌ Silme işlemi iptal edildi');
         return;
     }
-    
+
     console.log('🗑️ Siliniyor:', Array.from(selectedChats));
-    
+
     // Seçili sohbetleri sil (büyükten küçüğe sıralayarak)
     const sortedIndices = Array.from(selectedChats).sort((a, b) => b - a);
     sortedIndices.forEach(index => {
         console.log(`  Siliniyor: Index ${index}`);
         chatSessions.splice(index, 1);
     });
-    
+
     // Mevcut oturum silindiyse yeni oturum başlat
     const currentIndex = chatSessions.findIndex(s => s.id === currentSession.id);
     if (currentIndex === -1) {
         console.log('⚠️ Mevcut oturum silindi, yeni oturum başlatılıyor');
         startNewChat();
     }
-    
+
     saveChatHistory();
     exitSelectionMode();
-    
+
     // Başarı mesajı
     showToast(`${count} sohbet silindi`, 'success');
     console.log('✅ Silme işlemi tamamlandı');
@@ -462,13 +620,13 @@ function selectAllChats() {
 function updateSelectionModeButtons() {
     const historyHeader = document.querySelector('.history-header');
     if (!historyHeader) return;
-    
+
     // Mevcut butonları temizle
     let selectionButtons = historyHeader.querySelector('.selection-buttons');
     if (selectionButtons) {
         selectionButtons.remove();
     }
-    
+
     if (isSelectionMode) {
         // Seçim modu bilgi banner'ı
         const buttonsHtml = `
@@ -519,9 +677,9 @@ function showToast(message, type = 'info') {
         animation: slideInRight 0.3s ease;
         font-weight: 600;
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOutRight 0.3s ease';
         setTimeout(() => toast.remove(), 300);
@@ -529,19 +687,19 @@ function showToast(message, type = 'info') {
 }
 
 // Context menu için global fonksiyonlar
-window.showChatContextMenu = function(event, sessionIndex) {
+window.showChatContextMenu = function (event, sessionIndex) {
     event.preventDefault();
     event.stopPropagation();
-    
+
     // Önceki context menu'yu kaldır
     const existingMenu = document.getElementById('chatContextMenu');
     if (existingMenu) {
         existingMenu.remove();
     }
-    
+
     const session = chatSessions[sessionIndex];
     if (!session) return;
-    
+
     // Context menu oluştur
     const menu = document.createElement('div');
     menu.id = 'chatContextMenu';
@@ -557,10 +715,10 @@ window.showChatContextMenu = function(event, sessionIndex) {
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         min-width: 180px;
     `;
-    
+
     // Seçim moduna göre menü öğeleri
     const menuItems = [];
-    
+
     // Normal modda gösterilecek öğeler
     if (!isSelectionMode) {
         menuItems.push({
@@ -574,7 +732,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
             action: () => togglePinChatSession(sessionIndex)
         });
     }
-    
+
     // Çoklu seçim / Seçilenleri sil
     menuItems.push({
         icon: '☑️',
@@ -590,7 +748,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
         highlight: isSelectionMode,
         danger: isSelectionMode && selectedChats.size > 0
     });
-    
+
     // Normal modda tek sohbet silme
     if (!isSelectionMode) {
         menuItems.push({
@@ -600,7 +758,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
             danger: true
         });
     }
-    
+
     // Seçim modundan çıkış
     if (isSelectionMode) {
         menuItems.push({
@@ -609,7 +767,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
             action: () => exitSelectionMode()
         });
     }
-    
+
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
         menuItem.style.cssText = `
@@ -622,7 +780,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
             transition: background 0.2s;
         `;
         menuItem.innerHTML = `<span>${item.icon}</span><span>${item.text}</span>`;
-        
+
         menuItem.addEventListener('mouseenter', () => {
             menuItem.style.background = '#334155';
         });
@@ -633,12 +791,12 @@ window.showChatContextMenu = function(event, sessionIndex) {
             item.action();
             menu.remove();
         });
-        
+
         menu.appendChild(menuItem);
     });
-    
+
     document.body.appendChild(menu);
-    
+
     // Dışarı tıklandığında menüyü kapat
     const closeMenu = (e) => {
         if (!menu.contains(e.target)) {
@@ -652,7 +810,7 @@ window.showChatContextMenu = function(event, sessionIndex) {
 function renameChatSession(sessionIndex) {
     const session = chatSessions[sessionIndex];
     if (!session) return;
-    
+
     const newName = prompt('Yeni sohbet adı:', session.title);
     if (newName && newName.trim()) {
         chatSessions[sessionIndex].title = newName.trim();
@@ -664,16 +822,16 @@ function renameChatSession(sessionIndex) {
 function togglePinChatSession(sessionIndex) {
     const session = chatSessions[sessionIndex];
     if (!session) return;
-    
+
     chatSessions[sessionIndex].pinned = !session.pinned;
-    
+
     // Sabitlenen sohbetleri sıralama: sabitli olanlar başta
     chatSessions.sort((a, b) => {
         if (a.pinned && !b.pinned) return 1;
         if (!a.pinned && b.pinned) return -1;
         return 0;
     });
-    
+
     saveChatHistory();
     updateChatHistory();
 }
@@ -681,11 +839,11 @@ function togglePinChatSession(sessionIndex) {
 function deleteChatSession(sessionIndex) {
     const session = chatSessions[sessionIndex];
     if (!session) return;
-    
+
     chatSessions.splice(sessionIndex, 1);
     saveChatHistory();
     updateChatHistory();
-    
+
     // Eğer silinen sohbet aktif sohbet ise yeni sohbet başlat
     if (currentSession.id === session.id) {
         startNewChat();
@@ -693,16 +851,16 @@ function deleteChatSession(sessionIndex) {
 }
 
 // "Yeni Sohbet" için context menu
-window.showNewChatContextMenu = function(event) {
+window.showNewChatContextMenu = function (event) {
     event.preventDefault();
     event.stopPropagation();
-    
+
     // Önceki context menu'yu kaldır
     const existingMenu = document.getElementById('chatContextMenu');
     if (existingMenu) {
         existingMenu.remove();
     }
-    
+
     // Context menu oluştur
     const menu = document.createElement('div');
     menu.id = 'chatContextMenu';
@@ -718,7 +876,7 @@ window.showNewChatContextMenu = function(event) {
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         min-width: 200px;
     `;
-    
+
     const menuItems = [
         {
             icon: '🗑️',
@@ -727,7 +885,7 @@ window.showNewChatContextMenu = function(event) {
             danger: true
         }
     ];
-    
+
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
         menuItem.style.cssText = `
@@ -740,7 +898,7 @@ window.showNewChatContextMenu = function(event) {
             transition: background 0.2s;
         `;
         menuItem.innerHTML = `<span>${item.icon}</span><span>${item.text}</span>`;
-        
+
         menuItem.addEventListener('mouseenter', () => {
             menuItem.style.background = '#334155';
         });
@@ -751,12 +909,12 @@ window.showNewChatContextMenu = function(event) {
             item.action();
             menu.remove();
         });
-        
+
         menu.appendChild(menuItem);
     });
-    
+
     document.body.appendChild(menu);
-    
+
     // Dışarı tıklandığında menüyü kapat
     const closeMenu = (e) => {
         if (!menu.contains(e.target)) {
@@ -776,12 +934,12 @@ function clearAllChatHistory() {
 function loadChatSession(sessionIndex) {
     const session = chatSessions[sessionIndex];
     if (!session) return;
-    
+
     // Eğer zaten bu session aktifse hiçbir şey yapma
     if (currentSession.id === session.id) {
         return;
     }
-    
+
     // Mevcut sohbeti kaydet (sadece daha önce kaydedilmemişse)
     if (currentSession.messages.length > 0) {
         const existingIndex = chatSessions.findIndex(s => s.id === currentSession.id);
@@ -803,18 +961,18 @@ function loadChatSession(sessionIndex) {
             saveChatHistory();
         }
     }
-    
+
     // Seçilen sohbeti yükle
     currentSession = { ...session };
     conversationHistory = session.conversationHistory || [];
-    
+
     // Mesajları göster
     if (chatMessages) {
         chatMessages.innerHTML = '';
         if (welcomeScreen) {
             welcomeScreen.style.display = 'none';
         }
-        
+
         session.messages.forEach(msg => {
             // Eğer analiz sonucu mesajıysa, kartları yeniden oluştur
             if (msg.isAnalysisResult && msg.analysisData) {
@@ -822,7 +980,7 @@ function loadChatSession(sessionIndex) {
                 displayComprehensiveResultsFromSaved(msg.analysisData);
                 return;
             }
-            
+
             // Mesajı DOM'a eklerken currentSession'a eklemeyi önle
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${msg.type || msg.role}`;
@@ -860,10 +1018,10 @@ function loadChatSession(sessionIndex) {
 
             chatMessages.appendChild(messageDiv);
         });
-        
+
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    
+
     updateChatHistory();
 }
 
@@ -896,42 +1054,42 @@ async function sendMessage() {
                 addMessage('⏳ AI henüz hazır değil...', 'ai');
                 return;
             }
-            
+
             removeTypingIndicator(typingId);
             const streamingTypingId = showTypingIndicator();
-            
+
             try {
                 // WebLLM mevcutsa kullan, yoksa basit yanıt ver
                 let aiResponse;
-                
+
                 if (window.webLLMService && window.webLLMService.isReady) {
                     console.log('💬 WebLLM kullanılıyor');
                     aiResponse = await window.webLLMService.chatStream(
                         message,
                         conversationHistory,
-                        (chunk, fullText) => {}
+                        (chunk, fullText) => { }
                     );
                 } else {
                     // Mock AI - Basit yanıtlar
                     console.log('💬 Mock AI kullanılıyor');
                     aiResponse = generateMockResponse(message);
                 }
-                
+
                 removeTypingIndicator(streamingTypingId);
-                addMessage(aiResponse, 'ai', ['Devam et', 'Başka soru', 'Analiz yap']);
-                
+                addMessage(aiResponse, 'ai', []);
+
                 conversationHistory.push(
                     { role: 'user', content: message },
                     { role: 'assistant', content: aiResponse }
                 );
-                
+
             } catch (error) {
                 removeTypingIndicator(streamingTypingId);
                 console.error('❌ AI hatası:', error);
-                
+
                 // Fallback yanıt
                 const fallbackResponse = generateMockResponse(message);
-                addMessage(fallbackResponse, 'ai', ['Devam et']);
+                addMessage(fallbackResponse, 'ai', []);
             }
         }
 
@@ -1016,7 +1174,7 @@ async function handleAnalysis(formData) {
                 resultText += `   📍 ${uni.city} - ${uni.campus}\n`;
                 resultText += `   🎯 Taban Sıralama: ~${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}\n`;
                 resultText += `   👥 Kontenjan: ${uni.quota}\n`;
-                
+
                 // ÖSYM Şart Maddelerini göster
                 if (uni.conditionNumbers && uni.conditionNumbers.trim()) {
                     resultText += `   📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}\n`;
@@ -1028,9 +1186,7 @@ async function handleAnalysis(formData) {
         // Alternatif önerilerini sakla
         window.currentAnalysisData = data;
 
-        const suggestions = data.isEligible 
-            ? ['Detaylı bilgi ver', 'Excel raporu oluştur', 'Başka bölüm sor']
-            : ['🔍 Alternatif Programları Göster', 'Detaylı bilgi ver', 'Başka bölüm sor'];
+        const suggestions = [];
 
         addMessage(resultText, 'ai', suggestions);
 
@@ -1077,7 +1233,7 @@ function addMessage(text, type, suggestions = [], skipSessionSave = false) {
 
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     // Mesajı mevcut oturuma ekle (eğer skipSessionSave true değilse)
     if (!skipSessionSave) {
         currentSession.messages.push({
@@ -1088,7 +1244,7 @@ function addMessage(text, type, suggestions = [], skipSessionSave = false) {
             suggestions: suggestions,
             timestamp: Date.now()
         });
-        
+
         // Session'ı her mesajda kaydet ve history'yi güncelle
         if (currentSession.messages.length > 0) {
             const existingIndex = chatSessions.findIndex(s => s.id === currentSession.id);
@@ -1151,21 +1307,42 @@ function checkUserProfile() {
         const profile = StorageHelper.getItem('userProfile');
         if (profile) {
             userProfile = JSON.parse(profile);
+            console.log('👤 Kullanıcı profili yüklendi:', userProfile.name || userProfile.email);
+            
+            // Google ID'yi kontrol et
+            if (userProfile.googleId) {
+                console.log('🔑 Google ID:', userProfile.googleId);
+            }
+            
             updateUserUI();
+
+            // Kullanıcıya özel sohbet geçmişini yükle
+            console.log('📂 Kullanıcıya özel sohbet geçmişi yükleniyor...');
+            loadChatHistory();
+        } else {
+            console.log('👤 Misafir kullanıcı - Guest mode');
+            userProfile = null;
+            
+            // Misafir için misafir sohbetlerini yükle
+            console.log('📂 Misafir sohbet geçmişi yükleniyor...');
+            loadChatHistory();
         }
     } catch (e) {
         console.warn('Profil yüklenemedi:', e);
+        userProfile = null;
+        // Hata durumunda da misafir sohbetlerini yükle
+        loadChatHistory();
     }
 }
 
 function updateUserUI() {
     const userNameEl = document.querySelector('.user-name');
     const avatarEl = document.querySelector('.avatar');
-    
+
     if (userProfile && userProfile.name) {
         // Kullanıcı adını güncelle
         if (userNameEl) userNameEl.textContent = userProfile.name;
-        
+
         // Avatar'ı güncelle
         if (avatarEl) {
             if (userProfile.picture) {
@@ -1181,7 +1358,7 @@ function updateUserUI() {
         if (userNameEl) userNameEl.textContent = 'Misafir';
         if (avatarEl) avatarEl.textContent = '👤';
     }
-    
+
     // Google login butonunu her zaman kuruluma gönder
     setupGoogleLoginButton();
 }
@@ -1190,19 +1367,19 @@ function updateUserUI() {
 function openAnalysisForm() {
     // Yeni pencerede form aç
     const formWindow = window.open('/form.html', 'TercihFormu', 'width=700,height=800');
-    
+
     // Mesaj dinle
     window.addEventListener('message', async (event) => {
         if (event.data.type === 'ANALYSIS_FORM') {
             const formData = event.data.data;
-            
+
             // Chat'e ekle
             const message = `Bilgilerimi girmek istiyorum:\n\n📘 TYT Sıralama: ${formData.tytRanking.toLocaleString('tr-TR').replace(/,/g, '.')}\n📗 AYT Sıralama: ${formData.aytRanking.toLocaleString('tr-TR').replace(/,/g, '.')}\nCinsiyet: ${formData.gender}\nHedef Bölüm: ${formData.dreamDept}\nŞehirler: ${formData.city}\nBulunduğum Yer: ${formData.currentLocation}`;
-            
+
             addMessage(message, 'user');
-            
+
             const typingId = showTypingIndicator();
-            
+
             try {
                 // Analiz yap
                 const response = await fetch(`${API_URL}/api/analyze`, {
@@ -1210,13 +1387,13 @@ function openAnalysisForm() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
-                
+
                 const data = await response.json();
                 removeTypingIndicator(typingId);
-                
+
                 // Sonuçları göster
                 let resultText = `📊 **Analiz Tamamlandı!**\n\n${data.recommendation}\n\n`;
-                
+
                 if (data.isEligible && data.universities.length > 0) {
                     resultText += `🎓 **Size Uygun Üniversiteler:**\n\n`;
                     data.universities.slice(0, 10).forEach((uni, index) => {
@@ -1224,7 +1401,7 @@ function openAnalysisForm() {
                         resultText += `   📍 ${uni.city} - ${uni.campus}\n`;
                         resultText += `   🎯 Taban Sıralama: ~${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}\n`;
                         resultText += `   👥 Kontenjan: ${uni.quota}\n`;
-                        
+
                         // ÖSYM Şart Maddelerini göster
                         if (uni.conditionNumbers && uni.conditionNumbers.trim()) {
                             resultText += `   📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}\n`;
@@ -1232,16 +1409,16 @@ function openAnalysisForm() {
                         resultText += `\n`;
                     });
                 }
-                
+
                 // Alternatif önerilerini sakla
                 window.currentAnalysisData = data;
-                
-                const suggestions = data.isEligible 
+
+                const suggestions = data.isEligible
                     ? ['Detaylı bilgi ver', 'Excel raporu oluştur', 'Başka bölüm sor']
                     : ['🔍 Alternatif Programları Göster', 'Detaylı bilgi ver', 'Başka bölüm sor'];
-                
+
                 addMessage(resultText, 'ai', suggestions);
-                
+
             } catch (error) {
                 removeTypingIndicator(typingId);
                 addMessage('Analiz yapılırken bir hata oluştu. Lütfen tekrar deneyin.', 'ai');
@@ -1265,11 +1442,11 @@ function parseFormattedNumber(value) {
 
 async function handleQuickStart(e) {
     e.preventDefault();
-    
+
     // Formatlanmış değerleri sayıya çevir
     const tytValue = document.getElementById('quickTytRanking').value;
     const aytValue = document.getElementById('quickAytRanking').value;
-    
+
     const formData = {
         tytRanking: parseFormattedNumber(tytValue),
         aytRanking: parseFormattedNumber(aytValue),
@@ -1279,14 +1456,18 @@ async function handleQuickStart(e) {
         currentLocation: document.getElementById('quickLocation').value.trim(),
         educationType: document.getElementById('quickEduType').value
     };
-    
+
+    // Kullanıcı verilerini global olarak kaydet (butonlar için)
+    window.lastAnalysisData = formData;
+    console.log('💾 Analiz verileri kaydedildi:', formData);
+
     console.log('📋 Form Data:', formData);
-    
+
     if (!formData.tytRanking || !formData.aytRanking || !formData.gender || !formData.dreamDept || !formData.city || !formData.currentLocation) {
         const form = document.getElementById('quickAnalysisForm');
         form.classList.add('error-shake');
         setTimeout(() => form.classList.remove('error-shake'), 500);
-        
+
         const emptyFields = [];
         if (!formData.tytRanking) emptyFields.push('TYT Sıralama');
         if (!formData.aytRanking) emptyFields.push('AYT Sıralama');
@@ -1294,21 +1475,21 @@ async function handleQuickStart(e) {
         if (!formData.dreamDept) emptyFields.push('Hedef Bölüm');
         if (!formData.city) emptyFields.push('Şehirler');
         if (!formData.currentLocation) emptyFields.push('Bulunduğunuz Yer');
-        
+
         alert(`❌ Lütfen şu alanları doldurun:\n${emptyFields.join('\n')}`);
         return;
     }
-    
+
     // Success animation
     const form = document.getElementById('quickAnalysisForm');
     form.classList.add('success-animation');
     setTimeout(() => form.classList.remove('success-animation'), 600);
-    
+
     // Welcome screen'i gizle
     if (welcomeScreen) {
         welcomeScreen.style.display = 'none';
     }
-    
+
     // Kullanıcı mesajı ekle
     const userMessage = `📋 Tercih Analizi Bilgilerim:
 
@@ -1319,16 +1500,16 @@ async function handleQuickStart(e) {
 🏙️ Tercih Şehirleri: ${formData.city}
 📍 Bulunduğum Yer: ${formData.currentLocation}
 🎓 Tercih: ${formData.educationType === 'Tümü' ? 'Devlet + Vakıf' : formData.educationType === 'Devlet' ? 'Sadece Devlet' : 'Sadece Vakıf'}`;
-    
+
     addMessage(userMessage, 'user');
-    
+
     // Detaylı analiz yap
     await performDetailedAnalysis(formData);
 }
 
 async function performDetailedAnalysis(formData) {
     const typingId = showTypingIndicator();
-    
+
     try {
         console.log('🚀 Sending to API:', formData);
         const response = await fetch(`${API_URL}/api/analyze`, {
@@ -1336,17 +1517,17 @@ async function performDetailedAnalysis(formData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
-        
+
         console.log('📡 Response status:', response.status);
         const data = await response.json();
         console.log('📊 Response data:', data);
-        
+
         removeTypingIndicator(typingId);
-        
+
         // Detaylı sonuç göster
         console.log('📋 Passing to displayComprehensiveResults:', { data, formData });
         displayComprehensiveResults(data, formData);
-        
+
     } catch (error) {
         removeTypingIndicator(typingId);
         console.error('❌ Analiz hatası:', error);
@@ -1365,20 +1546,24 @@ function displayComprehensiveResultsFromSaved(analysisData) {
 }
 
 function displayComprehensiveResults(data, formData) {
-    console.log('🎨 displayComprehensiveResults called with:', { 
+    console.log('🎨 displayComprehensiveResults called with:', {
         dataKeys: Object.keys(data),
         formDataKeys: Object.keys(formData),
         tytRanking: formData.tytRanking || data.tytRanking,
         aytRanking: formData.aytRanking || data.aytRanking
     });
-    
+
+    // Kullanıcı verilerini global olarak kaydet (butonlar için)
+    window.lastAnalysisData = formData;
+    console.log('💾 Analiz verileri güncellendi:', formData);
+
     // TYT ve AYT sıralamalarını güvenli al
     const tytRanking = formData.tytRanking || data.tytRanking || 0;
     const aytRanking = formData.aytRanking || data.aytRanking || 0;
-    
+
     // resultText değişkenini tanımla (eski fonksiyonlar için)
     let resultText = '';
-    
+
     // Analiz sonuçlarını mesaj geçmişine kaydet (sadece yeni analiz ise)
     const hasExistingAnalysis = currentSession.messages.some(m => m.isAnalysisResult);
     if (!hasExistingAnalysis) {
@@ -1396,7 +1581,7 @@ function displayComprehensiveResults(data, formData) {
             timestamp: Date.now()
         };
         currentSession.messages.push(analysisMessage);
-        
+
         // Session'ı hemen kaydet
         const existingIndex = chatSessions.findIndex(s => s.id === currentSession.id);
         if (existingIndex !== -1) {
@@ -1407,7 +1592,96 @@ function displayComprehensiveResults(data, formData) {
         saveChatHistory();
         console.log('✅ Analiz sonucu session\'a kaydedildi');
     }
-    
+
+    // ⚠️ Cin siyet Kısıtlaması Kontrolü (Ebelik)
+    if (data.status === 'gender_restriction') {
+        console.log('⚠️ Cinsiyet kısıtlaması tespit edildi - Özel uyarı kartı gösteriliyor');
+
+        // Uyarı kartı oluştur
+        const warningContainer = document.createElement('div');
+        warningContainer.style.cssText = `
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        `;
+
+        const warningCard = document.createElement('div');
+        warningCard.style.cssText = `
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            border: 2px solid #ef4444;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+        `;
+
+        warningCard.innerHTML = `
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                <h2 style="color: #ef4444; margin: 0 0 1rem 0; font-size: 1.8rem; font-weight: 800;">
+                    ${data.warning.title}
+                </h2>
+            </div>
+            
+            <div style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <p style="color: #1e293b; font-size: 1.1rem; line-height: 1.8; margin: 0;">
+                    ${data.warning.description}
+                </p>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 1.5rem; margin-bottom: 2rem;">
+                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                    <strong>ℹ️ Neden?</strong><br>
+                    ${data.warning.reason}
+                </p>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="color: #10a37f; font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem;">
+                    ${data.alternatives.title}
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    ${data.alternatives.departments.map(dept => `
+                        <div style="
+                            background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), rgba(16, 163, 127, 0.05));
+                            border: 2px solid #10a37f;
+                            border-radius: 15px;
+                            padding: 1.5rem;
+                            transition: all 0.3s ease;
+                            cursor: pointer;
+                        " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(16,163,127,0.3)';" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${dept.icon}</div>
+                            <h4 style="color: #10a37f; font-size: 1.1rem; font-weight: 700; margin: 0 0 0.5rem 0;">
+                                ${dept.name}
+                            </h4>
+                            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                                ${dept.description}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.15)); 
+                        border-left: 4px solid #667eea; 
+                        border-radius: 10px; 
+                        padding: 1.5rem; 
+                        margin-top: 2rem;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);">
+                <div style="color: #0f172a; font-size: 1.05rem; line-height: 1.8; white-space: pre-line; font-weight: 500;">
+                    ${data.recommendation}
+                </div>
+            </div>
+        `;
+
+        warningContainer.appendChild(warningCard);
+        chatMessages.appendChild(warningContainer);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        return; // Fonksiyondan çık
+    }
+
     // Grid container oluştur (bilgi kartları için) - 3 sütun
     const infoGridContainer = document.createElement('div');
     infoGridContainer.style.cssText = `
@@ -1418,7 +1692,7 @@ function displayComprehensiveResults(data, formData) {
         margin: 1.5rem auto;
         padding: 0 1rem;
     `;
-    
+
     // Responsive için media query ekle
     const style = document.createElement('style');
     style.textContent = `
@@ -1438,7 +1712,7 @@ function displayComprehensiveResults(data, formData) {
         document.head.appendChild(style);
     }
     infoGridContainer.className = 'info-grid-container';
-    
+
     // Bilgi kartını ekle
     const infoCard = createInfoCard(formData, tytRanking, aytRanking);
     infoGridContainer.appendChild(infoCard);
@@ -1447,38 +1721,38 @@ function displayComprehensiveResults(data, formData) {
         // Başarı mesajını ekle
         const successCard = createSuccessCard(formData.dreamDept);
         infoGridContainer.appendChild(successCard);
-        
+
         // Grid'i chat'e ekle
         chatMessages.appendChild(infoGridContainer);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
+
         // Üniversite özet kartını göster (TÜM üniversiteleri gönder, sadece özet gösterilecek)
         setTimeout(() => {
             addUniversityCardsInBoxes(data.universities, formData);
         }, 500);
-        
+
     } else {
         // Durum kartını ekle
         const statusCard = createStatusCard(formData.dreamDept, aytRanking);
         infoGridContainer.appendChild(statusCard);
-        
+
         if (data.alternatives && data.alternatives.length > 0) {
             console.log('🔍 Toplam alternatif:', data.alternatives.length);
-            
+
             // Alternatifleri filtrele
             const fourYear = data.alternatives.filter(a => a.type === "4 Yıllık" && a.available === true);
             const twoYear = data.alternatives.filter(a => a.type === "2 Yıllık" && a.available === true);
-            
+
             console.log('📚 4 yıllık available:', fourYear.length);
             console.log('🎓 2 yıllık available:', twoYear.length);
             console.log('2 yıllık detay:', twoYear);
-            
+
             if (fourYear.length > 0) {
                 setTimeout(() => {
                     addAlternativeCards(fourYear, 'Size Uygun 4 Yıllık Lisans Programları', '#60a5fa', '📚');
                 }, 500);
             }
-            
+
             // 2 yıllık alternatifler + DGS yolu
             if (twoYear.length > 0) {
                 console.log('✅ 2 yıllık alternatif gösterilecek!');
@@ -1495,7 +1769,7 @@ function displayComprehensiveResults(data, formData) {
                     display: flex;
                     flex-direction: column;
                 `;
-                
+
                 dgsAdvantagesCard.innerHTML = `
                     <div style="text-align: center; margin-bottom: 0.8rem;">
                         <div style="font-size: 2rem; margin-bottom: 0.3rem;">🎯</div>
@@ -1531,22 +1805,22 @@ function displayComprehensiveResults(data, formData) {
                         </div>
                     </div>
                 `;
-                
+
                 // DGS kartını grid'e ekle
                 infoGridContainer.appendChild(dgsAdvantagesCard);
-                
+
                 // Grid'i chat'e ekle
                 chatMessages.appendChild(infoGridContainer);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                
+
                 setTimeout(() => {
                     addAlternativeCards(twoYear, 'Size Uygun 2 Yıllık Önlisans Programları', '#f59e0b', '🎓');
                 }, 1000);
             }
         }
-        
+
     }
-    
+
     // Analiz sonuçlarını sakla
     window.currentAnalysisData = {
         ...data,
@@ -1599,7 +1873,7 @@ async function sendMessage() {
             { role: 'user', content: message },
             { role: 'assistant', content: data.response.text }
         );
-        
+
         // Conversation history'yi session'a kaydet
         currentSession.conversationHistory = [...conversationHistory];
 
@@ -1739,7 +2013,7 @@ function showAlternativesModal() {
 
     // İçeriği oluştur
     const contentDiv = document.getElementById('alternativesContent');
-    
+
     // 4 yıllık programlar
     const fourYear = alternatives.filter(a => a.type === "4 Yıllık");
     const twoYear = alternatives.filter(a => a.type === "2 Yıllık" && a.dgs);
@@ -1881,7 +2155,7 @@ function showAlternativesModal() {
     contentDiv.innerHTML = contentHTML;
 
     // Üniversiteleri modal içinde gösterme fonksiyonu
-    window.showUniversitiesForProgram = function(programName) {
+    window.showUniversitiesForProgram = function (programName) {
         const program = alternatives.find(a => a.dept === programName);
         if (!program || !program.universities) return;
 
@@ -1934,7 +2208,7 @@ function showAlternativesModal() {
         document.body.appendChild(subModalDiv);
     };
 
-    window.closeUniversitiesModal = function() {
+    window.closeUniversitiesModal = function () {
         const subModal = document.getElementById('universitiesSubModal');
         if (subModal) {
             subModal.parentElement.remove();
@@ -1942,7 +2216,7 @@ function showAlternativesModal() {
     };
 }
 
-window.closeAlternativesModal = function() {
+window.closeAlternativesModal = function () {
     const modal = document.getElementById('alternativesModal');
     if (modal) {
         modal.parentElement.remove();
@@ -1967,7 +2241,7 @@ function showUniversitiesListModal() {
 
     // Sıralama yetiyorsa hayalindeki bölümü, yetmiyorsa alternatifleri göster
     let modalTitle, modalSubtitle;
-    
+
     if (isEligible) {
         modalTitle = `🏛️ ${dreamDept} Üniversiteleri`;
         modalSubtitle = '✅ Sıralamanız yeterli! Gidebileceğiniz üniversiteler:';
@@ -2038,7 +2312,7 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
         });
 
         const universities = await response.json();
-        
+
         console.log('🏛️ Gelen üniversite sayısı:', universities.length);
         console.log('🏛️ İlk üniversite örneği:', universities[0]);
 
@@ -2057,11 +2331,11 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
         const uniqueTypes = [...new Set(universities.map(u => u.type))];
         console.log('📊 Gelen type değerleri:', uniqueTypes);
         console.log('📊 İlk 3 üniversite örneği:', universities.slice(0, 3));
-        
+
         // Devlet ve vakıf üniversiteleri ayır
         const devlet = universities.filter(u => u.type === 'Devlet' || u.type === 'DEVLET');
         const ozel = universities.filter(u => u.type === 'Özel' || u.type === 'Vakıf' || u.type === 'VAKIF' || u.type === 'Vakif');
-        
+
         console.log('🏛️ Devlet üniversiteleri:', devlet.length);
         console.log('🏛️ Özel üniversiteler:', ozel.length);
 
@@ -2074,8 +2348,8 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                 <h3 style="color: #10a37f; font-size: 22px; margin-bottom: 20px;">🏛️ Devlet Üniversiteleri (${devlet.length})</h3>
                 <div style="display: grid; gap: 15px;">
                     ${devlet.map((uni, idx) => {
-                        const program = uni.programs && uni.programs[0];
-                        return `
+                const program = uni.programs && uni.programs[0];
+                return `
                         <div style="background: #1e293b; border-radius: 10px; padding: 20px; border-left: 4px solid #10a37f;">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
                                 <h4 style="color: #fff; font-size: 18px; margin: 0; flex: 1;">${uni.name}</h4>
@@ -2098,7 +2372,7 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                             </button>
                         </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             </div>
             `;
@@ -2111,8 +2385,8 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                 <h3 style="color: #f59e0b; font-size: 22px; margin-bottom: 20px;">💼 Özel/Vakıf Üniversiteleri (${ozel.length})</h3>
                 <div style="display: grid; gap: 15px;">
                     ${ozel.map((uni, idx) => {
-                        const program = uni.programs && uni.programs[0];
-                        return `
+                const program = uni.programs && uni.programs[0];
+                return `
                         <div style="background: #1e293b; border-radius: 10px; padding: 20px; border-left: 4px solid #f59e0b;">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
                                 <h4 style="color: #fff; font-size: 18px; margin: 0; flex: 1;">${uni.name}</h4>
@@ -2135,12 +2409,12 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                             </button>
                         </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             </div>
             `;
         }
-        
+
         // Hiç üniversite bulunamadıysa
         if (contentHTML === '') {
             contentDiv.innerHTML = `
@@ -2177,7 +2451,7 @@ async function displayAlternativeUniversities(data, selectedCities) {
 
     try {
         const alternatives = data.alternatives || [];
-        
+
         if (!alternatives || alternatives.length === 0) {
             contentDiv.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #94a3b8;">
@@ -2207,7 +2481,7 @@ async function displayAlternativeUniversities(data, selectedCities) {
 
             for (const alt of fourYear) {
                 const universities = alt.universities || [];
-                
+
                 contentHTML += `
                 <div style="background: #1e293b; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #60a5fa;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
@@ -2293,7 +2567,7 @@ async function displayAlternativeUniversities(data, selectedCities) {
 
             for (const alt of twoYear) {
                 const universities = alt.universities || [];
-                
+
                 contentHTML += `
                 <div style="background: #1e293b; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
@@ -2385,7 +2659,7 @@ async function displayAlternativeUniversities(data, selectedCities) {
     }
 }
 
-window.closeUniversitiesListModal = function() {
+window.closeUniversitiesListModal = function () {
     const modal = document.getElementById('universitiesListModal');
     if (modal) {
         modal.parentElement.remove();
@@ -2394,11 +2668,18 @@ window.closeUniversitiesListModal = function() {
 
 function loadChatHistory() {
     try {
-        const savedSessions = StorageHelper.getItem('chatSessions');
+        // Kullanıcıya özel key kullan
+        const storageKey = getChatStorageKey();
+        console.log(`📂 Sohbet geçmişi yükleniyor: ${storageKey}`);
+
+        const savedSessions = StorageHelper.getItem(storageKey);
         if (savedSessions) {
             chatSessions = JSON.parse(savedSessions);
+            console.log(`✅ ${chatSessions.length} sohbet oturumu yüklendi`);
             updateChatHistory();
         } else {
+            console.log('ℹ️ Kaydedilmiş sohbet bulunamadı');
+            chatSessions = [];
             // Boş olsa bile butonları göster
             updateSelectionModeButtons();
         }
@@ -2411,9 +2692,24 @@ function loadChatHistory() {
 
 function saveChatHistory() {
     try {
-        StorageHelper.setItem('chatSessions', JSON.stringify(chatSessions));
+        // Kullanıcıya özel key kullan
+        const storageKey = getChatStorageKey();
+        console.log(`💾 Sohbet geçmişi kaydediliyor: ${storageKey} (${chatSessions.length} oturum)`);
+
+        StorageHelper.setItem(storageKey, JSON.stringify(chatSessions));
     } catch (e) {
         console.warn('Sohbet geçmişi kaydedilemedi:', e);
+    }
+}
+
+// Kullanıcıya özel storage key döndür
+function getChatStorageKey() {
+    if (userProfile && userProfile.id) {
+        return `chatSessions_user_${userProfile.id}`;
+    } else if (userProfile && userProfile.googleId) {
+        return `chatSessions_google_${userProfile.googleId}`;
+    } else {
+        return 'chatSessions_guest';
     }
 }
 
@@ -2431,7 +2727,7 @@ themeToggle?.addEventListener('click', () => {
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
     localStorage.setItem('theme', currentTheme);
-    
+
     // Add animation effect
     themeToggle.style.transform = 'rotate(360deg) scale(1.2)';
     setTimeout(() => {
@@ -2447,16 +2743,16 @@ function addAlternativeCards(alternatives, title, color, icon) {
     alternatives.forEach(alt => {
         console.log(`  - ${alt.dept}: ${alt.universities ? alt.universities.length : 0} üniversite`);
     });
-    
+
     const validAlternatives = alternatives.filter(alt => alt.universities && alt.universities.length > 0);
     console.log('✅ Valid alternatif sayısı:', validAlternatives.length);
-    
+
     // Eğer hiç valid alternatif yoksa hiçbir şey gösterme
     if (validAlternatives.length === 0) {
         console.log(`⚠️ ${title} için hiç üniversite bulunamadı, kart gösterilmiyor`);
         return;
     }
-    
+
     // Başlık kartı
     const titleEl = document.createElement('div');
     titleEl.className = 'result-card';
@@ -2481,9 +2777,9 @@ function addAlternativeCards(alternatives, title, color, icon) {
             ${validAlternatives.length} program bulundu
         </p>
     `;
-    
+
     chatMessages.appendChild(titleEl);
-    
+
     validAlternatives.forEach((alt, index) => {
         setTimeout(() => {
             const card = document.createElement('div');
@@ -2503,7 +2799,7 @@ function addAlternativeCards(alternatives, title, color, icon) {
                 display: flex;
                 flex-direction: column;
             `;
-            
+
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem; gap: 1rem;">
                     <div style="flex: 1;">
@@ -2549,19 +2845,19 @@ function addAlternativeCards(alternatives, title, color, icon) {
                     </div>
                 </div>
             `;
-            
-            card.addEventListener('mouseenter', function() {
+
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-8px)';
                 this.style.boxShadow = `0 12px 40px ${color}30`;
                 this.style.borderColor = color;
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'translateY(0)';
                 this.style.boxShadow = '0 8px 24px var(--shadow)';
                 this.style.borderColor = 'var(--border)';
             });
-            
+
             chatMessages.appendChild(card);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }, index * 150);
@@ -2582,7 +2878,7 @@ function createInfoCard(formData, tytRanking, aytRanking) {
         display: flex;
         flex-direction: column;
     `;
-    
+
     infoCard.innerHTML = `
         <div style="text-align: center; margin-bottom: 0.8rem;">
             <h3 style="color: var(--primary); font-size: 1.1rem; margin: 0; font-weight: 800;">
@@ -2612,7 +2908,7 @@ function createInfoCard(formData, tytRanking, aytRanking) {
             </div>
         </div>
     `;
-    
+
     return infoCard;
 }
 
@@ -2632,7 +2928,7 @@ function createSuccessCard(dreamDept) {
         flex-direction: column;
         justify-content: center;
     `;
-    
+
     successCard.innerHTML = `
         <div style="font-size: 2.5rem; margin-bottom: 0.6rem; animation: float 2s ease-in-out infinite;">🎉</div>
         <h3 style="color: #10a37f; font-size: 1.1rem; margin-bottom: 0.6rem; font-weight: 800;">
@@ -2642,7 +2938,7 @@ function createSuccessCard(dreamDept) {
             <strong>${dreamDept}</strong> için sıralamanız yeterli!
         </p>
     `;
-    
+
     return successCard;
 }
 
@@ -2662,7 +2958,7 @@ function createStatusCard(dreamDept, aytRanking) {
         flex-direction: column;
         justify-content: center;
     `;
-    
+
     statusCard.innerHTML = `
         <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
         <h3 style="color: #f59e0b; font-size: 1.1rem; margin-bottom: 0.6rem; font-weight: 800;">
@@ -2683,7 +2979,7 @@ function createStatusCard(dreamDept, aytRanking) {
             </p>
         </div>
     `;
-    
+
     return statusCard;
 }
 
@@ -2703,14 +2999,14 @@ function addUniversityCardsInBoxes(universities, formData) {
         max-width: 600px;
         margin: 1rem auto;
     `;
-    
+
     const devletCount = universities.filter(u => u.type === 'Devlet').length;
     const vakifCount = universities.filter(u => u.type === 'Vakıf').length;
     const cities = [...new Set(universities.map(u => u.city))];
-    const cityText = formData.city && formData.city.toLowerCase() !== 'fark etmez' && formData.city.toLowerCase() !== 'farketmez' 
-        ? formData.city 
+    const cityText = formData.city && formData.city.toLowerCase() !== 'fark etmez' && formData.city.toLowerCase() !== 'farketmez'
+        ? formData.city
         : cities.join(', ') || 'Tüm Türkiye';
-    
+
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem; gap: 1rem;">
             <div style="flex: 1;">
@@ -2753,22 +3049,22 @@ function addUniversityCardsInBoxes(universities, formData) {
             </div>
         </div>
     `;
-    
-    summaryCard.addEventListener('mouseenter', function() {
+
+    summaryCard.addEventListener('mouseenter', function () {
         this.style.transform = 'translateY(-8px)';
         this.style.boxShadow = '0 12px 40px rgba(16, 163, 127, 0.3)';
         this.style.borderColor = '#10a37f';
     });
-    
-    summaryCard.addEventListener('mouseleave', function() {
+
+    summaryCard.addEventListener('mouseleave', function () {
         this.style.transform = 'translateY(0)';
         this.style.boxShadow = '0 8px 24px var(--shadow)';
         this.style.borderColor = 'var(--border)';
     });
-    
+
     chatMessages.appendChild(summaryCard);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     // Detaylar butonuna event listener ekle
     currentEligibleUniversities = universities;
     setTimeout(() => {
@@ -2788,10 +3084,10 @@ function showEligibleUniversityModal(deptName, universities) {
     console.log('📊 Bölüm:', deptName);
     console.log('📊 Üniversite sayısı:', universities ? universities.length : 0);
     console.log('📊 İlk üniversite:', universities && universities[0] ? universities[0] : 'YOK');
-    
+
     // Seçili üniversiteleri temizle
     selectedUniversities.clear();
-    
+
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
     modalOverlay.id = 'universitySelectionModal';
@@ -2809,7 +3105,7 @@ function showEligibleUniversityModal(deptName, universities) {
         animation: fadeIn 0.3s ease;
         padding: 2rem;
     `;
-    
+
     const modalContent = document.createElement('div');
     modalContent.style.cssText = `
         background: var(--bg-dark);
@@ -2822,10 +3118,10 @@ function showEligibleUniversityModal(deptName, universities) {
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         animation: slideUp 0.3s ease;
     `;
-    
+
     const devletUnis = universities.filter(u => u.type === 'Devlet');
     const vakifUnis = universities.filter(u => u.type === 'Vakıf');
-    
+
     modalContent.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h2 style="color: var(--primary); margin: 0; font-size: 1.8rem;">🎓 ${deptName}</h2>
@@ -2989,10 +3285,10 @@ function showEligibleUniversityModal(deptName, universities) {
             </button>
         </div>
     `;
-    
+
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
-    
+
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
             modalOverlay.remove();
@@ -3022,7 +3318,7 @@ function showUniversityModal(deptName, universities) {
         padding: 20px;
         animation: fadeIn 0.3s ease;
     `;
-    
+
     const modalContent = document.createElement('div');
     modalContent.style.cssText = `
         background: var(--bg-dark);
@@ -3035,10 +3331,10 @@ function showUniversityModal(deptName, universities) {
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         border: 2px solid var(--border);
     `;
-    
+
     const devletUnis = universities.filter(u => u.type === 'Devlet');
     const vakifUnis = universities.filter(u => u.type === 'Vakıf');
-    
+
     modalContent.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h2 style="color: var(--primary); margin: 0; font-size: 1.8rem;">🏛️ ${deptName}</h2>
@@ -3148,21 +3444,21 @@ function showUniversityModal(deptName, universities) {
             </button>
         </div>
     `;
-    
+
     modal.appendChild(modalContent);
     modal.className = 'modal-overlay';
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
-    
+
     document.body.appendChild(modal);
-    
+
     // Checkbox event listeners ekle
     const checkboxes = modalContent.querySelectorAll('.uni-checkbox');
     const exportBtn = modalContent.querySelector('#exportToSheetsBtn');
     const selectedCountText = modalContent.querySelector('#selectedCountText');
     const selectAllBtn = modalContent.querySelector('#selectAllBtn');
-    
+
     function updateExportButton() {
         const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
         selectedCountText.textContent = `Seçili: ${checkedCount} üniversite`;
@@ -3170,18 +3466,18 @@ function showUniversityModal(deptName, universities) {
         exportBtn.style.opacity = checkedCount === 0 ? '0.5' : '1';
         exportBtn.style.cursor = checkedCount === 0 ? 'not-allowed' : 'pointer';
     }
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateExportButton);
     });
-    
+
     selectAllBtn.addEventListener('click', () => {
         const allChecked = Array.from(checkboxes).every(cb => cb.checked);
         checkboxes.forEach(cb => cb.checked = !allChecked);
         selectAllBtn.textContent = allChecked ? 'Tümünü Seç' : 'Tümünü Kaldır';
         updateExportButton();
     });
-    
+
     exportBtn.addEventListener('click', () => {
         const selectedFromThisModal = Array.from(checkboxes)
             .filter(cb => cb.checked)
@@ -3194,24 +3490,24 @@ function showUniversityModal(deptName, universities) {
                 type: cb.dataset.uniType,
                 department: cb.dataset.uniDept
             }));
-        
+
         if (selectedFromThisModal.length > 0) {
             // Global listeye ekle (tekrar eklemeden önce kontrol et)
             selectedFromThisModal.forEach(uni => {
-                const exists = globalSelectedUniversities.find(u => 
+                const exists = globalSelectedUniversities.find(u =>
                     u.name === uni.name && u.department === uni.department
                 );
                 if (!exists) {
                     globalSelectedUniversities.push(uni);
                 }
             });
-            
+
             // Kullanıcıya bilgi ver
             addMessage(`✅ ${selectedFromThisModal.length} üniversite seçim listenize eklendi!\n\nToplam seçili: ${globalSelectedUniversities.length} üniversite\n\n💡 Sol üst köşedeki "📋 Seçimlerim (${globalSelectedUniversities.length})" butonuna tıklayarak tüm seçimlerinizi görüntüleyebilir ve Google Sheets'e aktarabilirsiniz.`, 'ai');
-            
+
             // Modal'ı kapat
             modal.remove();
-            
+
             // Seçimler butonunu güncelle
             updateSelectionButton();
         }
@@ -3231,7 +3527,7 @@ async function exportToGoogleSheets(universities) {
         }
 
         // CSV formatında veri hazırla
-        const csvHeaders = ['Sıra', 'Üniversite Adı', 'Şehir', 'Kampüs', 'Bölüm', 'Tür', 'Taban Sıralama', 'Kontenjan'];
+        const csvHeaders = ['Sıra', 'Üniversite Adı', 'Şehir', 'Kampüs', 'Bölüm', 'Tür', 'Taban Sıralama', 'Kontenjan', 'ÖSYM Şart Maddeleri'];
         const csvRows = universities.map((uni, index) => [
             index + 1,
             uni.name,
@@ -3240,9 +3536,10 @@ async function exportToGoogleSheets(universities) {
             uni.department,
             uni.type,
             uni.ranking || '-',
-            uni.quota || '-'
+            uni.quota || '-',
+            uni.conditionNumbers ? `Madde ${uni.conditionNumbers}` : 'Yok'
         ]);
-        
+
         const csvContent = [
             csvHeaders.join(','),
             ...csvRows.map(row => row.map(cell => `"${cell}"`).join(','))
@@ -3251,16 +3548,19 @@ async function exportToGoogleSheets(universities) {
         // Google Sheets URL'ini oluştur
         const encodedData = encodeURIComponent(csvContent);
         const sheetTitle = `Tercih Listesi - ${new Date().toLocaleDateString('tr-TR')}`;
-        
+
         // CSV dosyasını indirme alternatifi sunalım
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        // UTF-8 BOM ekle - Excel'in Türkçe karakterleri doğru göstermesi için gerekli
+        const BOM = '\uFEFF';
+        const csvContentWithBOM = BOM + csvContent;
+        const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
         link.setAttribute('download', `tercih_listesi_${Date.now()}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
-        
+
         // Kullanıcıya seçenek sun
         const message = `
             ✅ ${universities.length} üniversite seçildi!\n\n
@@ -3269,14 +3569,14 @@ async function exportToGoogleSheets(universities) {
             2️⃣ Ya da Google Sheets'i açıp "Dosya > İçe Aktar > Yükle" seçeneğiyle CSV'yi içe aktarabilirsiniz\n\n
             💡 İpucu: İndirilen CSV dosyasını doğrudan Google Drive'a sürükleyip Sheets olarak açabilirsiniz!
         `;
-        
+
         addMessage(message, 'ai', ['Yeni analiz yap', 'Başka bölüm sor']);
-        
+
         // CSV'yi indir
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         // Ayrıca backend'e kaydet (opsiyonel)
         try {
             await fetch(`${API_URL}/api/save-selections`, {
@@ -3294,7 +3594,7 @@ async function exportToGoogleSheets(universities) {
         } catch (backendError) {
             console.warn('⚠️ Backend\'e kaydedilemedi:', backendError);
         }
-        
+
     } catch (error) {
         console.error('❌ Export hatası:', error);
         addMessage('❌ Veri aktarımında bir hata oluştu. Lütfen tekrar deneyin.', 'ai');
@@ -3307,10 +3607,10 @@ window.exportToGoogleSheets = exportToGoogleSheets;
 function updateSelectionButton() {
     const selectionsBtn = document.getElementById('selectionsBtn');
     const selectionCount = document.getElementById('selectionCount');
-    
+
     if (selectionsBtn && selectionCount) {
         selectionCount.textContent = globalSelectedUniversities.length;
-        
+
         if (globalSelectedUniversities.length > 0) {
             selectionsBtn.style.display = 'flex';
         } else {
@@ -3325,7 +3625,7 @@ function showSelectionsModal() {
         addMessage('❌ Henüz hiç üniversite seçmediniz. Önce bir analiz yapıp üniversiteleri seçin.', 'ai');
         return;
     }
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed;
@@ -3341,7 +3641,7 @@ function showSelectionsModal() {
         padding: 20px;
         animation: fadeIn 0.3s ease;
     `;
-    
+
     // Bölümlere göre grupla
     const byDepartment = {};
     globalSelectedUniversities.forEach(uni => {
@@ -3350,7 +3650,7 @@ function showSelectionsModal() {
         }
         byDepartment[uni.department].push(uni);
     });
-    
+
     const modalContent = document.createElement('div');
     modalContent.style.cssText = `
         background: var(--bg-dark);
@@ -3363,7 +3663,7 @@ function showSelectionsModal() {
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         border: 2px solid var(--border);
     `;
-    
+
     const departmentSections = Object.entries(byDepartment).map(([dept, unis]) => `
         <div style="margin-bottom: 2rem;">
             <h3 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -3389,7 +3689,7 @@ function showSelectionsModal() {
             </div>
         </div>
     `).join('');
-    
+
     modalContent.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <h2 style="color: var(--primary); margin: 0; font-size: 1.8rem;">📋 Seçtiğim Üniversiteler</h2>
@@ -3415,13 +3715,13 @@ function showSelectionsModal() {
             </button>
         </div>
     `;
-    
+
     modal.appendChild(modalContent);
     modal.className = 'selections-modal-overlay';
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
-    
+
     document.body.appendChild(modal);
 }
 
@@ -3429,13 +3729,13 @@ function showSelectionsModal() {
 function removeFromGlobalSelections(department, index) {
     const filtered = globalSelectedUniversities.filter(u => u.department === department);
     const toRemove = filtered[index];
-    
-    globalSelectedUniversities = globalSelectedUniversities.filter(u => 
+
+    globalSelectedUniversities = globalSelectedUniversities.filter(u =>
         !(u.name === toRemove.name && u.department === toRemove.department)
     );
-    
+
     updateSelectionButton();
-    
+
     // Modal'ı yeniden aç
     document.querySelector('.selections-modal-overlay')?.remove();
     showSelectionsModal();
@@ -3467,37 +3767,37 @@ window.exportAllSelectionsToSheets = exportAllSelectionsToSheets;
 window.updateSelectionButton = updateSelectionButton;
 
 // TYT ve AYT input'larına otomatik formatlama ekle
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const tytInput = document.getElementById('quickTytRanking');
     const aytInput = document.getElementById('quickAytRanking');
-    
+
     function setupNumberFormatting(input) {
         if (!input) return;
-        
+
         // Input sırasında formatla
-        input.addEventListener('input', function(e) {
+        input.addEventListener('input', function (e) {
             const cursorPosition = this.selectionStart;
             const oldLength = this.value.length;
-            
+
             // Formatla
             const formatted = formatNumberWithDots(this.value);
             this.value = formatted;
-            
+
             // Cursor pozisyonunu ayarla
             const newLength = formatted.length;
             const newCursorPosition = cursorPosition + (newLength - oldLength);
             this.setSelectionRange(newCursorPosition, newCursorPosition);
         });
-        
+
         // Paste olayında formatla
-        input.addEventListener('paste', function(e) {
+        input.addEventListener('paste', function (e) {
             e.preventDefault();
             const pastedText = (e.clipboardData || window.clipboardData).getData('text');
             const formatted = formatNumberWithDots(pastedText);
             this.value = formatted;
         });
     }
-    
+
     setupNumberFormatting(tytInput);
     setupNumberFormatting(aytInput);
 });
@@ -3505,7 +3805,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Üniversite Detay Modal (ÖSYM Şartları + Google Maps)
 function showUniversityDetailModal(uni, program) {
     console.log('🏛️ Detay Modal Açılıyor:', uni.name);
-    
+
     // Şartları hazırla - Daha kapsamlı şart kontrolü
     let conditions = [];
     if (program && program.admissionConditions && program.admissionConditions.length > 0) {
@@ -3513,7 +3813,7 @@ function showUniversityDetailModal(uni, program) {
     } else if (uni.conditions && uni.conditions.length > 0) {
         conditions = uni.conditions.map(c => c.text || c.conditionText || c);
     }
-    
+
     // ÖSYM şartları için örnek veri (eğer yoksa)
     if (conditions.length === 0 && uni.conditionNumbers) {
         conditions = [
@@ -3523,7 +3823,7 @@ function showUniversityDetailModal(uni, program) {
             "Lisans mezunlarının başvurabileceği programdır."
         ];
     }
-    
+
     const modalHTML = `
         <div id="universityDetailModal" style="
             position: fixed;
@@ -3819,11 +4119,11 @@ function showUniversityDetailModal(uni, program) {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Modal dışına tıklandığında kapat
-    document.getElementById('universityDetailModal').addEventListener('click', function(e) {
+    document.getElementById('universityDetailModal').addEventListener('click', function (e) {
         if (e.target.id === 'universityDetailModal') {
             closeUniversityDetailModal();
         }
@@ -3849,14 +4149,14 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
     console.log('🔥🔥🔥 BUTON ÇALIŞTI! showDetailedConditionsModal çağrıldı 🔥🔥🔥');
     console.log('📋 Detaylı Şartlar Modal Açılıyor:', uniName);
     console.log('Parametreler:', { uniName, conditions, conditionNumbers, city, campus, uniType });
-    
+
     // Loading modal göster
     showLoadingModal('ÖSYM şartları yükleniyor...');
-    
+
     // Gerçek ÖSYM şartlarını API'den çek
     let parsedConditions = [];
     let realConditions = [];
-    
+
     try {
         // Backend'den gerçek ÖSYM şartlarını çek
         const response = await fetch(`${API_URL}/api/conditions/${encodeURIComponent(uniName)}/${encodeURIComponent(window.currentDepartment || 'Bilgisayar Mühendisliği')}`);
@@ -3868,7 +4168,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
     } catch (error) {
         console.warn('⚠️ ÖSYM şartları alınamadı:', error);
     }
-    
+
     // Gerçek şartları kullan, yoksa mevcut şartları parse et
     if (realConditions.length > 0) {
         parsedConditions = realConditions.map(c => c.conditionText || c.text || c);
@@ -3880,7 +4180,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
             parsedConditions = Array.isArray(conditions) ? conditions : [conditions];
         }
     }
-    
+
     // Eğer hiç şart yoksa genel ÖSYM şartlarını göster
     if (parsedConditions.length === 0 || (parsedConditions.length === 1 && !parsedConditions[0])) {
         parsedConditions = [
@@ -3890,10 +4190,10 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
             "Ön kayıt yaptırmayan adaylar yerleştirme işlemlerinde dikkate alınmazlar."
         ];
     }
-    
+
     // Loading modal'ı kapat
     closeLoadingModal();
-    
+
     const modalHTML = `
         <div id="detailedConditionsModal" style="
             position: fixed;
@@ -4054,29 +4354,29 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                                 line-height: 1.8;
                             ">
                                 ${parsedConditions.map((condition, index) => {
-                                    // Şart numarasını ve metnini tespit et
-                                    let conditionText, conditionNumber, category;
-                                    
-                                    if (typeof condition === 'object') {
-                                        conditionText = condition.conditionText || condition.text || condition;
-                                        conditionNumber = condition.conditionNumber || condition.number || '';
-                                        category = condition.category || '';
-                                    } else {
-                                        conditionText = condition;
-                                        conditionNumber = '';
-                                        category = '';
-                                    }
-                                    
-                                    // Kategori ikonları
-                                    const categoryIcon = {
-                                        'Öğretim': '🎓',
-                                        'Ücret': '💰',
-                                        'Dil': '🌍',
-                                        'Özel': '⭐',
-                                        'Genel': '📋'
-                                    }[category] || '📋';
-                                    
-                                    return `
+        // Şart numarasını ve metnini tespit et
+        let conditionText, conditionNumber, category;
+
+        if (typeof condition === 'object') {
+            conditionText = condition.conditionText || condition.text || condition;
+            conditionNumber = condition.conditionNumber || condition.number || '';
+            category = condition.category || '';
+        } else {
+            conditionText = condition;
+            conditionNumber = '';
+            category = '';
+        }
+
+        // Kategori ikonları
+        const categoryIcon = {
+            'Öğretim': '🎓',
+            'Ücret': '💰',
+            'Dil': '🌍',
+            'Özel': '⭐',
+            'Genel': '📋'
+        }[category] || '📋';
+
+        return `
                                     <div style="
                                         display: flex;
                                         align-items: flex-start;
@@ -4138,7 +4438,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                                         </div>
                                     </div>
                                     `;
-                                }).join('')}
+    }).join('')}
                             </div>
                         </div>
                         
@@ -4150,11 +4450,11 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                             border-left: 4px solid #667eea;
                         ">
                             <p style="color: #e2e8f0; margin: 0; font-size: 13px; line-height: 1.6;">
-                                ${realConditions.length > 0 ? 
-                                    `✅ <strong style="color: #10a37f;">Güncel Veriler:</strong> Bu şartlar ÖSYM 2025 Yükseköğretim Programları ve Kontenjanları Kılavuzu'ndan gerçek zamanlı olarak alınmıştır. Son güncelleme: ${new Date().toLocaleDateString('tr-TR')}` 
-                                    : 
-                                    `💡 <strong style="color: #667eea;">Önemli Not:</strong> Bu üniversite için özel şart bulunamadı. Genel ÖSYM kuralları geçerlidir. Güncel şartlar için mutlaka resmi ÖSYM kılavuzunu kontrol ediniz.`
-                                }
+                                ${realConditions.length > 0 ?
+            `✅ <strong style="color: #10a37f;">Güncel Veriler:</strong> Bu şartlar ÖSYM 2025 Yükseköğretim Programları ve Kontenjanları Kılavuzu'ndan gerçek zamanlı olarak alınmıştır. Son güncelleme: ${new Date().toLocaleDateString('tr-TR')}`
+            :
+            `💡 <strong style="color: #667eea;">Önemli Not:</strong> Bu üniversite için özel şart bulunamadı. Genel ÖSYM kuralları geçerlidir. Güncel şartlar için mutlaka resmi ÖSYM kılavuzunu kontrol ediniz.`
+        }
                             </p>
                         </div>
                     </div>
@@ -4268,9 +4568,9 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Responsive grid kontrolü
     const modalContent = document.querySelector('#detailedConditionsModal .modal-content-grid');
     if (window.innerWidth <= 768) {
@@ -4278,16 +4578,16 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
         modalContent.style.gap = '20px';
         modalContent.style.padding = '15px';
     }
-    
+
     // Modal dışına tıklandığında kapat
-    document.getElementById('detailedConditionsModal').addEventListener('click', function(e) {
+    document.getElementById('detailedConditionsModal').addEventListener('click', function (e) {
         if (e.target.id === 'detailedConditionsModal') {
             closeDetailedConditionsModal();
         }
     });
-    
+
     // Escape tuşu ile kapat
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeDetailedConditionsModal();
         }
@@ -4305,51 +4605,51 @@ function closeDetailedConditionsModal() {
 // Ulaşım Rotası Planlama Fonksiyonu
 async function planRoute(uniName, city, campus) {
     console.log('🚍 Ulaşım rotası planlanıyor:', { uniName, city, campus });
-    
+
     const destination = `${uniName} ${city} ${campus}`;
-    
+
     // Konum izni kontrolü
     if (!navigator.geolocation) {
         alert('❌ Tarayıcınız konum hizmetlerini desteklemiyor.');
         return;
     }
-    
+
     // Butonu devre dışı bırak ve yükleniyor göster
     const btn = document.getElementById('planRouteBtn');
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.style.opacity = '0.7';
     btn.innerHTML = '📍 Konumunuz alınıyor...';
-    
+
     // Kullanıcının konumunu al
     navigator.geolocation.getCurrentPosition(
         // Başarılı
         (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            
+
             console.log('✅ Konum alındı:', { lat, lng });
-            
+
             // Google Maps yol tarifi URL'i (toplu taşıma modu ile)
             const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${encodeURIComponent(destination)}&travelmode=transit`;
-            
+
             // Yeni sekmede aç
             window.open(mapsUrl, '_blank');
-            
+
             // Butonu eski haline getir
             btn.disabled = false;
             btn.style.opacity = '1';
             btn.innerHTML = originalHTML;
-            
+
             // Başarı mesajı göster
             showTemporaryMessage('✅ Yol tarifi Google Maps\'te açıldı!', 'success');
         },
         // Hata
         (error) => {
             console.error('❌ Konum hatası:', error);
-            
+
             let errorMessage = '';
-            switch(error.code) {
+            switch (error.code) {
                 case error.PERMISSION_DENIED:
                     errorMessage = '❌ Konum izni reddedildi. Lütfen tarayıcı ayarlarınızdan konum iznini etkinleştirin.';
                     break;
@@ -4362,14 +4662,14 @@ async function planRoute(uniName, city, campus) {
                 default:
                     errorMessage = '❌ Konum alınırken bir hata oluştu.';
             }
-            
+
             // Konum olmadan da Google Maps'i aç
             const mapsUrlNoOrigin = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}&travelmode=transit`;
-            
+
             if (confirm(errorMessage + '\n\nKonumunuzu manuel olarak girmek için Google Maps\'i açmak ister misiniz?')) {
                 window.open(mapsUrlNoOrigin, '_blank');
             }
-            
+
             // Butonu eski haline getir
             btn.disabled = false;
             btn.style.opacity = '1';
@@ -4391,7 +4691,7 @@ function showTemporaryMessage(message, type = 'info') {
         'error': 'linear-gradient(135deg, #ef4444, #dc2626)',
         'info': 'linear-gradient(135deg, #667eea, #764ba2)'
     };
-    
+
     const messageHTML = `
         <div id="tempMessage" style="
             position: fixed;
@@ -4410,9 +4710,9 @@ function showTemporaryMessage(message, type = 'info') {
             ${message}
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', messageHTML);
-    
+
     // 3 saniye sonra kaldır
     setTimeout(() => {
         const msg = document.getElementById('tempMessage');
@@ -4472,7 +4772,7 @@ function showLoadingModal(message = 'Yükleniyor...') {
         }
         </style>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', loadingHTML);
 }
 
@@ -4505,13 +4805,13 @@ console.log('🎯 Detaylı modal fonksiyonları yüklendi:', {
 // Üniversite seçim toggle
 function toggleUniversitySelection(checkbox) {
     const uniData = JSON.parse(checkbox.getAttribute('data-uni').replace(/&#39;/g, "'"));
-    
+
     if (checkbox.checked) {
         selectedUniversities.add(JSON.stringify(uniData));
     } else {
         selectedUniversities.delete(JSON.stringify(uniData));
     }
-    
+
     // Seçili sayısını güncelle
     updateSelectedCount();
 }
@@ -4520,11 +4820,11 @@ function toggleUniversitySelection(checkbox) {
 function updateSelectedCount() {
     const countElement = document.getElementById('selectedCount');
     const exportBtn = document.getElementById('exportToSheetsBtn');
-    
+
     if (countElement) {
         countElement.textContent = selectedUniversities.size;
     }
-    
+
     if (exportBtn) {
         if (selectedUniversities.size === 0) {
             exportBtn.style.opacity = '0.5';
@@ -4544,16 +4844,16 @@ async function exportSelectedToGoogleSheets(deptName, allUniversities) {
         showNotification('⚠️ Lütfen en az bir üniversite seçin!', 'warning');
         return;
     }
-    
+
     // Seçili üniversiteleri parse et
     const selectedUnis = Array.from(selectedUniversities).map(uniStr => JSON.parse(uniStr));
-    
+
     console.log('📊 Google Sheets\'e aktarılıyor:', {
         department: deptName,
         selectedCount: selectedUnis.length,
         universities: selectedUnis.map(u => u.name)
     });
-    
+
     // Loading göster
     const exportBtn = document.getElementById('exportToSheetsBtn');
     const originalContent = exportBtn.innerHTML;
@@ -4565,7 +4865,7 @@ async function exportSelectedToGoogleSheets(deptName, allUniversities) {
     `;
     exportBtn.disabled = true;
     exportBtn.style.cursor = 'not-allowed';
-    
+
     try {
         const response = await fetch(`${API_URL}/api/export-to-sheets`, {
             method: 'POST',
@@ -4578,40 +4878,40 @@ async function exportSelectedToGoogleSheets(deptName, allUniversities) {
                 userEmail: userProfile?.email || null
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok && result.success) {
             console.log('✅ Google Sheets oluşturuldu:', result.spreadsheetUrl);
-            
+
             // Başarı mesajı göster
             showNotification('✅ Google Sheets başarıyla oluşturuldu!', 'success');
-            
+
             // Modal kapat ve Google Sheets'i aç
             document.getElementById('universitySelectionModal')?.remove();
-            
+
             // Yeni sekmede aç
             window.open(result.spreadsheetUrl, '_blank');
-            
+
             // Seçimi temizle
             selectedUniversities.clear();
-            
+
         } else {
             throw new Error(result.message || result.error || 'Bilinmeyen hata');
         }
-        
+
     } catch (error) {
         console.error('❌ Google Sheets export hatası:', error);
-        
+
         let errorMessage = '❌ Google Sheets oluşturulamadı!';
         if (error.message.includes('google-credentials.json')) {
             errorMessage += ' Google Service Account credentials dosyası bulunamadı.';
         } else {
             errorMessage += ' ' + error.message;
         }
-        
+
         showNotification(errorMessage, 'error');
-        
+
         // Butonu eski haline getir
         exportBtn.innerHTML = originalContent;
         exportBtn.disabled = false;
@@ -4637,9 +4937,9 @@ function showNotification(message, type = 'info') {
         max-width: 400px;
     `;
     notification.textContent = message;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.3s ease';
         setTimeout(() => notification.remove(), 300);
@@ -4684,3 +4984,450 @@ if (!document.getElementById('googleSheetsAnimations')) {
 
 
 
+
+// ============================================
+// ANALİZ SEÇİM SİSTEMİ (Tercih vs Hedef)
+// ============================================
+
+function setupAnalysisChoiceCards() {
+    const tercihCard = document.getElementById('tercihAnalysisCard');
+    const hedefCard = document.getElementById('hedefAnalysisCard');
+    const choiceContainer = document.getElementById('analysisChoiceContainer');
+    const tercihForm = document.getElementById('tercihAnalysisForm');
+    const hedefForm = document.getElementById('hedefAnalysisForm');
+    const backFromTercih = document.getElementById('backFromTercih');
+    const backFromHedef = document.getElementById('backFromHedef');
+
+    // Tercih Analizi kartına tıklama
+    tercihCard?.addEventListener('click', () => {
+        choiceContainer.style.display = 'none';
+        tercihForm.style.display = 'block';
+    });
+
+    // Hedef Analizi kartına tıklama
+    hedefCard?.addEventListener('click', () => {
+        choiceContainer.style.display = 'none';
+        hedefForm.style.display = 'block';
+    });
+
+    // Geri butonları
+    backFromTercih?.addEventListener('click', () => {
+        tercihForm.style.display = 'none';
+        choiceContainer.style.display = 'grid';
+    });
+
+    backFromHedef?.addEventListener('click', () => {
+        hedefForm.style.display = 'none';
+        choiceContainer.style.display = 'grid';
+    });
+}
+
+// ============================================
+// AYT DİNAMİK NET GİRİŞİ
+// ============================================
+
+function showAytNets() {
+    const aytAlan = document.getElementById('aytAlan').value;
+    const aytNetsSection = document.getElementById('aytNetsSection');
+    const aytNetsContainer = document.getElementById('aytNetsContainer');
+
+    if (!aytAlan) {
+        aytNetsSection.style.display = 'none';
+        return;
+    }
+
+    aytNetsSection.style.display = 'block';
+    aytNetsContainer.innerHTML = '';
+
+    let fields = [];
+
+    if (aytAlan === 'sayisal') {
+        fields = [
+            { id: 'aytMat', label: 'Matematik', max: 40 },
+            { id: 'aytFen', label: 'Fen Bilimleri', max: 40 }
+        ];
+    } else if (aytAlan === 'esit') {
+        fields = [
+            { id: 'aytMat', label: 'Matematik', max: 40 },
+            { id: 'aytEdebiyat', label: 'Türk Dili ve Edebiyatı', max: 24 },
+            { id: 'aytSosyal', label: 'Sosyal Bilimler', max: 24 }
+        ];
+    } else if (aytAlan === 'sozel') {
+        fields = [
+            { id: 'aytEdebiyat', label: 'Türk Dili ve Edebiyatı', max: 24 },
+            { id: 'aytTarih', label: 'Tarih', max: 10 },
+            { id: 'aytCografya', label: 'Coğrafya', max: 6 },
+            { id: 'aytFelsefe', label: 'Felsefe', max: 12 },
+            { id: 'aytDin', label: 'Din Kültürü ve Ahlak Bilgisi', max: 6 }
+        ];
+    }
+
+    fields.forEach(field => {
+        const formGroup = document.createElement('div');
+        formGroup.className = 'form-group';
+        formGroup.innerHTML = `
+            <label>${field.label} (Max: ${field.max})</label>
+            <input type="number" id="${field.id}" placeholder="Örn: 15.25" min="0" max="${field.max}" step="0.01" required>
+            <small>Ondalıklı net girebilirsiniz (örn: 15.25, 20.5)</small>
+        `;
+        aytNetsContainer.appendChild(formGroup);
+        
+        // Dinamik validasyon ekle
+        const input = formGroup.querySelector('input');
+        input.addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            if (value > field.max) {
+                e.target.value = field.max;
+                showToast(`⚠️ ${field.label} için maksimum ${field.max} net girebilirsiniz`);
+            } else if (value < 0) {
+                e.target.value = 0;
+            }
+        });
+    });
+}
+
+// Toast bildirimi göster
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #f44336;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutToTop 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ============================================
+// HEDEF ANALİZİ İŞLEME
+// ============================================
+
+async function handleHedefAnalysis(e) {
+    e.preventDefault();
+
+    // Form verilerini topla
+    const tytNets = {
+        turkce: parseFloat(document.getElementById('tytTurkce').value) || 0,
+        mat: parseFloat(document.getElementById('tytMat').value) || 0,
+        sosyal: parseFloat(document.getElementById('tytSosyal').value) || 0,
+        fen: parseFloat(document.getElementById('tytFen').value) || 0
+    };
+
+    const aytAlan = document.getElementById('aytAlan').value;
+    const hedefBolum = document.getElementById('hedefBolum').value.trim();
+    const aytNets = {};
+
+    if (aytAlan === 'sayisal') {
+        aytNets.mat = parseFloat(document.getElementById('aytMat').value) || 0;
+        aytNets.fen = parseFloat(document.getElementById('aytFen').value) || 0;
+    } else if (aytAlan === 'esit') {
+        aytNets.mat = parseFloat(document.getElementById('aytMat').value) || 0;
+        aytNets.edebiyat = parseFloat(document.getElementById('aytEdebiyat').value) || 0;
+        aytNets.sosyal = parseFloat(document.getElementById('aytSosyal').value) || 0;
+    } else if (aytAlan === 'sozel') {
+        aytNets.edebiyat = parseFloat(document.getElementById('aytEdebiyat').value) || 0;
+        aytNets.tarih = parseFloat(document.getElementById('aytTarih').value) || 0;
+        aytNets.cografya = parseFloat(document.getElementById('aytCografya').value) || 0;
+        aytNets.felsefe = parseFloat(document.getElementById('aytFelsefe').value) || 0;
+        aytNets.din = parseFloat(document.getElementById('aytDin').value) || 0;
+    }
+
+    // Validasyon
+    if (!hedefBolum) {
+        showToast('⚠️ Lütfen hayalinizdeki bölümü giriniz');
+        return;
+    }
+
+    // Welcome screen'i gizle
+    hideWelcomeScreen();
+
+    // Kullanıcı mesajını göster
+    const totalTytNet = (tytNets.turkce + tytNets.mat + tytNets.sosyal + tytNets.fen).toFixed(2);
+    const totalAytNet = Object.values(aytNets).reduce((a, b) => a + b, 0).toFixed(2);
+    
+    const alanIsim = aytAlan === 'sayisal' ? 'Sayısal (MF)' : 
+                     aytAlan === 'esit' ? 'Eşit Ağırlık (TM)' : 
+                     'Sözel (TS)';
+
+    const userMessage = `
+🚀 **Hedef Analizi İsteği**
+
+💭 **Hayalimdeki Bölüm:** ${hedefBolum}
+
+📘 **TYT Netlerim:**
+• Türkçe: ${tytNets.turkce.toFixed(2)}
+• Matematik: ${tytNets.mat.toFixed(2)}
+• Sosyal: ${tytNets.sosyal.toFixed(2)}
+• Fen: ${tytNets.fen.toFixed(2)}
+**Toplam TYT Net: ${totalTytNet}**
+
+📗 **AYT Alanım:** ${alanIsim}
+${Object.entries(aytNets).map(([key, val]) => {
+    const labels = {
+        mat: 'Matematik',
+        fen: 'Fen Bilimleri',
+        edebiyat: 'Türk Dili ve Edebiyatı',
+        sosyal: 'Sosyal Bilimler',
+        tarih: 'Tarih',
+        cografya: 'Coğrafya',
+        felsefe: 'Felsefe',
+        din: 'Din Kültürü'
+    };
+    return `• ${labels[key] || key}: ${val.toFixed(2)}`;
+}).join('\n')}
+**Toplam AYT Net: ${totalAytNet}**
+    `.trim();
+
+    addMessage(userMessage, 'user');
+
+    // AI yanıtını bekle
+    showTypingIndicator();
+
+    try {
+        const response = await fetch(`${API_URL}/api/hedef-analiz`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tytNets, aytNets, aytAlan, hedefBolum })
+        });
+
+        const data = await response.json();
+        removeTypingIndicator();
+
+        if (data.success) {
+            // Yeni formatı kullan
+            const formattedHTML = formatHedefAnalysisResult(data.data, data.message);
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    ${formattedHTML}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        } else {
+            addMessage('❌ Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.', 'ai');
+        }
+    } catch (error) {
+        console.error('Hedef analiz hatası:', error);
+        removeTypingIndicator();
+        addMessage('❌ Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.', 'ai');
+    }
+}
+
+// Typing indicator fonksiyonları
+function showTypingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'message ai typing-indicator-msg';
+    indicator.id = 'typingIndicator';
+    indicator.innerHTML = `
+        <div class="message-avatar">🤖</div>
+        <div class="message-content">
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+    `;
+    chatMessages.appendChild(indicator);
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function hideWelcomeScreen() {
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    if (welcomeScreen) {
+        welcomeScreen.style.display = 'none';
+    }
+}
+
+function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ============================================
+// NET GİRİŞ VALIDASYONU
+// ============================================
+
+function setupNetValidation(inputId, maxValue) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    input.addEventListener('input', (e) => {
+        let value = parseFloat(e.target.value);
+        
+        // Değer kontrolü
+        if (isNaN(value)) return;
+        
+        if (value > maxValue) {
+            e.target.value = maxValue;
+            showToast(`⚠️ Maksimum ${maxValue} net girebilirsiniz`);
+        } else if (value < 0) {
+            e.target.value = 0;
+            showToast(`⚠️ Net değeri negatif olamaz`);
+        }
+        
+        // 2 ondalık basamağa yuvarla
+        if (value.toString().includes('.')) {
+            const parts = value.toString().split('.');
+            if (parts[1] && parts[1].length > 2) {
+                e.target.value = value.toFixed(2);
+            }
+        }
+    });
+
+    // Blur olayında son kontrol
+    input.addEventListener('blur', (e) => {
+        let value = parseFloat(e.target.value);
+        if (!isNaN(value) && value > 0) {
+            e.target.value = value.toFixed(2);
+        }
+    });
+
+    // Virgül yerine nokta kullanımını zorla
+    input.addEventListener('keypress', (e) => {
+        if (e.key === ',') {
+            e.preventDefault();
+            const cursorPos = e.target.selectionStart;
+            e.target.value = e.target.value.slice(0, cursorPos) + '.' + e.target.value.slice(cursorPos);
+            e.target.selectionStart = e.target.selectionEnd = cursorPos + 1;
+        }
+    });
+}
+
+// ============================================
+// HEDEF ANALİZİ SONUÇ FORMATLAMA
+// ============================================
+
+function formatHedefAnalysisResult(data, aiText) {
+    // Mesajı parse et
+    const lines = aiText.split('\n').filter(line => line.trim());
+    
+    // Seviye class belirleme
+    const seviyeClassMap = {
+        'Mükemmel': 'seviye-mukemmel',
+        'Çok İyi': 'seviye-cok-iyi',
+        'İyi': 'seviye-iyi',
+        'Orta': 'seviye-orta',
+        'Başlangıç': 'seviye-gelistirilmeli'
+    };
+    
+    const seviyeClass = seviyeClassMap[data.seviye] || 'seviye-iyi';
+    
+    return `
+        <div class="hedef-sonuc-container">
+            <!-- Başlık Kartı -->
+            <div class="hedef-baslik-card">
+                <h2>🎯 Hedef Analiz Sonucunuz</h2>
+                <div class="hedef-isim">💭 ${data.hedefBolum || 'Hedef Bölüm'}</div>
+                <div class="seviye-badge-hero ${seviyeClass}">
+                    ${getSeviyeEmoji(data.seviye)} ${data.seviye || 'İyi'} Seviye
+                </div>
+            </div>
+
+            <!-- Net Kartları -->
+            <div class="net-showcase">
+                <div class="net-showcase-item">
+                    <div class="net-showcase-label">📘 TYT</div>
+                    <div class="net-showcase-value">${data.tytNet}</div>
+                    <div class="net-showcase-sublabel">net</div>
+                </div>
+                <div class="net-showcase-item">
+                    <div class="net-showcase-label">📗 AYT</div>
+                    <div class="net-showcase-value">${data.aytNet}</div>
+                    <div class="net-showcase-sublabel">net</div>
+                </div>
+                <div class="net-showcase-item">
+                    <div class="net-showcase-label">🎯 TOPLAM</div>
+                    <div class="net-showcase-value">${data.toplamNet}</div>
+                    <div class="net-showcase-sublabel">net</div>
+                </div>
+            </div>
+
+            <!-- AI Analiz -->
+            <div class="ai-analiz-section">
+                <h3>🤖 Kişisel Değerlendirmeniz</h3>
+                <div class="ai-analiz-content">
+                    ${aiText.split('\n').map(line => {
+                        line = line.trim();
+                        if (line.startsWith('━')) return '';
+                        if (line.includes('**') || line.length > 0) {
+                            return `<p>${line.replace(/\*\*/g, '<strong>').replace(/\*/g, '')}</p>`;
+                        }
+                        return '';
+                    }).filter(l => l).join('')}
+                </div>
+            </div>
+
+            <!-- Bölümler Grid -->
+            ${data.programs && data.programs.length > 0 ? `
+            <div class="ai-analiz-section">
+                <h3>🎓 ${data.alan} Alanında Kazanılabilecek Bölümler</h3>
+                <div class="bolumler-grid">
+                    ${data.programs.slice(0, 8).map((prog, index) => `
+                        <div class="bolum-card">
+                            <div class="bolum-card-header">
+                                <div class="bolum-card-number">${index + 1}</div>
+                                <div class="bolum-card-type ${prog.type === 'Devlet' ? 'devlet' : 'vakif'}">
+                                    ${prog.type === 'Devlet' ? '🏛️' : '🏢'} ${prog.type}
+                                </div>
+                            </div>
+                            <div class="bolum-card-title">${prog.department}</div>
+                            <div class="bolum-card-info">
+                                <div class="bolum-info-row">
+                                    🏛️ <strong>${prog.name}</strong>
+                                </div>
+                                <div class="bolum-info-row">
+                                    📍 ${prog.city || 'Belirtilmemiş'}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+
+            <!-- CTA -->
+            <div class="hedef-cta">
+                <h3>💡 Bir Sonraki Adım</h3>
+                <p>Daha detaylı analiz için tercih analizi yapabilirsiniz</p>
+                <button class="hedef-cta-btn" onclick="window.location.reload()">
+                    🎯 Tercih Analizi Yap
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function getSeviyeEmoji(seviye) {
+    const emojiMap = {
+        'Mükemmel': '🌟',
+        'Çok İyi': '⭐',
+        'İyi': '��',
+        'Orta': '📈',
+        'Başlangıç': '💪'
+    };
+    return emojiMap[seviye] || '👍';
+}

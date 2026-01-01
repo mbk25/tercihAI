@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // MySQL bağlantı havuzu
 const pool = mysql.createPool({
@@ -31,11 +32,11 @@ async function testConnection() {
 async function initDatabase() {
     try {
         const connection = await pool.getConnection();
-        
+
         // Veritabanını oluştur
         await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'tercihAI'} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
         await connection.query(`USE ${process.env.DB_NAME || 'tercihAI'}`);
-        
+
         // Kullanıcılar tablosu
         await connection.query(`
             CREATE TABLE IF NOT EXISTS users (
@@ -54,7 +55,7 @@ async function initDatabase() {
                 INDEX idx_username (username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        
+
         // Analizler tablosu
         await connection.query(`
             CREATE TABLE IF NOT EXISTS analyses (
@@ -72,7 +73,7 @@ async function initDatabase() {
                 INDEX idx_dreamDept (dreamDept)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        
+
         // Üniversiteler tablosu (zaten var, sadece yoksa oluştur)
         await connection.query(`
             CREATE TABLE IF NOT EXISTS universities (
@@ -83,8 +84,13 @@ async function initDatabase() {
                 campus VARCHAR(255),
                 ranking INT,
                 minRanking INT,
+                minScore DECIMAL(6,2),
                 quota INT,
+                enrolled INT,
                 type ENUM('Devlet', 'Vakıf') DEFAULT 'Devlet',
+                educationLanguage VARCHAR(50) DEFAULT 'Türkçe',
+                educationType VARCHAR(50) DEFAULT 'Örgün Öğretim',
+                scholarshipRate VARCHAR(50),
                 year INT DEFAULT 2024,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -92,10 +98,12 @@ async function initDatabase() {
                 INDEX idx_city (city),
                 INDEX idx_ranking (ranking),
                 INDEX idx_minRanking (minRanking),
-                INDEX idx_year (year)
+                INDEX idx_type (type),
+                INDEX idx_year (year),
+                INDEX idx_composite_search (department, city, type, year)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        
+
         // Sohbet geçmişi tablosu
         await connection.query(`
             CREATE TABLE IF NOT EXISTS chat_history (
@@ -110,7 +118,7 @@ async function initDatabase() {
                 INDEX idx_createdAt (createdAt)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        
+
         // Admin kullanıcısı ekle (şifre: admin123)
         const bcrypt = require('bcryptjs');
         const hashedPassword = await bcrypt.hash('admin123', 10);
@@ -118,7 +126,7 @@ async function initDatabase() {
             INSERT IGNORE INTO users (username, password, email, name, role) 
             VALUES ('admin', ?, 'admin@tercihAI.com', 'Admin', 'admin')
         `, [hashedPassword]);
-        
+
         // Örnek üniversite verileri ekle
         const sampleUniversities = [
             ['Boğaziçi Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Bebek Kampüsü', 3000, 80, 'Devlet', 2024],
@@ -132,14 +140,14 @@ async function initDatabase() {
             ['Ankara Üniversitesi', 'Ankara', 'Bilgisayar Mühendisliği', 'Tandoğan Kampüsü', 35000, 75, 'Devlet', 2024],
             ['Marmara Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Göztepe Kampüsü', 65000, 95, 'Devlet', 2024]
         ];
-        
+
         for (const uni of sampleUniversities) {
             await connection.query(`
                 INSERT IGNORE INTO universities (name, city, department, campus, ranking, minRanking, quota, type, year) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `, [uni[0], uni[1], uni[2], uni[3], uni[4], uni[4], uni[5], uni[6], uni[7]]);
         }
-        
+
         connection.release();
         console.log('✅ Veritabanı tabloları oluşturuldu');
         return true;

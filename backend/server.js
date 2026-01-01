@@ -69,13 +69,13 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const connection = await pool.getConnection();
-        
+
         // Kullanıcıyı ara
         const [users] = await connection.query(
             'SELECT * FROM users WHERE googleId = ?',
             [profile.id]
         );
-        
+
         let user;
         if (users.length > 0) {
             user = users[0];
@@ -94,7 +94,7 @@ passport.use(new GoogleStrategy({
                 role: 'user'
             };
         }
-        
+
         connection.release();
         return done(null, user);
     } catch (error) {
@@ -129,7 +129,7 @@ function normalizeDepName(dept) {
 async function scrapeYokAtlas(department, year = 2024) {
     const normalizedDept = normalizeDepName(department);
     console.log(`🔍 YÖK Atlas veri çekiliyor: "${department}" → "${normalizedDept}" (${year})`);
-    
+
     try {
         // MySQL'den kontrol et - önce tam eşleşme
         const connection = await pool.getConnection();
@@ -137,7 +137,7 @@ async function scrapeYokAtlas(department, year = 2024) {
             'SELECT * FROM universities WHERE department = ? AND year = ? ORDER BY COALESCE(ranking, 999999) DESC',
             [normalizedDept, year]
         );
-        
+
         // Eğer bulunamazsa, LIKE ile ara
         if (dbData.length === 0) {
             [dbData] = await connection.query(
@@ -148,29 +148,29 @@ async function scrapeYokAtlas(department, year = 2024) {
                 console.log(`ℹ️ LIKE ile ${dbData.length} sonuç bulundu (arama: "%${department}%")`);
             }
         }
-        
+
         connection.release();
-        
+
         if (dbData.length > 0) {
             console.log(`✅ Veritabanından ${dbData.length} üniversite verisi alındı`);
             return dbData;
         }
-        
+
         console.log(`⚠️ Veritabanında "${department}" bulunamadı, scraping başlıyor...`);
-        
+
         // Veritabanında yoksa scraping yap
         let data = await scrapeYokAtlasSimple(department, year);
-        
+
         if (!data || data.length === 0) {
             console.log(`⚙️ "${department}" için Puppeteer ile deneniyor...`);
             data = await scrapeYokAtlasReal(department, year);
         }
-        
+
         if (!data || data.length === 0) {
             console.log(`❌ "${department}" için gerçek veri bulunamadı, mock data kullanılıyor`);
             data = generateMockData(department, year);
         }
-        
+
         // MySQL'e kaydet
         if (data && data.length > 0) {
             const conn = await pool.getConnection();
@@ -183,7 +183,7 @@ async function scrapeYokAtlas(department, year = 2024) {
             conn.release();
             console.log(`✅ ${data.length} üniversite veritabanına kaydedildi`);
         }
-        
+
         return data;
     } catch (error) {
         console.error('❌ Scraping hatası:', error.message);
@@ -195,17 +195,17 @@ async function scrapeYokAtlas(department, year = 2024) {
 app.post('/api/recommendations', async (req, res) => {
     try {
         const { aytRanking, tytRanking, dreamDept, city, educationType } = req.body;
-        
+
         console.log('🎯 Öneri sistemi başladı:', { aytRanking, tytRanking, dreamDept, city, educationType });
-        
+
         if ((!aytRanking && !tytRanking) || !dreamDept) {
             return res.status(400).json({ error: 'Sıralama ve bölüm bilgisi gerekli' });
         }
-        
+
         // 1️⃣ YÖK Atlas'tan hedef bölüm verilerini çek
         const allDeptUnis = await scrapeYokAtlas(dreamDept, 2024);
         console.log(`📚 "${dreamDept}" için ${allDeptUnis.length} üniversite bulundu`);
-        
+
         // 2️⃣ Şehir ve eğitim türü filtresi uygula
         let filteredUnis = allDeptUnis;
         if (city && city.length > 0) {
@@ -219,9 +219,9 @@ app.post('/api/recommendations', async (req, res) => {
         if (educationType && educationType !== 'Tümü') {
             filteredUnis = filteredUnis.filter(uni => uni.type === educationType);
         }
-        
+
         console.log(`🔍 Filtre sonrası: ${filteredUnis.length} üniversite (Şehir: ${city}, Tür: ${educationType})`);
-        
+
         if (filteredUnis.length === 0) {
             console.log(`⚠️  UYARI: Filtre sonrası 0 üniversite kaldı!`);
             console.log(`   Toplam üniversite: ${allDeptUnis.length}`);
@@ -234,12 +234,12 @@ app.post('/api/recommendations', async (req, res) => {
                 });
             }
         }
-        
+
         // 3️⃣ Sıralama kontrolü (2 yıllık -> TYT, 4 yıllık -> AYT)
         // Taban sıralama: O programa girebilmek için EN KÖTÜ sıralama
         // Kullanıcı sıralaması <= Üniversite taban sıralaması ise GİREBİLİR
         // Örnek: Kullanıcı 300k, Üni taban 350k -> 300000 <= 350000 = GİREBİLİR ✅
-        
+
         // 2 yıllık programlar listesi
         const twoYearPrograms = [
             'Bilgisayar Programcılığı', 'Bilgisayar Teknolojisi', 'Web Tasarım ve Kodlama',
@@ -247,17 +247,17 @@ app.post('/api/recommendations', async (req, res) => {
             'Dış Ticaret', 'Turizm ve Otel İşletmeciliği', 'Pazarlama',
             'Tıbbi Laboratuvar Teknikleri', 'Tıbbi Görüntüleme Teknikleri', 'Anestezi', 'İlk ve Acil Yardım'
         ];
-        
-        const is2Year = twoYearPrograms.some(prog => 
+
+        const is2Year = twoYearPrograms.some(prog =>
             dreamDept.toLowerCase().includes(prog.toLowerCase())
         );
-        
+
         const userRanking = is2Year ? tytRanking : aytRanking;
         const rankingType = is2Year ? 'TYT' : 'AYT';
-        
+
         console.log(`📐 Program türü: ${is2Year ? '2 Yıllık (Ön Lisans)' : '4 Yıllık (Lisans)'}`);
         console.log(`📊 Kullanılan sıralama: ${rankingType} = ${userRanking}`);
-        
+
         const eligibleUnis = filteredUnis.filter(uni => {
             const uniRank = uni.ranking || uni.minRanking || 0;
             const eligible = uniRank > 0 && userRanking <= uniRank;
@@ -266,11 +266,11 @@ app.post('/api/recommendations', async (req, res) => {
             }
             return eligible;
         });
-        
+
         console.log(`🎯 Toplam ${eligibleUnis.length} üniversiteye girebilir`);
-        
+
         let result;
-        
+
         if (eligibleUnis.length > 0) {
             // ✅ Birincil Öneriler: Hedef bölüme girebilir
             result = {
@@ -296,7 +296,7 @@ app.post('/api/recommendations', async (req, res) => {
             };
         } else {
             // ❌ Alternatif Öneriler: Hedef bölüme yetmiyor
-            
+
             // 4️⃣ Alternatif 4 yıllık bölümler bul (AYT bazlı)
             const alternatives4y = await findAlternatives(dreamDept, aytRanking, tytRanking);
             const alt4yWithData = await Promise.all(
@@ -308,7 +308,7 @@ app.post('/api/recommendations', async (req, res) => {
                             const uniRank = u.ranking || u.minRanking || 0;
                             return uniRank > 0 && aytRanking <= uniRank;
                         });
-                        
+
                         if (city) {
                             const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
                             eligible = eligible.filter(u =>
@@ -318,7 +318,7 @@ app.post('/api/recommendations', async (req, res) => {
                         if (educationType && educationType !== 'Tümü') {
                             eligible = eligible.filter(u => u.type === educationType);
                         }
-                        
+
                         return {
                             department: alt.dept,
                             description: alt.description,
@@ -334,7 +334,7 @@ app.post('/api/recommendations', async (req, res) => {
                         };
                     })
             );
-            
+
             // 5️⃣ 2 yıllık programlar + DGS (TYT bazlı)
             const alternatives2y = await Promise.all(
                 alternatives4y
@@ -345,14 +345,14 @@ app.post('/api/recommendations', async (req, res) => {
                             const uniRank = u.ranking || u.minRanking || 0;
                             return uniRank > 0 && tytRanking <= uniRank;
                         });
-                        
+
                         if (city) {
                             const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
                             eligible = eligible.filter(u =>
                                 selectedCities.some(sc => u.city.toLocaleLowerCase('tr-TR').includes(sc))
                             );
                         }
-                        
+
                         return {
                             department: alt.dept,
                             description: alt.description,
@@ -367,7 +367,7 @@ app.post('/api/recommendations', async (req, res) => {
                         };
                     })
             );
-            
+
             result = {
                 status: 'alternatives',
                 message: `${dreamDept} için sıralamanız yeterli değil, ancak alternatifleriniz var!`,
@@ -384,10 +384,10 @@ app.post('/api/recommendations', async (req, res) => {
                 }
             };
         }
-        
+
         console.log('✅ Öneri sistemi tamamlandı');
         res.json(result);
-        
+
     } catch (error) {
         console.error('❌ Öneri sistemi hatası:', error);
         res.status(500).json({ error: error.message });
@@ -406,12 +406,12 @@ function calculateRisk(userRank, uniRank) {
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, conversationHistory } = req.body;
-        
+
         console.log('📩 Chat mesajı:', message);
-        
+
         // OpenAI GPT ile yanıt oluştur
         const response = await generateAIResponse(message, conversationHistory || []);
-        
+
         // Sohbeti MySQL'e kaydet
         if (req.user && req.user.id) {
             try {
@@ -430,7 +430,7 @@ app.post('/api/chat', async (req, res) => {
                 console.log('⚠️ MySQL kayıt hatası:', sqlErr.message);
             }
         }
-        
+
         res.json({ response });
     } catch (error) {
         console.error('❌ Chat hatası:', error);
@@ -441,39 +441,39 @@ app.post('/api/chat', async (req, res) => {
 async function generateAIResponse(message, history) {
     try {
         const lowerMessage = message.toLowerCase();
-        
+
         // 1️⃣ Bölüm bilgisi sorgusu kontrolü
         const deptInfoKeywords = ['hakkında', 'nedir', 'ne yapar', 'dersleri', 'ders içeriği', 'kariyer', 'iş imkanları', 'mezun'];
         const isDeptInfoQuery = deptInfoKeywords.some(keyword => lowerMessage.includes(keyword));
-        
+
         // 1️⃣ Bölüm adı kontrolü ve YÖK verilerini topla
         const departments = [
             "Bilgisayar Programcılığı", "Web Tasarım ve Kodlama", "Bilgisayar Teknolojileri",
-            "Bilgisayar Mühendisliği", "Makine Mühendisliği", "Tıp", "Hukuk", 
+            "Bilgisayar Mühendisliği", "Makine Mühendisliği", "Tıp", "Hukuk",
             "İşletme", "Elektrik-Elektronik Mühendisliği", "Mimarlık", "Psikoloji",
             "Yazılım Mühendisliği", "Endüstri Mühendisliği", "İnşaat Mühendisliği"
         ];
-        
+
         let yokData = '';
         let detectedDept = null;
         let departmentInfo = '';
-        
+
         for (let dept of departments) {
             if (lowerMessage.includes(dept.toLowerCase())) {
                 detectedDept = dept;
                 console.log(`🔍 "${dept}" için bilgiler çekiliyor...`);
-                
+
                 // Eğer bölüm hakkında genel bilgi soruyorsa, YÖK verisi çekme
                 if (isDeptInfoQuery) {
                     console.log(`📚 "${dept}" hakkında genel bilgi isteniyor...`);
-                    
+
                     // Veritabanından bölüm bilgilerini çek
                     try {
                         const [rows] = await pool.query(
                             'SELECT * FROM universities WHERE department LIKE ? LIMIT 15',
                             [`%${dept}%`]
                         );
-                        
+
                         if (rows.length > 0) {
                             departmentInfo = `\n\n📊 ${dept} Bölümü - Veritabanı Bilgileri:\n\n`;
                             departmentInfo += `✅ ${rows.length} üniversitede bu program bulunuyor.\n`;
@@ -491,7 +491,7 @@ async function generateAIResponse(message, history) {
                     // Normal tercih analizi için YÖK verisi çek
                     const data = await scrapeYokAtlas(dept, 2024);
                     const top10 = data.slice(0, 10);
-                    
+
                     yokData = `\n\n📊 ${dept} - 2024 YÖK Atlas Verileri (Güncel):\n\n`;
                     top10.forEach((uni, index) => {
                         yokData += `${index + 1}. ${uni.name}\n   📍 Şehir: ${uni.city}\n   🏫 Kampüs: ${uni.campus}\n   🎯 Son Sıralama: ${(uni.ranking || uni.minRanking)?.toLocaleString() || 'N/A'}\n   👥 Kontenjan: ${uni.quota}\n   🏛️ Tür: ${uni.type || 'Devlet'}\n\n`;
@@ -501,7 +501,7 @@ async function generateAIResponse(message, history) {
                 break;
             }
         }
-        
+
         // 2️⃣ AI'a prompt gönder (YÖK verileriyle birlikte)
         let enrichedMessage = message;
         if (departmentInfo) {
@@ -511,7 +511,7 @@ async function generateAIResponse(message, history) {
             // Normal tercih analizi
             enrichedMessage = `Kullanıcı Sorusu: ${message}\n\nYÖK Atlas'tan Çekilen Gerçek Veriler:${yokData}\n\nLütfen yukarıdaki GERÇEK YÖK Atlas verilerini kullanarak kullanıcıya detaylı, doğru ve güncel bilgi ver.`;
         }
-        
+
         let aiResponse;
         if (AI_PROVIDER === 'groq') {
             aiResponse = await chatWithGroq(enrichedMessage, history);
@@ -520,16 +520,16 @@ async function generateAIResponse(message, history) {
         } else {
             aiResponse = await chatWithAI(enrichedMessage, history);
         }
-        
+
         console.log(`✅ AI yanıt oluşturuldu (${AI_PROVIDER})`);
         return aiResponse;
-        
+
     } catch (error) {
         console.error('❌ AI yanıt hatası:', error.message);
-        
+
         // Fallback: YÖK verilerini manuel kontrol et
         const lowerMessage = message.toLowerCase();
-        
+
         if (lowerMessage.includes('merhaba') || lowerMessage.includes('selam')) {
             return {
                 text: "Merhaba! 👋 Ben TercihAI, sizin akıllı üniversite tercih danışmanınızım. YÖK Atlas verilerini kullanarak size en güncel ve doğru bilgileri sunuyorum. Size nasıl yardımcı olabilirim?",
@@ -541,7 +541,7 @@ async function generateAIResponse(message, history) {
                 source: 'fallback'
             };
         }
-        
+
         if (lowerMessage.includes('tercih') || lowerMessage.includes('analiz')) {
             return {
                 text: "🎯 YÖK verilerine dayalı tercih analizi için bilgilerinizi paylaşın:\n\n1️⃣ AYT/TYT sıralamanız\n2️⃣ Hedef bölüm\n3️⃣ Tercih ettiğiniz şehirler\n4️⃣ Eğitim türü tercihi (Devlet/Vakıf)\n\nGerçek YÖK verileriyle size özel analiz yapacağım!",
@@ -549,24 +549,24 @@ async function generateAIResponse(message, history) {
                 source: 'fallback'
             };
         }
-        
+
         // Bölüm bazlı YÖK verisi göster (fallback)
         const departments = [
-            "Bilgisayar Mühendisliği", "Makine Mühendisliği", "Tıp", "Hukuk", 
+            "Bilgisayar Mühendisliği", "Makine Mühendisliği", "Tıp", "Hukuk",
             "İşletme", "Elektrik-Elektronik Mühendisliği", "Mimarlık", "Psikoloji"
         ];
-        
+
         for (let dept of departments) {
             if (lowerMessage.includes(dept.toLowerCase())) {
                 const data = await scrapeYokAtlas(dept, 2024);
                 const top8 = data.slice(0, 8);
-                
+
                 let text = `📊 ${dept} - 2024 YÖK Atlas Güncel Verileri:\n\n`;
                 top8.forEach((uni, index) => {
                     text += `${index + 1}. ${uni.name} (${uni.type || 'Devlet'})\n   📍 ${uni.city} - ${uni.campus}\n   🎯 Sıralama: ${(uni.ranking || uni.minRanking)?.toLocaleString() || 'N/A'}\n   👥 Kontenjan: ${uni.quota}\n\n`;
                 });
                 text += `\nToplam ${data.length} üniversitede ${dept} var. Daha fazla bilgi için "Detaylı analiz yap" deyin.`;
-                
+
                 return {
                     text: text,
                     suggestions: ["Detaylı analiz yap", "Alternatif bölümler", "Tercih stratejisi"],
@@ -574,7 +574,7 @@ async function generateAIResponse(message, history) {
                 };
             }
         }
-        
+
         return {
             text: "Size YÖK Atlas verilerinden yararlanarak yardımcı olabilirim! 😊\n\n• Tercih analizi (gerçek sıralamalarla)\n• Bölüm karşılaştırması\n• Üniversite önerileri\n\nHangi bölümle ilgileniyorsunuz?",
             suggestions: [
@@ -592,28 +592,75 @@ async function generateAIResponse(message, history) {
 app.post('/api/analyze', async (req, res) => {
     try {
         const { ranking, aytRanking, tytRanking, gender, dreamDept, city, currentLocation, educationType } = req.body;
-        
+
         // TYT ve AYT sıralamalarını belirle
         const aytRank = aytRanking || ranking; // 4 yıllık için
         const tytRank = tytRanking || ranking; // 2 yıllık için
-        
-        console.log('🤖 Tercih Robotu Analizi Başladı:', { 
-            aytRanking: aytRank, 
-            tytRanking: tytRank, 
-            gender, 
-            dreamDept, 
+
+        console.log('🤖 Tercih Robotu Analizi Başladı:', {
+            aytRanking: aytRank,
+            tytRanking: tytRank,
+            gender,
+            dreamDept,
             city,
-            educationType 
+            educationType
         });
-        
+
         if ((!aytRank && !tytRank) || !dreamDept) {
             return res.status(400).json({ error: 'Sıralama ve bölüm bilgisi gerekli' });
         }
-        
+
+        // ⚠️ Ebelik Bölümü Cinsiyet Kontrolü
+        if (dreamDept.toLowerCase().includes('ebelik') && gender === 'Erkek') {
+            console.log('⚠️ Erkek öğrenci Ebelik bölümü seçti - Uyarı mesajı gönderiliyor');
+
+            return res.json({
+                isEligible: false,
+                status: 'gender_restriction',
+                message: '⚠️ Ebelik Bölümü Hakkında Önemli Bilgi',
+                warning: {
+                    title: 'Ebelik Bölümü Cinsiyet Kısıtlaması',
+                    description: 'Türkiye\'de Ebelik bölümü, mevcut mevzuat gereği sadece kadın öğrenciler tarafından tercih edilebilmektedir. Erkek öğrenciler bu bölüme başvuru yapamazlar.',
+                    reason: 'Bu kısıtlama, ebelik mesleğinin tanımı ve uygulama alanları göz önünde bulundurularak Yükseköğretim Kurulu (YÖK) ve Sağlık Bakanlığı tarafından belirlenen yasal düzenlemelere dayanmaktadır.'
+                },
+                alternatives: {
+                    title: 'Size Önerebileceğimiz Alternatif Sağlık Bilimleri Bölümleri:',
+                    departments: [
+                        {
+                            name: 'Hemşirelik',
+                            description: 'Sağlık hizmetlerinin temel taşlarından biri. Hem erkek hem kadın öğrenciler tercih edebilir.',
+                            icon: '👨‍⚕️'
+                        },
+                        {
+                            name: 'Fizyoterapi ve Rehabilitasyon',
+                            description: 'Hareket ve fonksiyon bozukluklarının tedavisi. Yüksek istihdam oranı.',
+                            icon: '🏥'
+                        },
+                        {
+                            name: 'Anestezi',
+                            description: 'Önlisans programı. Ameliyathane ve anestezi hizmetleri.',
+                            icon: '💉'
+                        },
+                        {
+                            name: 'Tıbbi Laboratuvar Teknikleri',
+                            description: 'Önlisans programı. Laboratuvar analizleri ve teşhis.',
+                            icon: '🔬'
+                        },
+                        {
+                            name: 'Acil Yardım ve Afet Yönetimi',
+                            description: 'Önlisans programı. Ambulans ve acil sağlık hizmetleri.',
+                            icon: '🚑'
+                        }
+                    ]
+                },
+                recommendation: `📋 **Tercih Önerimiz:**\n\nSağlık sektöründe kariyer yapmak istiyorsanız, yukarıdaki alternatif bölümlerden birini tercih edebilirsiniz. Özellikle Hemşirelik, erkek öğrenciler için de açık olan ve sağlık sektöründe geniş istihdam imkanları sunan bir bölümdür.\n\n💡 **İpucu:** Sıralamanız (TYT: ${tytRank.toLocaleString('tr-TR')}, AYT: ${aytRank.toLocaleString('tr-TR')}) ile bu bölümlerden hangilerine girebileceğinizi analiz edebiliriz. Lütfen alternatif bir bölüm seçip tekrar deneyin.`
+            });
+        }
+
         // 1️⃣ YÖK Atlas'tan GÜNCEL veri çek (4 yıllık)
         const allUniversities = await scrapeYokAtlas(dreamDept, 2024);
         console.log(`✅ ${allUniversities.length} üniversite verisi YÖK Atlas'tan alındı`);
-        
+
         // 2️⃣ Seçilen şehirlere göre filtrele
         let universities = allUniversities;
         let selectedCities = [];
@@ -621,8 +668,8 @@ app.post('/api/analyze', async (req, res) => {
             selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
             console.log(`🔍 Kullanıcının tercih ettiği şehirler: "${city}"`);
             console.log(`🔍 Normalize edilmiş şehirler:`, selectedCities);
-            universities = allUniversities.filter(uni => 
-                selectedCities.some(selectedCity => 
+            universities = allUniversities.filter(uni =>
+                selectedCities.some(selectedCity =>
                     uni.city.toLocaleLowerCase('tr-TR').includes(selectedCity)
                 )
             );
@@ -630,22 +677,22 @@ app.post('/api/analyze', async (req, res) => {
         } else if (city) {
             console.log(`ℹ️ Şehir filtresi atlandı: "${city}"`);
         }
-        
+
         // 2.5️⃣ Eğitim türüne göre filtrele (Devlet/Vakıf)
         if (educationType && educationType !== 'Tümü') {
             universities = universities.filter(uni => uni.type === educationType);
             console.log(`🏫 ${educationType} üniversiteleri filtrelendi: ${universities.length} üniversite`);
         }
-        
+
         // 3️⃣ Sıralama kontrolü (4 yıllık için AYT, 2 yıllık için TYT)
         // 2 yıllık programlar: Bilgisayar Programcılığı, Web Tasarım, Muhasebe, vb.
-        const is2Year = dreamDept.includes('Programcılığı') || dreamDept.includes('Web Tasarım') || 
-                        dreamDept.includes('Muhasebe') || dreamDept.includes('Turizm ve Otel') || 
-                        dreamDept.includes('İşletme Yönetimi') || dreamDept.includes('Teknolojisi');
-        
+        const is2Year = dreamDept.includes('Programcılığı') || dreamDept.includes('Web Tasarım') ||
+            dreamDept.includes('Muhasebe') || dreamDept.includes('Turizm ve Otel') ||
+            dreamDept.includes('İşletme Yönetimi') || dreamDept.includes('Teknolojisi');
+
         const rankToUse = is2Year ? tytRank : aytRank;
         console.log(`📊 ${is2Year ? '2 yıllık' : '4 yıllık'} program - Kullanılan sıralama: ${rankToUse.toLocaleString()}`);
-        
+
         // DOĞRU MANTIK: Kullanıcı sıralaması <= Üniversite tabanı (düşük sıralama = daha iyi)
         // Örnek: Kullanıcı 10,000 -> 50,000 taban olan üniversiteye girebilir
         // Örnek: Kullanıcı 400,000 -> 50,000 taban olan üniversiteye giremez
@@ -654,11 +701,11 @@ app.post('/api/analyze', async (req, res) => {
             return uniRank && rankToUse <= uniRank;
         });
         console.log(`   ✅ ${filteredUniversities.length} üniversiteye sıralama yetiyor`);
-        
+
         // 4️⃣ Tekrar eden üniversiteleri kaldır (benzersiz yapma)
         const uniqueUniversities = [];
         const seenUniversities = new Set();
-        
+
         for (const uni of filteredUniversities) {
             // Üniversite adı + şehir + kampüs kombinasyonunu kullan
             const uniqueKey = `${uni.name}-${uni.city}-${uni.campus || 'Merkez'}`.toLowerCase();
@@ -667,7 +714,7 @@ app.post('/api/analyze', async (req, res) => {
                 uniqueUniversities.push(uni);
             }
         }
-        
+
         // Şartları ekle
         const eligibleUniversitiesWithConditions = await Promise.all(uniqueUniversities.map(async (uni) => {
             try {
@@ -682,20 +729,20 @@ app.post('/api/analyze', async (req, res) => {
                 return uni;
             }
         }));
-        
+
         const eligibleUniversities = eligibleUniversitiesWithConditions;
         const isEligible = eligibleUniversities.length > 0;
-        
+
         let results;
-        
+
         if (isEligible) {
             // ✅ YETİYOR - Hayalindeki bölüme girebilir
             console.log(`✅ ${gender === 'kız' ? 'Öğrenci' : 'Öğrenci'} ${dreamDept}'ne GİREBİLİR!`);
-            
+
             // Devlet/Vakıf ayırımı
             const devletUnis = eligibleUniversities.filter(u => u.type === 'Devlet');
             const vakifUnis = eligibleUniversities.filter(u => u.type === 'Vakıf');
-            
+
             // AI ile profesyonel eğitim danışmanlığı önerisi
             const aiPrompt = `Sen deneyimli bir eğitim danışmanı ve üniversite tercih uzmanısınız. Türkiye'deki YÖK sistemi, üniversite programları ve kariyer planlama konusunda derin uzmanlığa sahipsiniz.
 
@@ -717,25 +764,25 @@ Toplam ${eligibleUniversities.length} üniversite seçeneği tespit edildi.
 
 🏛️ DEVLET ÜNİVERSİTELERİ (${devletUnis.length} adet):
 ${devletUnis.slice(0, 10).map((u, i) => {
-    const userRank = aytRank;
-    const uniRank = u.ranking || u.minRanking || 0;
-    const diff = userRank - uniRank;
-    const riskLevel = diff < 5000 ? '🔴 Riskli' : diff < 20000 ? '🟡 Orta Risk' : '🟢 Güvenli';
-    return `${i+1}. ${u.name} - ${u.city}
+                const userRank = aytRank;
+                const uniRank = u.ranking || u.minRanking || 0;
+                const diff = userRank - uniRank;
+                const riskLevel = diff < 5000 ? '🔴 Riskli' : diff < 20000 ? '🟡 Orta Risk' : '🟢 Güvenli';
+                return `${i + 1}. ${u.name} - ${u.city}
    Taban: ${uniRank.toLocaleString()} | Sizin: ${userRank.toLocaleString()} | ${riskLevel}
    Kampüs: ${u.campus || 'Merkez'}`;
-}).join('\n\n')}
+            }).join('\n\n')}
 
 💼 VAKIF/ÖZEL ÜNİVERSİTELERİ (${vakifUnis.length} adet):
 ${vakifUnis.slice(0, 5).map((u, i) => {
-    const userRank = aytRank;
-    const uniRank = u.ranking || u.minRanking || 0;
-    const diff = userRank - uniRank;
-    const riskLevel = diff < 5000 ? '🔴 Riskli' : diff < 20000 ? '🟡 Orta Risk' : '🟢 Güvenli';
-    return `${i+1}. ${u.name} - ${u.city}
+                const userRank = aytRank;
+                const uniRank = u.ranking || u.minRanking || 0;
+                const diff = userRank - uniRank;
+                const riskLevel = diff < 5000 ? '🔴 Riskli' : diff < 20000 ? '🟡 Orta Risk' : '🟢 Güvenli';
+                return `${i + 1}. ${u.name} - ${u.city}
    Taban: ${uniRank.toLocaleString()} | Sizin: ${userRank.toLocaleString()} | ${riskLevel}
    Kampüs: ${u.campus || 'Merkez'}`;
-}).join('\n\n')}
+            }).join('\n\n')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 DANIŞMANLIK TALEBİ:
@@ -809,16 +856,16 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                 console.warn('⚠️ AI hatası:', aiError.message);
                 aiRecommendation = `🎉 Tebrikler! ${dreamDept} bölümüne girebilirsiniz!\n\n📊 ${eligibleUniversities.length} üniversite seçeneğiniz var (${devletUnis.length} Devlet, ${vakifUnis.length} Vakıf)`;
             }
-            
+
             // Üniversitelere ÖSYM şart maddelerini ekle
             const universitiesWithConditions = await Promise.all(
                 eligibleUniversities.map(async (uni) => {
                     try {
                         const conditions = await getUniversityConditions(uni.name, dreamDept, 2024);
-                        
+
                         // Benzersiz şart numaralarını al (ek güvenlik)
                         const uniqueConditionNumbers = [...new Set(conditions.map(c => c.conditionNumber))];
-                        
+
                         return {
                             ...uni,
                             conditions: conditions.map(c => ({
@@ -834,7 +881,7 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                     }
                 })
             );
-            
+
             // Sonuç mesajını şehir bilgisiyle zenginleştir
             const cityDisplayText = selectedCities.length > 0 ? selectedCities.join(', ').toUpperCase() : 'Tüm Türkiye';
             let successMessage = `${dreamDept} bölümüne girebilirsiniz!`;
@@ -843,7 +890,7 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
             } else {
                 successMessage += ` (Türkiye genelinde ${eligibleUniversities.length} üniversite)`;
             }
-            
+
             results = {
                 isEligible: true,
                 status: 'success',
@@ -859,23 +906,23 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                 },
                 aiRecommendation: aiRecommendation
             };
-            
+
         } else {
             // ❌ YETMİYOR - Alternatif bölümler öner
             console.log(`❌ ${dreamDept}'ne yetmiyor, alternatifler aranıyor...`);
-            
+
             const alternatives = await findAlternatives(dreamDept, aytRank, tytRank);
-            
+
             // Alternatifler için de üniversite bilgisi ekle
             const alternativesWithDetails = await Promise.all(
                 alternatives.map(async (alt) => {
                     console.log(`\n🔍 Alternatif bölüm analizi: "${alt.dept}"`);
-                    
+
                     let altUnis;
                     // Tüm alternatif bölümler için YÖK'ten veri çek (şehir filtresini doğru uygulamak için)
                     altUnis = await scrapeYokAtlas(alt.dept, 2024);
                     console.log(`   📊 YÖK'ten ${altUnis.length} üniversite bulundu`);
-                    
+
                     // 4 yıllık için AYT, 2 yıllık için TYT sıralaması kullan
                     const rankToUse = alt.type === '2 Yıllık' ? tytRank : aytRank;
                     console.log(`   📈 ${alt.type} program - Kullanılan sıralama: ${rankToUse.toLocaleString()}`);
@@ -885,41 +932,41 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                         return uniRank && rankToUse <= uniRank;
                     });
                     console.log(`   ✅ Sıralama yeterli olan: ${filteredUnis.length} üniversite`);
-                    
+
                     // Şehir filtresi - TÜM alternatif bölümler için uygula
                     if (city && city.toLowerCase() !== 'fark etmez' && city.toLowerCase() !== 'farketmez') {
                         const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
                         console.log(`🏙️ Alternatif "${alt.dept}" için şehir filtresi uygulanıyor:`, selectedCities);
                         console.log(`   Filtreleme öncesi: ${filteredUnis.length} üniversite`);
-                        
+
                         // İlk 3 üniversitenin şehirlerini göster
                         if (filteredUnis.length > 0) {
                             console.log(`   Örnek şehirler:`, filteredUnis.slice(0, 3).map(u => u.city));
                         }
-                        
+
                         filteredUnis = filteredUnis.filter(uni => {
                             const uniCity = uni.city.toLocaleLowerCase('tr-TR');
                             const match = selectedCities.some(sc => uniCity.includes(sc));
                             return match;
                         });
                         console.log(`   Filtreleme sonrası: ${filteredUnis.length} üniversite`);
-                        
+
                         if (filteredUnis.length > 0) {
                             console.log(`   Kalan şehirler:`, [...new Set(filteredUnis.map(u => u.city))]);
                         }
                     }
-                    
+
                     // Eğitim türü filtresi
                     if (educationType && educationType !== 'Tümü') {
                         console.log(`   🏫 Eğitim türü filtresi öncesi: ${filteredUnis.length} üniversite`);
                         filteredUnis = filteredUnis.filter(uni => uni.type === educationType);
                         console.log(`   🏫 "${educationType}" filtresi sonrası: ${filteredUnis.length} üniversite`);
                     }
-                    
+
                     // Tekrar eden üniversiteleri kaldır (benzersiz yapma)
                     const uniqueAltUnis = [];
                     const seenAltUnis = new Set();
-                    
+
                     for (const uni of filteredUnis) {
                         const uniqueKey = `${uni.name}-${uni.city}-${uni.campus || 'Merkez'}`.toLowerCase();
                         if (!seenAltUnis.has(uniqueKey)) {
@@ -927,18 +974,18 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                             uniqueAltUnis.push(uni);
                         }
                     }
-                    
+
                     console.log(`   ✨ SONUÇ: "${alt.dept}" için ${uniqueAltUnis.length} benzersiz üniversite uygun\n`);
-                    
+
                     // Üniversite verilerini normalize et ve şart maddelerini ekle
                     const normalizedUnis = await Promise.all(
                         uniqueAltUnis.map(async (uni) => {
                             try {
                                 const conditions = await getUniversityConditions(uni.name, alt.dept, 2024);
-                                
+
                                 // Benzersiz şart numaralarını al
                                 const uniqueConditionNumbers = [...new Set(conditions.map(c => c.conditionNumber))];
-                                
+
                                 return {
                                     ...uni,
                                     ranking: uni.ranking || uni.minRanking,
@@ -961,7 +1008,7 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                             }
                         })
                     );
-                    
+
                     return {
                         ...alt,
                         universities: normalizedUnis,
@@ -970,11 +1017,11 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
                     };
                 })
             );
-            
+
             // AI ile profesyonel alternatif öneri danışmanlığı
             const fourYear = alternativesWithDetails.filter(a => a.type === '4 Yıllık' && a.available);
             const twoYear = alternativesWithDetails.filter(a => a.type === '2 Yıllık' && a.dgs && a.available);
-            
+
             const aiPrompt = `Sen deneyimli bir eğitim danışmanı ve kariyer planlamacısısınız. Öğrencilerin hedeflerine ulaşmaları için alternatif yollar gösterme konusunda uzmansınız.
 
 📋 ÖĞRENCİ PROFİLİ VE DURUM ANALİZİ:
@@ -995,11 +1042,11 @@ ANCAK, hedefinize ulaşmanın birden fazla yolu var!
 🎯 ALTERNATİF YOL 1: 4 YILLIK BENZER PROGRAMLAR (AYT bazlı)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${fourYear.slice(0, 4).map((alt, i) => {
-    const totalUnis = alt.universities.length;
-    const devletCount = alt.universities.filter(u => u.type === 'Devlet').length;
-    const vakifCount = alt.universities.filter(u => u.type === 'Vakıf').length;
-    return `
-${i+1}. 📚 ${alt.dept.toUpperCase()}
+                const totalUnis = alt.universities.length;
+                const devletCount = alt.universities.filter(u => u.type === 'Devlet').length;
+                const vakifCount = alt.universities.filter(u => u.type === 'Vakıf').length;
+                return `
+${i + 1}. 📚 ${alt.dept.toUpperCase()}
    ✓ Sizin AYT Sıralamanız: ${alt.rankUsed.toLocaleString()}
    ✓ Taban Sıralama: ~${alt.threshold.toLocaleString()}
    ✓ Fark: ${(alt.rankUsed - alt.threshold).toLocaleString()} (${alt.rankUsed < alt.threshold ? '✅ YETERLİ' : '❌ YETMİYOR'})
@@ -1007,11 +1054,11 @@ ${i+1}. 📚 ${alt.dept.toUpperCase()}
    ✓ Program Özellikleri: ${alt.description}
    
    En İyi Seçenekler:
-   ${alt.universities.slice(0, 3).map((u, idx) => 
-      `   ${idx+1}) ${u.name} - ${u.city} (${u.type}) - Taban: ${(u.ranking || u.minRanking)?.toLocaleString() || 'N/A'}`
-   ).join('\n')}
+   ${alt.universities.slice(0, 3).map((u, idx) =>
+                    `   ${idx + 1}) ${u.name} - ${u.city} (${u.type}) - Taban: ${(u.ranking || u.minRanking)?.toLocaleString() || 'N/A'}`
+                ).join('\n')}
    ${totalUnis > 3 ? `   ... ve ${totalUnis - 3} üniversite daha` : ''}`;
-}).join('\n')}
+            }).join('\n')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1020,9 +1067,9 @@ ${i+1}. 📚 ${alt.dept.toUpperCase()}
 2 yıllık ön lisans programlarından mezun olduktan sonra DGS (Dikey Geçiş Sınavı) ile ${dreamDept} veya benzer 4 yıllık programlara geçebilirsiniz!
 
 ${twoYear.slice(0, 3).map((alt, i) => {
-    const totalUnis = alt.universities.length;
-    return `
-${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
+                const totalUnis = alt.universities.length;
+                return `
+${i + 1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
    ✓ Sizin TYT Sıralamanız: ${alt.rankUsed.toLocaleString()}
    ✓ Taban Sıralama: ~${alt.threshold.toLocaleString()}
    ✓ Fark: ${(alt.rankUsed - alt.threshold).toLocaleString()} (${alt.rankUsed < alt.threshold ? '✅ YETERLİ' : '❌ YETMİYOR'})
@@ -1031,10 +1078,10 @@ ${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
    ✓ DGS Geçiş: ${dreamDept} ve benzer bölümlere
    
    Başlıca Seçenekler:
-   ${alt.universities.slice(0, 3).map((u, idx) => 
-      `   ${idx+1}) ${u.name} - ${u.city} - Kontenjan: ${u.quota || 'N/A'}`
-   ).join('\n')}`;
-}).join('\n')}
+   ${alt.universities.slice(0, 3).map((u, idx) =>
+                    `   ${idx + 1}) ${u.name} - ${u.city} - Kontenjan: ${u.quota || 'N/A'}`
+                ).join('\n')}`;
+            }).join('\n')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1125,7 +1172,7 @@ ${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
                 console.warn('⚠️ AI hatası:', aiError.message);
                 aiRecommendation = `${dreamDept} için sıralamanız yeterli değil. Ancak size ${alternativesWithDetails.length} alternatif önerimiz var!`;
             }
-            
+
             results = {
                 isEligible: false,
                 status: 'alternatives',
@@ -1145,7 +1192,7 @@ ${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
                 }
             };
         }
-        
+
         // Veritabanına kaydet
         try {
             const connection = await pool.getConnection();
@@ -1158,15 +1205,15 @@ ${i+1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
         } catch (dbError) {
             console.warn('⚠️ DB kayıt hatası (devam ediyor):', dbError.message);
         }
-        
+
         console.log('✅ Tercih Robotu analizi tamamlandı');
         res.json(results);
-        
+
     } catch (error) {
         console.error('❌ Tercih Robotu hatası:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Analiz yapılırken bir hata oluştu',
-            details: error.message 
+            details: error.message
         });
     }
 });
@@ -1206,7 +1253,7 @@ async function findAlternatives(department, aytRanking, tytRanking) {
             { dept: "Dış Ticaret", threshold: 250000, type: "2 Yıllık", description: "İthalat/İhracat", dgs: true }
         ]
     };
-    
+
     const alts = alternativesMap[department] || [];
     // 4 yıllık için AYT, 2 yıllık için TYT kullan
     // Threshold: kullanıcı bu sıralamaya KADAR girebilir (threshold bir üst sınır)
@@ -1223,7 +1270,7 @@ app.get('/api/universities/:department', async (req, res) => {
     try {
         const { department } = req.params;
         const { year = 2024 } = req.query;
-        
+
         const data = await scrapeYokAtlas(department, year);
         res.json(data);
     } catch (error) {
@@ -1236,47 +1283,47 @@ app.get('/api/universities/:department', async (req, res) => {
 app.post('/api/universities', async (req, res) => {
     try {
         const { department, ranking, cities, educationType } = req.body;
-        
+
         console.log('🏛️ Üniversite listesi istendi:', { department, ranking, cities, educationType });
-        
+
         // YÖK Atlas'tan tüm üniversiteleri çek
         const allUniversities = await scrapeYokAtlas(department, 2024);
         console.log(`✅ Toplam ${allUniversities.length} üniversite bulundu`);
-        
+
         let filteredUniversities = allUniversities;
-        
+
         // Şehir filtreleme
         if (cities && cities.length > 0) {
-            filteredUniversities = filteredUniversities.filter(uni => 
-                cities.some(city => 
+            filteredUniversities = filteredUniversities.filter(uni =>
+                cities.some(city =>
                     uni.city.toLocaleLowerCase('tr-TR').includes(city.toLocaleLowerCase('tr-TR'))
                 )
             );
             console.log(`📍 Şehir filtresi uygulandı: ${filteredUniversities.length} üniversite`);
         }
-        
+
         // Eğitim türü filtreleme
         if (educationType && educationType !== 'Tümü') {
-            filteredUniversities = filteredUniversities.filter(uni => 
+            filteredUniversities = filteredUniversities.filter(uni =>
                 uni.type === educationType
             );
             console.log(`🏫 Eğitim türü filtresi (${educationType}): ${filteredUniversities.length} üniversite`);
         }
-        
+
         // Sıralama filtreleme
         // Kullanıcının sıralaması, üniversitenin taban sıralamasından BÜYÜK OLMALI
         // Örnek: Kullanıcı 20.000, Üni taban 65.000 → GİREBİLİR (20.000 < 65.000)
         if (ranking) {
-            filteredUniversities = filteredUniversities.filter(uni => 
+            filteredUniversities = filteredUniversities.filter(uni =>
                 (uni.ranking || uni.minRanking || 999999) >= ranking
             );
             console.log(`🎯 Sıralama filtresi (${ranking}): ${filteredUniversities.length} üniversite`);
         }
-        
+
         // Üniversite bazında gruplama (aynı üniversitenin birden fazla kampüsü varsa)
         const universitiesWithPrograms = [];
         const universityMap = new Map();
-        
+
         // Şart maddelerini çek
         const universitiesWithConditions = await Promise.all(filteredUniversities.map(async (uni) => {
             try {
@@ -1289,7 +1336,7 @@ app.post('/api/universities', async (req, res) => {
 
         universitiesWithConditions.forEach(uni => {
             const key = `${uni.name}_${uni.city}`;
-            
+
             if (!universityMap.has(key)) {
                 universityMap.set(key, {
                     name: uni.name,
@@ -1300,7 +1347,7 @@ app.post('/api/universities', async (req, res) => {
                     programs: []
                 });
             }
-            
+
             universityMap.get(key).programs.push({
                 name: uni.department,
                 minRanking: uni.ranking || uni.minRanking,
@@ -1309,11 +1356,11 @@ app.post('/api/universities', async (req, res) => {
                 scholarshipConditions: uni.scholarshipConditions
             });
         });
-        
+
         universityMap.forEach(uni => universitiesWithPrograms.push(uni));
-        
+
         console.log(`✅ ${universitiesWithPrograms.length} üniversite gönderiliyor`);
-        
+
         res.json(universitiesWithPrograms);
     } catch (error) {
         console.error('Üniversite listesi hatası:', error);
@@ -1325,20 +1372,20 @@ app.post('/api/universities', async (req, res) => {
 app.post('/api/department-analysis', async (req, res) => {
     try {
         const { department, userRanking } = req.body;
-        
+
         if (!department) {
             return res.status(400).json({ error: 'Bölüm bilgisi gerekli' });
         }
-        
+
         console.log(`🔍 ${department} için detaylı analiz istendi`);
-        
+
         // OpenAI ile bölüm analizi
         const aiAnalysis = await analyzeDepartment(department, { ranking: userRanking });
-        
+
         // YÖK Atlas verileri
         const universities = await scrapeYokAtlas(department, 2024);
         const top10 = universities.slice(0, 10);
-        
+
         const response = {
             department: department,
             aiAnalysis: aiAnalysis || `${department} bölümü hakkında detaylı bilgi...`,
@@ -1350,7 +1397,7 @@ app.post('/api/department-analysis', async (req, res) => {
                 avgQuota: Math.round(universities.reduce((sum, u) => sum + u.quota, 0) / universities.length)
             }
         };
-        
+
         res.json(response);
     } catch (error) {
         console.error('Bölüm analizi hatası:', error);
@@ -1362,35 +1409,35 @@ app.post('/api/department-analysis', async (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        
+
         console.log('🔐 Admin giriş denemesi:', username);
-        
+
         const connection = await pool.getConnection();
         const [users] = await connection.query(
             'SELECT * FROM users WHERE username = ? AND role = ?',
             [username, 'admin']
         );
         connection.release();
-        
+
         if (users.length === 0) {
             return res.status(401).json({ error: 'Kullanıcı bulunamadı' });
         }
-        
+
         const user = users[0];
         const validPassword = await bcrypt.compare(password, user.password);
-        
+
         if (!validPassword) {
             return res.status(401).json({ error: 'Yanlış şifre' });
         }
-        
+
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             process.env.JWT_SECRET || 'secret-key',
             { expiresIn: '24h' }
         );
-        
+
         console.log('✅ Admin girişi başarılı');
-        
+
         res.json({ token, role: user.role, user: { id: user.id, username: user.username, email: user.email } });
     } catch (error) {
         console.error('Admin giriş hatası:', error);
@@ -1402,15 +1449,15 @@ app.post('/api/admin/login', async (req, res) => {
 app.get('/api/admin/stats', authenticateToken, isAdmin, async (req, res) => {
     try {
         const connection = await pool.getConnection();
-        
+
         const [totalAnalyses] = await connection.query('SELECT COUNT(*) as count FROM analyses');
         const [totalUsers] = await connection.query('SELECT COUNT(*) as count FROM users');
         const [recentAnalyses] = await connection.query(
             'SELECT * FROM analyses ORDER BY createdAt DESC LIMIT 10'
         );
-        
+
         connection.release();
-        
+
         res.json({
             totalAnalyses: totalAnalyses[0].count,
             totalUsers: totalUsers[0].count,
@@ -1433,7 +1480,7 @@ app.get('/api/admin/analyses', authenticateToken, isAdmin, async (req, res) => {
             'SELECT * FROM analyses ORDER BY createdAt DESC'
         );
         connection.release();
-        
+
         res.json(analyses.map(a => ({
             ...a,
             results: typeof a.results === 'string' ? JSON.parse(a.results) : a.results
@@ -1452,7 +1499,7 @@ app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
             'SELECT id, username, email, name, role, createdAt FROM users ORDER BY createdAt DESC'
         );
         connection.release();
-        
+
         res.json(users);
     } catch (error) {
         console.error('Kullanıcılar hatası:', error);
@@ -1464,30 +1511,30 @@ app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
 app.post('/api/admin/universities', authenticateToken, isAdmin, async (req, res) => {
     try {
         const { department, year } = req.body;
-        
+
         console.log(`🔄 Üniversite verileri güncelleniyor: ${department} - ${year}`);
-        
+
         // YÖK Atlas'tan yeni verileri çek
         const data = await scrapeYokAtlas(department, year);
-        
+
         // Veritabanına kaydet
         const connection = await pool.getConnection();
         await connection.query(
             'DELETE FROM universities WHERE department = ? AND year = ?',
             [department, year]
         );
-        
+
         for (const uni of data) {
             await connection.query(
                 'INSERT INTO universities (name, city, department, campus, ranking, quota, type, year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                 [uni.name, uni.city, uni.department, uni.campus, uni.ranking, uni.quota, uni.type || 'Devlet', uni.year]
             );
         }
-        
+
         connection.release();
-        
+
         console.log(`✅ ${data.length} üniversite güncellendi`);
-        
+
         res.json({ message: 'Üniversite verileri güncellendi', count: data.length });
     } catch (error) {
         console.error('Güncelleme hatası:', error);
@@ -1505,7 +1552,7 @@ app.get('/auth/google/callback',
     (req, res) => {
         try {
             const token = jwt.sign(
-                { 
+                {
                     id: req.user.id,
                     email: req.user.email,
                     name: req.user.name,
@@ -1514,15 +1561,17 @@ app.get('/auth/google/callback',
                 process.env.JWT_SECRET || 'secret-key',
                 { expiresIn: '7d' }
             );
-            
+
             res.send(`
                 <script>
                     localStorage.setItem('authToken', '${token}');
                     localStorage.setItem('userProfile', '${JSON.stringify({
-                        name: req.user.name,
-                        email: req.user.email,
-                        picture: req.user.picture
-                    }).replace(/'/g, "\\'")}');
+                id: req.user.id,
+                googleId: req.user.googleId,
+                name: req.user.name,
+                email: req.user.email,
+                picture: req.user.picture
+            }).replace(/'/g, "\\'")}');
                     window.opener.postMessage({type: 'GOOGLE_LOGIN_SUCCESS'}, '*');
                     window.close();
                 </script>
@@ -1559,7 +1608,7 @@ app.get('/api/conditions/definitions', async (req, res) => {
             ORDER BY CAST(conditionNumber AS UNSIGNED)
         `);
         connection.release();
-        
+
         res.json({ conditions: rows });
     } catch (error) {
         console.error('Şart tanımları getirme hatası:', error);
@@ -1584,9 +1633,9 @@ app.post('/api/admin/refresh-osym', authenticateToken, isAdmin, async (req, res)
     try {
         console.log('🔄 Admin tarafından ÖSYM verileri güncelleniyor...');
         await refreshAllData();
-        res.json({ 
-            success: true, 
-            message: 'ÖSYM verileri başarıyla güncellendi' 
+        res.json({
+            success: true,
+            message: 'ÖSYM verileri başarıyla güncellendi'
         });
     } catch (error) {
         console.error('ÖSYM güncelleme hatası:', error);
@@ -1610,7 +1659,7 @@ app.get('/api/admin/program-conditions', authenticateToken, isAdmin, async (req,
 app.post('/api/smart-recommend', async (req, res) => {
     try {
         const { aytRanking, tytRanking, dreamDept, city, gender, educationType } = req.body;
-        
+
         console.log('🧠 Akıllı Alternatif Sistemi Başladı:', {
             aytRanking,
             tytRanking,
@@ -1620,15 +1669,15 @@ app.post('/api/smart-recommend', async (req, res) => {
         });
 
         if (!dreamDept || (!aytRanking && !tytRanking)) {
-            return res.status(400).json({ 
-                error: 'Hedef bölüm ve en az bir sıralama bilgisi gerekli' 
+            return res.status(400).json({
+                error: 'Hedef bölüm ve en az bir sıralama bilgisi gerekli'
             });
         }
 
         // 1️⃣ Akıllı alternatifler bul
         const alternatives = findSmartAlternatives(
-            dreamDept, 
-            aytRanking, 
+            dreamDept,
+            aytRanking,
             tytRanking,
             city
         );
@@ -1708,7 +1757,7 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
 
     } catch (error) {
         console.error('❌ Akıllı Alternatif Hatası:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: error.message,
             details: 'Akıllı alternatif sistemi şu anda kullanılamıyor. Lütfen manuel tercih analizini deneyin.'
         });
@@ -1719,26 +1768,26 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
 app.post('/api/export-to-sheets', async (req, res) => {
     try {
         const { universities, userEmail, title } = req.body;
-        
+
         if (!universities || !Array.isArray(universities) || universities.length === 0) {
             return res.status(400).json({ error: 'Üniversite listesi boş olamaz' });
         }
-        
+
         console.log('📊 Google Sheets\'e aktarılıyor:', {
             count: universities.length,
             userEmail: userEmail || 'Belirtilmedi',
             title: title || 'Seçtiğim Üniversiteler'
         });
-        
+
         const sheetTitle = title || `Seçtiğim Üniversiteler - ${new Date().toLocaleDateString('tr-TR')}`;
-        
+
         const result = await createSpreadsheet(sheetTitle, universities, userEmail);
-        
+
         res.json(result);
-        
+
     } catch (error) {
         console.error('Google Sheets export hatası:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Google Sheets oluşturulamadı',
             message: error.message,
             hint: 'backend/google-credentials.json dosyasını ekleyin'
@@ -1750,19 +1799,19 @@ app.post('/api/export-to-sheets', async (req, res) => {
 app.post('/api/save-selections', async (req, res) => {
     try {
         const { userEmail, universities, timestamp } = req.body;
-        
+
         if (!universities || !Array.isArray(universities) || universities.length === 0) {
             return res.status(400).json({ error: 'Üniversite listesi boş olamaz' });
         }
-        
+
         console.log('💾 Kullanıcı seçimleri kaydediliyor:', {
             userEmail: userEmail || 'Anonim',
             count: universities.length,
             timestamp
         });
-        
+
         const connection = await pool.getConnection();
-        
+
         try {
             // user_selections tablosuna kaydet
             await connection.query(`
@@ -1781,7 +1830,7 @@ app.post('/api/save-selections', async (req, res) => {
                     INDEX idx_created_at (created_at)
                 )
             `);
-            
+
             // Her üniversite için kayıt ekle
             for (const uni of universities) {
                 await connection.query(
@@ -1800,20 +1849,20 @@ app.post('/api/save-selections', async (req, res) => {
                     ]
                 );
             }
-            
-            res.json({ 
-                success: true, 
+
+            res.json({
+                success: true,
                 message: `${universities.length} üniversite kaydedildi`,
                 savedCount: universities.length
             });
-            
+
         } finally {
             connection.release();
         }
-        
+
     } catch (error) {
         console.error('❌ Seçim kaydetme hatası:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Seçimler kaydedilemedi',
             message: error.message
         });
@@ -1825,13 +1874,224 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Server çalışıyor' });
 });
 
+// ============================================
+// 🚀 HEDEF ANALİZİ ENDPOİNTİ (NET BAZLI - BASİT)
+// ============================================
+app.post('/api/hedef-analiz', async (req, res) => {
+    try {
+        const { tytNets, aytNets, aytAlan, hedefBolum } = req.body;
+
+        console.log('🎯 Hedef Analizi (Net Bazlı):', { tytNets, aytNets, aytAlan, hedefBolum });
+
+        // TYT toplam net
+        const totalTytNet = (
+            parseFloat(tytNets.turkce || 0) +
+            parseFloat(tytNets.mat || 0) +
+            parseFloat(tytNets.sosyal || 0) +
+            parseFloat(tytNets.fen || 0)
+        );
+
+        // AYT toplam net
+        const totalAytNet = Object.values(aytNets).reduce((sum, val) => sum + parseFloat(val || 0), 0);
+
+        // Alan adı
+        const alanIsim = aytAlan === 'sayisal' ? 'Sayısal (MF)' : 
+                         aytAlan === 'esit' ? 'Eşit Ağırlık (TM)' : 
+                         'Sözel (TS)';
+
+        // ===============================================
+        // VERİTABANINDAN NET BAZLI PROGRAMLARI ÇEK
+        // ===============================================
+        
+        const connection = await pool.getConnection();
+        
+        // 1) Hayalindeki bölümü ara
+        const [hedefProgramlar] = await connection.query(
+            `SELECT * FROM universities 
+             WHERE department LIKE ? 
+             ORDER BY minRanking ASC 
+             LIMIT 100`,
+            [`%${hedefBolum}%`]
+        );
+
+        // 2) Alan bazlı kazanılabilecek bölümler
+        let alanQuery = '';
+        if (aytAlan === 'sayisal') {
+            alanQuery = `
+                SELECT * FROM universities 
+                WHERE department LIKE '%Mühendisliği%' 
+                   OR department LIKE '%Bilgisayar%'
+                ORDER BY minRanking ASC 
+                LIMIT 50
+            `;
+        } else if (aytAlan === 'esit') {
+            alanQuery = `
+                SELECT * FROM universities 
+                WHERE department LIKE '%İşletme%' 
+                   OR department LIKE '%İktisat%'
+                   OR department LIKE '%İletişim%'
+                ORDER BY minRanking ASC 
+                LIMIT 50
+            `;
+        } else {
+            alanQuery = `
+                SELECT * FROM universities 
+                WHERE department LIKE '%Edebiyat%' 
+                   OR department LIKE '%Tarih%'
+                   OR department LIKE '%Sosyoloji%'
+                ORDER BY minRanking ASC 
+                LIMIT 50
+            `;
+        }
+
+        const [alanProgramlari] = await connection.query(alanQuery);
+        connection.release();
+
+        // ===============================================
+        // NET BAZLI DURUM DEĞERLENDİRMESİ
+        // ===============================================
+        
+        let seviye = '';
+        let seviyeEmoji = '';
+        let seviyeClass = '';
+
+        // TYT + AYT toplam
+        const toplamNet = totalTytNet + totalAytNet;
+
+        if (toplamNet >= 150) {
+            seviye = 'Mükemmel';
+            seviyeEmoji = '🌟';
+            seviyeClass = 'seviye-mukemmel';
+        } else if (toplamNet >= 120) {
+            seviye = 'Çok İyi';
+            seviyeEmoji = '⭐';
+            seviyeClass = 'seviye-cok-iyi';
+        } else if (toplamNet >= 90) {
+            seviye = 'İyi';
+            seviyeEmoji = '👍';
+            seviyeClass = 'seviye-iyi';
+        } else if (toplamNet >= 60) {
+            seviye = 'Orta';
+            seviyeEmoji = '📈';
+            seviyeClass = 'seviye-orta';
+        } else {
+            seviye = 'Başlangıç';
+            seviyeEmoji = '💪';
+            seviyeClass = 'seviye-gelistirilmeli';
+        }
+
+        // ===============================================
+        // AI İLE BASİT VE ANLAŞILIR ANALİZ
+        // ===============================================
+
+        const aiPrompt = `
+Sen bir YKS danışmanısın. Öğrenciye BASİT ve ANLAŞILIR bir analiz yap.
+
+🎯 **HEDEFİ:** ${hedefBolum}
+
+📊 **MEVCUT NETLERİ:**
+TYT: ${totalTytNet.toFixed(1)} net (Türkçe: ${tytNets.turkce}, Mat: ${tytNets.mat}, Sosyal: ${tytNets.sosyal}, Fen: ${tytNets.fen})
+AYT (${alanIsim}): ${totalAytNet.toFixed(1)} net
+Toplam: ${toplamNet.toFixed(1)} net
+
+📍 **HEDEF BÖLÜM VERİSİ:**
+${hedefProgramlar.length > 0 ? `
+${hedefBolum} için ${hedefProgramlar.length} program bulundu:
+- En kolay kazanılan: ${hedefProgramlar[hedefProgramlar.length - 1]?.name} (${hedefProgramlar[hedefProgramlar.length - 1]?.city})
+- Orta seviye: ${hedefProgramlar[Math.floor(hedefProgramlar.length / 2)]?.name} (${hedefProgramlar[Math.floor(hedefProgramlar.length / 2)]?.city})
+- En zor: ${hedefProgramlar[0]?.name} (${hedefProgramlar[0]?.city})
+` : 'Veritabanında bu bölüm bulunamadı'}
+
+🎯 **GÖREVİN:**
+1. **Durum:** Bu netlerle ${hedefBolum} için nerede durduğunu 2-3 cümleyle açıkla
+2. **Kazanılabilecek Yerler:** Hangi şehirlerde/üniversitelerde gerçekçi? (3-5 örnek ver)
+3. **Gelişim:** Hangi dersleri geliştirmeli? Net öneriler
+4. **Motivasyon:** 1-2 cümle motivasyon
+
+⚠️ KURALLAMA:
+- KISA ve ÖZ yaz (max 15 satır)
+- Karmaşık hesaplardan KAÇIN
+- "Şu kadar net artırırsan şuraya gidersin" dili kullan
+- Emoji kullan
+- Sade Türkçe
+`;
+
+        let aiResponse;
+        if (AI_PROVIDER === 'groq') {
+            aiResponse = await chatWithGroq(aiPrompt, []);
+        } else if (AI_PROVIDER === 'gemini') {
+            aiResponse = await chatWithGemini(aiPrompt, []);
+        } else {
+            aiResponse = await chatWithAI(aiPrompt, []);
+        }
+
+        // ===============================================
+        // BASİT VE GÜ ZEL ÇIKTI
+        // ===============================================
+
+        const message = `
+${seviyeEmoji} **${seviye.toUpperCase()} SEVİYE!**
+
+━━━━━━━━━━━━━━━━━━━━
+💭 **HEDEFİNİZ**
+${hedefBolum}
+
+📊 **NETLERİNİZ**
+🔹 TYT: **${totalTytNet.toFixed(1)}** net
+🔹 AYT: **${totalAytNet.toFixed(1)}** net
+🔹 Toplam: **${toplamNet.toFixed(1)}** net
+
+━━━━━━━━━━━━━━━━━━━━
+
+${aiResponse.text}
+
+━━━━━━━━━━━━━━━━━━━━
+🎓 **ALANINIZDAK İ DİĞER BÖLÜMLER**
+
+${alanProgramlari.slice(0, 8).map((p, i) => `
+${i + 1}. **${p.department}**
+   ${p.name} • ${p.city}
+   ${p.type === 'Devlet' ? '🏛️' : '🏢'} ${p.type}
+`).join('')}
+
+━━━━━━━━━━━━━━━━━━━━
+💡 **BİR SONRAKİ ADIM**
+
+Daha detaylı analiz için **"Tercih Analizi"** yapın!
+        `.trim();
+
+        res.json({
+            success: true,
+            message,
+            data: {
+                tytNet: totalTytNet.toFixed(1),
+                aytNet: totalAytNet.toFixed(1),
+                toplamNet: toplamNet.toFixed(1),
+                alan: alanIsim,
+                seviye,
+                seviyeClass,
+                hedefBolum,
+                hedefProgramSayisi: hedefProgramlar.length,
+                programs: alanProgramlari.slice(0, 8) // Bölüm listesi
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Hedef analiz hatası:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // Veritabanını başlat ve sunucuyu çalıştır
 async function startServer() {
     try {
         console.log('\n🎓 ==========================================');
         console.log('🚀 Tercih AI Backend başlatılıyor...');
         console.log('==========================================\n');
-        
+
         // MySQL bağlantısını test et
         const connected = await testConnection();
         if (!connected) {
@@ -1840,14 +2100,14 @@ async function startServer() {
             console.log('💡 MySQL servisinin çalıştığından emin olun');
             process.exit(1);
         }
-        
+
         // Veritabanını oluştur
         await initDatabase();
-        
+
         // ÖSYM şart maddesi tablolarını oluştur
         console.log('📋 ÖSYM şart maddesi tabloları oluşturuluyor...');
         await createConditionsTable();
-        
+
         // Sunucuyu başlat
         app.listen(PORT, () => {
             console.log(`\n🎓 ==========================================`);
@@ -1858,7 +2118,7 @@ async function startServer() {
             console.log(`💾 Veritabanı: MySQL (${process.env.DB_NAME})`);
             console.log(`📋 ÖSYM Şart Maddesi Sistemi: Aktif`);
             console.log(`==========================================\n`);
-            
+
             // İlk başlatmada ÖSYM verilerini yükle
             console.log('🔄 ÖSYM verileri yükleniyor (arka planda)...');
             refreshAllData().then(() => {
@@ -1867,7 +2127,7 @@ async function startServer() {
                 console.warn('⚠️ ÖSYM verileri yüklenemedi:', err.message);
             });
         });
-        
+
     } catch (error) {
         console.error('❌ Sunucu başlatma hatası:', error);
         process.exit(1);

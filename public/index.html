@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tercih AI - Akıllı Üniversite Tercih Danışmanı</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- Theme Toggle Button -->
     <button class="theme-toggle" id="themeToggle" title="Tema Değiştir">
@@ -27,20 +29,21 @@
                 </div>
                 <button class="new-chat-btn" id="newChatBtn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 5v14M5 12h14"/>
+                        <path d="M12 5v14M5 12h14" />
                     </svg>
                     Yeni Sohbet
                 </button>
             </div>
 
             <div class="history-header">
-                <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; padding: 0 1rem;">Sohbet Geçmişi</h3>
+                <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; padding: 0 1rem;">Sohbet Geçmişi
+                </h3>
             </div>
-            
+
             <div class="chat-history" id="chatHistory">
                 <div class="history-item active">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                     <span>Yeni Sohbet</span>
                 </div>
@@ -51,12 +54,18 @@
                     <div class="avatar">👤</div>
                     <div class="user-details">
                         <span class="user-name">Misafir</span>
-                        <button class="google-login-btn" id="googleLoginBtn" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #4285f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; width: 100%;">
-                            <svg style="width: 16px; height: 16px; margin-right: 0.5rem; vertical-align: middle;" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        <button class="google-login-btn" id="googleLoginBtn"
+                            style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #4285f4; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; width: 100%;">
+                            <svg style="width: 16px; height: 16px; margin-right: 0.5rem; vertical-align: middle;"
+                                viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                <path fill="currentColor"
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                <path fill="currentColor"
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                <path fill="currentColor"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                             </svg>
                             Google ile Giriş
                         </button>
@@ -68,7 +77,7 @@
         <!-- Mobile sidebar toggle -->
         <button class="mobile-menu-toggle" id="mobileMenuToggle">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 12h18M3 6h18M3 18h18"/>
+                <path d="M3 12h18M3 6h18M3 18h18" />
             </svg>
         </button>
 
@@ -79,36 +88,59 @@
                     <div class="welcome-logo">🎓</div>
                     <h1 class="gradient-text">Tercih AI'ya Hoş Geldiniz</h1>
                     <p>Yapay zeka destekli üniversite tercih danışmanınız. Hemen başlayalım!</p>
-                    
-                    <div class="quick-start-form">
-                        <h3>🚀 Tercih Analizi - Tüm Bilgilerinizi Girin</h3>
+
+                    <!-- Ana Seçim Kutuları -->
+                    <div class="analysis-choice-container" id="analysisChoiceContainer">
+                        <div class="analysis-card" id="tercihAnalysisCard">
+                            <div class="card-icon">🎯</div>
+                            <h3>Tercih Analizi Yap</h3>
+                            <p>Sıralama bilgilerinle kazanabileceğin üniversite ve bölümleri keşfet</p>
+                            <button class="choice-btn">Başla</button>
+                        </div>
+
+                        <div class="analysis-card" id="hedefAnalysisCard">
+                            <div class="card-icon">🚀</div>
+                            <h3>Hedef Analizi Yap</h3>
+                            <p>Mevcut net durumunla hedefindeki bölümlere olan mesafeni öğren</p>
+                            <button class="choice-btn">Başla</button>
+                        </div>
+                    </div>
+
+                    <!-- Tercih Analizi Formu -->
+                    <div class="quick-start-form" id="tercihAnalysisForm" style="display: none;">
+                        <button type="button" class="back-to-choice-btn" id="backFromTercih">
+                            ← Geri Dön
+                        </button>
+                        <h3>🎯 Tercih Analizi - Bilgilerinizi Girin</h3>
                         <form id="quickAnalysisForm">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label>📘 TYT Sıralamanız *</label>
-                                    <input type="text" id="quickTytRanking" placeholder="Örn: 600.000" inputmode="numeric" required>
+                                    <input type="text" id="quickTytRanking" placeholder="Örn: 600.000"
+                                        inputmode="numeric" required>
                                     <small>2 yıllık programlar için</small>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>📗 AYT Sıralamanız *</label>
-                                    <input type="text" id="quickAytRanking" placeholder="Örn: 400.000" inputmode="numeric" required>
+                                    <input type="text" id="quickAytRanking" placeholder="Örn: 400.000"
+                                        inputmode="numeric" required>
                                     <small>4 yıllık programlar için</small>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>👤 Cinsiyet *</label>
                                     <select id="quickGender" required>
-                                        <option value="">Seçiniz</option>
+                                        <option value="" disabled selected>Seçiniz</option>
                                         <option value="Erkek">Erkek</option>
                                         <option value="Kadın">Kadın</option>
-                                        <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>💭 Hayalinizdeki Bölüm *</label>
-                                    <input type="text" id="quickDept" placeholder="Örn: Bilgisayar Mühendisliği" required list="deptList">
+                                    <input type="text" id="quickDept" placeholder="Örn: Bilgisayar Mühendisliği"
+                                        required list="deptList">
                                     <datalist id="deptList">
                                         <option value="Bilgisayar Mühendisliği">
                                         <option value="Makine Mühendisliği">
@@ -124,19 +156,20 @@
                                         <option value="Psikoloji">
                                     </datalist>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>🏙️ Tercih Ettiğiniz Şehirler *</label>
-                                    <input type="text" id="quickCity" placeholder="Örn: İstanbul, Ankara, İzmir" required>
+                                    <input type="text" id="quickCity" placeholder="Örn: İstanbul, Ankara, İzmir"
+                                        required>
                                     <small>Virgülle ayırarak yazın veya "Fark etmez" yazın</small>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>📍 Bulunduğunuz İl *</label>
                                     <input type="text" id="quickLocation" placeholder="Örn: İzmir" required>
                                     <small>Ulaşım bilgisi için</small>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label>🎓 Eğitim Türü Tercihi</label>
                                     <select id="quickEduType">
@@ -146,28 +179,122 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <button type="submit" class="quick-start-btn">
                                 🤖 Detaylı Analiz Yap
                             </button>
                         </form>
                     </div>
 
+                    <!-- Hedef Analizi Formu -->
+                    <div class="quick-start-form" id="hedefAnalysisForm" style="display: none;">
+                        <button type="button" class="back-to-choice-btn" id="backFromHedef">
+                            ← Geri Dön
+                        </button>
+                        <h3>🚀 Hedef Analizi - Mevcut Durumunuzu Girin</h3>
+                        <form id="hedefAnalysisFormSubmit">
+                            <div class="form-grid">
+                                <!-- TYT Netleri -->
+                                <div class="form-section">
+                                    <h4>📘 TYT Netleriniz</h4>
+                                    <div class="form-group">
+                                        <label>Türkçe (Max: 40)</label>
+                                        <input type="number" id="tytTurkce" placeholder="Örn: 25.75" min="0" max="40" step="0.01" required>
+                                        <small>Ondalıklı net girebilirsiniz</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Matematik (Max: 40)</label>
+                                        <input type="number" id="tytMat" placeholder="Örn: 30.5" min="0" max="40" step="0.01" required>
+                                        <small>Ondalıklı net girebilirsiniz</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sosyal Bilgiler (Max: 20)</label>
+                                        <input type="number" id="tytSosyal" placeholder="Örn: 15.25" min="0" max="20" step="0.01" required>
+                                        <small>Ondalıklı net girebilirsiniz</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Fen Bilimleri (Max: 20)</label>
+                                        <input type="number" id="tytFen" placeholder="Örn: 18.5" min="0" max="20" step="0.01" required>
+                                        <small>Ondalıklı net girebilirsiniz</small>
+                                    </div>
+                                </div>
+
+                                <!-- AYT Alan Seçimi -->
+                                <div class="form-section">
+                                    <h4>📗 AYT Alan Seçimi</h4>
+                                    <div class="form-group">
+                                        <label>Alanınız *</label>
+                                        <select id="aytAlan" required>
+                                            <option value="" disabled selected>Seçiniz</option>
+                                            <option value="sayisal">Sayısal (MF)</option>
+                                            <option value="esit">Eşit Ağırlık (TM)</option>
+                                            <option value="sozel">Sözel (TS)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- AYT Netleri (Dinamik) -->
+                                <div class="form-section" id="aytNetsSection" style="display: none;">
+                                    <h4>📗 AYT Netleriniz</h4>
+                                    <div id="aytNetsContainer"></div>
+                                </div>
+
+                                <!-- Hayalindeki Bölüm -->
+                                <div class="form-section">
+                                    <h4>💭 Hayalindeki Bölüm</h4>
+                                    <div class="form-group">
+                                        <label>Hedef Bölümünüz *</label>
+                                        <input type="text" id="hedefBolum" placeholder="Örn: Bilgisayar Mühendisliği" 
+                                               required list="hedefBolumList" autocomplete="off">
+                                        <datalist id="hedefBolumList">
+                                            <option value="Bilgisayar Mühendisliği">
+                                            <option value="Yazılım Mühendisliği">
+                                            <option value="Elektrik-Elektronik Mühendisliği">
+                                            <option value="Makine Mühendisliği">
+                                            <option value="Endüstri Mühendisliği">
+                                            <option value="İnşaat Mühendisliği">
+                                            <option value="Mimarlık">
+                                            <option value="Hukuk">
+                                            <option value="Tıp">
+                                            <option value="Diş Hekimliği">
+                                            <option value="Eczacılık">
+                                            <option value="Hemşirelik">
+                                            <option value="Psikoloji">
+                                            <option value="İşletme">
+                                            <option value="İktisat">
+                                            <option value="Uluslararası İlişkiler">
+                                            <option value="Siyaset Bilimi ve Kamu Yönetimi">
+                                            <option value="İletişim">
+                                            <option value="Öğretmenlik">
+                                            <option value="Türk Dili ve Edebiyatı">
+                                            <option value="Tarih">
+                                            <option value="Sosyoloji">
+                                            <option value="Felsefe">
+                                        </datalist>
+                                        <small>Hedeflemek istediğiniz bölümü yazın</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="quick-start-btn">
+                                🎯 Hedef Analizi Yap
+                            </button>
+                        </form>
+                    </div>
 
                 </div>
             </div>
 
             <div class="chat-input-container">
-                <div class="chat-input-wrapper">
-                    <textarea 
-                        class="chat-input" 
-                        id="chatInput" 
-                        rows="1"
-                        placeholder="Mesajınızı yazın... (Enter ile gönderin)"
-                    ></textarea>
+                <div class="input-area-wrapper">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" id="chatInput" rows="1"
+                            placeholder="Mesajınızı yazın... (Enter ile gönderin)"></textarea>
+                    </div>
                     <button class="send-btn" id="sendBtn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                     </button>
                 </div>
@@ -181,4 +308,5 @@
     <script src="storage-helper.js"></script>
     <script src="app.js?v=9"></script>
 </body>
+
 </html>
