@@ -1,4 +1,10 @@
-const puppeteer = require('puppeteer');
+let puppeteer;
+try {
+    puppeteer = require('puppeteer');
+} catch (e) {
+    console.warn('⚠️ Puppeteer yüklenemedi - ÖSYM scraping devre dışı');
+}
+
 const axios = require('axios');
 const { pool } = require('./db');
 

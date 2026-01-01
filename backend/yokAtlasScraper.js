@@ -1,10 +1,21 @@
-const puppeteer = require('puppeteer');
+let puppeteer;
+try {
+    puppeteer = require('puppeteer');
+} catch (e) {
+    console.warn('⚠️ Puppeteer yüklenemedi - Sadece mock data kullanılacak');
+}
+
 const axios = require('axios');
 const cheerio = require('cheerio');
 
 // Gerçek YÖK Atlas Scraper
 async function scrapeYokAtlasReal(department, year = 2024) {
     console.log(`📡 YÖK Atlas'tan veri çekiliyor: ${department} - ${year}`);
+    
+    if (!puppeteer) {
+        console.warn('⚠️ Puppeteer kullanılamıyor - Mock data döndürülüyor');
+        return generateMockData(department, year);
+    }
     
     try {
         // Puppeteer ile tarayıcı başlat

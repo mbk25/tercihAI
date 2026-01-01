@@ -29,7 +29,9 @@
     "openai": "^6.9.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "puppeteer": "^24.30.0",
     "sequelize": "^6.37.7"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^24.30.0"
   }
 }

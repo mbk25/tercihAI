@@ -5,8 +5,11 @@ node_modules
 .env.local
 .git
 
-# Test dosyaları
-test-*.js
+# Test ve scraper dosyaları (production'da gereksiz)
+backend/test-*.js
+backend/scrape-*.js
+backend/list-*.js
+backend/yok-atlas-*.js
 *.test.js
 
 # Markdown dosyaları (README hariç)
@@ -27,3 +30,6 @@ tmp/
 server-*.txt
 BUTONLAR_EKLENMIS.txt
 TEST_DETAY_BUTONLARI.txt
+
+# Admin panel (production'da gereksiz)
+admin/

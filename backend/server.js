@@ -2144,11 +2144,18 @@ async function startServer() {
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     startServer();
 } else {
-    console.log('🌐 Vercel serverless mode - Server başlatılmıyor');
-    // Vercel için DB bağlantılarını kur
+    console.log('🌐 Vercel serverless mode - Initializing databases');
+    // Vercel için DB bağlantılarını kur (non-blocking)
     (async () => {
-        await connectMongoDB();
-        await testConnection();
+        try {
+            await connectMongoDB().catch(e => console.warn('MongoDB skip:', e.message));
+            await testConnection().catch(e => console.warn('MySQL skip:', e.message));
+            await initDatabase().catch(e => console.warn('DB init skip:', e.message));
+            await createConditionsTable().catch(e => console.warn('Conditions table skip:', e.message));
+            console.log('✅ Vercel initialization complete');
+        } catch (err) {
+            console.warn('⚠️ Partial initialization:', err.message);
+        }
     })();
 }
 
