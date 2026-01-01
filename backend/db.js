@@ -5,25 +5,17 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 // Singleton pool instance
 let pool = null;
 
-// Aiven gibi bulut sunucular için SSL ayarı şarttır.
+// Localhost MySQL configuration
 const dbConfig = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'tercihAI',
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    charset: 'utf8mb4',
-    // KRİTİK AYAR: SSL Bağlantısı
-    ssl: {
-        rejectUnauthorized: false
-    },
-    // Vercel için önemli ayarlar
-    connectTimeout: 10000,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    charset: 'utf8mb4'
 };
 
 // Singleton pool getter
@@ -41,7 +33,7 @@ async function testConnection() {
     try {
         const currentPool = getPool();
         const connection = await currentPool.getConnection();
-        console.log('✅ MySQL bağlantısı başarılı (Aiven/Cloud)');
+        console.log('✅ MySQL bağlantısı başarılı (Localhost)');
         connection.release();
         return true;
     } catch (error) {
