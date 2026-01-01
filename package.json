@@ -23,6 +23,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "googleapis": "^169.0.0",
+    "groq-sdk": "^0.3.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.4",
     "mysql2": "^3.15.3",
