@@ -2140,7 +2140,17 @@ async function startServer() {
     }
 }
 
-startServer();
+// Sadece localhost'ta server başlat (Vercel'de serverless olarak çalışacak)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    startServer();
+} else {
+    console.log('🌐 Vercel serverless mode - Server başlatılmıyor');
+    // Vercel için DB bağlantılarını kur
+    (async () => {
+        await connectMongoDB();
+        await testConnection();
+    })();
+}
 
 // ============================================
 // 💰 VAKIF ÜNİVERSİTESİ ÜCRET BİLGİSİ API
@@ -2177,3 +2187,6 @@ app.post('/api/tuition-fee', async (req, res) => {
         });
     }
 });
+
+// Vercel için export
+module.exports = app;

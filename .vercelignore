@@ -1,0 +1,29 @@
+# Vercel'e yüklenmesin
+node_modules
+*.log
+.env
+.env.local
+.git
+
+# Test dosyaları
+test-*.js
+*.test.js
+
+# Markdown dosyaları (README hariç)
+*.md
+!README.md
+
+# Batch dosyaları
+*.bat
+*.ps1
+
+# Yedek ve geçici dosyalar
+*.backup
+*.tmp
+temp/
+tmp/
+
+# Development dosyaları
+server-*.txt
+BUTONLAR_EKLENMIS.txt
+TEST_DETAY_BUTONLARI.txt

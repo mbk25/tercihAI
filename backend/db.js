@@ -2,6 +2,9 @@ const mysql = require('mysql2/promise');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Singleton pool instance
+let pool = null;
+
 // Aiven gibi bulut sunucular için SSL ayarı şarttır.
 const dbConfig = {
     host: process.env.DB_HOST,
@@ -16,15 +19,28 @@ const dbConfig = {
     // KRİTİK AYAR: SSL Bağlantısı
     ssl: {
         rejectUnauthorized: false
-    }
+    },
+    // Vercel için önemli ayarlar
+    connectTimeout: 10000,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
 };
 
-const pool = mysql.createPool(dbConfig);
+// Singleton pool getter
+function getPool() {
+    if (!pool) {
+        pool = mysql.createPool(dbConfig);
+    }
+    return pool;
+}
+
+const poolInstance = getPool();
 
 // Veritabanı bağlantısını test et
 async function testConnection() {
     try {
-        const connection = await pool.getConnection();
+        const currentPool = getPool();
+        const connection = await currentPool.getConnection();
         console.log('✅ MySQL bağlantısı başarılı (Aiven/Cloud)');
         connection.release();
         return true;
@@ -37,7 +53,8 @@ async function testConnection() {
 // Veritabanı tablolarını kontrol et (CREATE DATABASE kaldırıldı, Cloud'da zaten var)
 async function initDatabase() {
     try {
-        const connection = await pool.getConnection();
+        const currentPool = getPool();
+        const connection = await currentPool.getConnection();
 
         // Not: Cloud sunucularda 'CREATE DATABASE' genelde yetki hatası verir
         // veya zaten 'defaultdb' adında bir veritabanı vardır.
@@ -147,7 +164,7 @@ async function initDatabase() {
 }
 
 module.exports = {
-    pool,
+    pool: poolInstance,
     testConnection,
     initDatabase
 };

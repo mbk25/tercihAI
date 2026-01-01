@@ -1,21 +1,35 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// Singleton pattern for Vercel serverless functions
+let isConnected = false;
+
 // MongoDB Atlas bağlantısı
 const connectMongoDB = async () => {
+    // Eğer zaten bağlıysa, tekrar bağlanma
+    if (isConnected && mongoose.connection.readyState === 1) {
+        console.log('✅ MongoDB zaten bağlı (mevcut bağlantı kullanılıyor)');
+        return true;
+    }
+
     try {
         const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/tercihAI';
         
         await mongoose.connect(mongoURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            // Vercel için önemli ayarlar
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         });
         
+        isConnected = true;
         console.log('✅ MongoDB Atlas bağlantısı başarılı');
         return true;
     } catch (error) {
         console.error('❌ MongoDB bağlantı hatası:', error.message);
         console.log('⚠️ Sistem MySQL ile devam edecek');
+        isConnected = false;
         return false;
     }
 };
