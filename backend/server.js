@@ -14,6 +14,7 @@ const { chatWithGroq, analyzeDepartmentWithGroq } = require('./groq-service');
 const { findSmartAlternatives, generateStrategy, formatForAI } = require('./smart-alternatives');
 const { getUniversityConditions, createConditionsTable, refreshAllData } = require('./osym-guide-scraper');
 const { createSpreadsheet, appendToSpreadsheet } = require('./google-sheets-service');
+const { getTuitionInfo, formatTuitionInfoHTML } = require('./vakif-ucret-scraper');
 require('dotenv').config();
 
 // AI Provider seçimi (Groq en hızlı ve ücretsiz, Gemini ücretsiz ama yavaş, OpenAI ücretli)
@@ -1178,6 +1179,11 @@ ${i + 1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
                 status: 'alternatives',
                 message: `${dreamDept} için sıralamanız yeterli değil`,
                 dreamDepartment: dreamDept,
+                userRanking: rankToUse,
+                highestAcceptedRanking: allUniversities.length > 0 
+                    ? Math.max(...allUniversities.map(u => u.ranking || u.minRanking || 0).filter(r => r > 0))
+                    : null,
+                rankingType: is2Year ? 'TYT' : 'AYT',
                 alternatives: alternativesWithDetails,
                 aiRecommendation: aiRecommendation,
                 dgsInfo: {
@@ -2135,3 +2141,39 @@ async function startServer() {
 }
 
 startServer();
+
+// ============================================
+// 💰 VAKIF ÜNİVERSİTESİ ÜCRET BİLGİSİ API
+// ============================================
+
+app.post('/api/tuition-fee', async (req, res) => {
+    try {
+        const { university, department, preferenceOrder } = req.body;
+
+        console.log(`💰 Ücret bilgisi isteniyor: ${university} - ${department}`);
+
+        const tuitionInfo = await getTuitionInfo(university, department, preferenceOrder);
+
+        if (tuitionInfo) {
+            const htmlFormatted = formatTuitionInfoHTML(tuitionInfo);
+            
+            res.json({
+                success: true,
+                data: tuitionInfo,
+                html: htmlFormatted
+            });
+        } else {
+            res.json({
+                success: false,
+                message: 'Ücret bilgisi bulunamadı'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Ücret bilgisi hatası:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});

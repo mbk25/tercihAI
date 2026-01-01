@@ -125,19 +125,15 @@ function setupGoogleLoginButton() {
         googleBtn.onclick = () => {
             console.log('🚪 Çıkış yapılıyor...');
             
-            // Kullanıcıya özel sohbet geçmişini temizle
-            if (userProfile) {
-                const storageKey = getChatStorageKey();
-                console.log(`🗑️ Kullanıcı sohbet geçmişi temizleniyor: ${storageKey}`);
-                // NOT: Sohbet geçmişini SİLMİYORUZ - sadece profili temizliyoruz
-                // Kullanıcı tekrar giriş yaptığında aynı key ile sohbetleri geri gelecek
-            }
+            // NOT: Kullanıcı sohbetlerini SİLMİYORUZ - sadece session'ı temizliyoruz
+            // Tekrar giriş yaptığında sohbetler geri gelecek
+            console.log('ℹ️ Kullanıcı sohbetleri korunuyor (tekrar giriş için)');
             
-            // Profil ve token'ı temizle
+            // Sadece profil ve token'ı temizle
             StorageHelper.removeItem('userProfile');
             StorageHelper.removeItem('authToken');
             console.log('✅ Profil ve token temizlendi');
-            console.log('ℹ️ Sohbet geçmişi korundu - Tekrar giriş yaptığınızda geri gelecek');
+            console.log('✅ Sohbet geçmişi korundu - Tekrar giriş yaptığınızda geri gelecek');
             
             // Sayfayı yenile - misafir moduna dön
             window.location.reload();
@@ -1314,6 +1310,10 @@ function checkUserProfile() {
                 console.log('🔑 Google ID:', userProfile.googleId);
             }
             
+            // MİSAFİR SOHBETLERİNİ TEMİZLE
+            console.log('🗑️ Misafir sohbetleri temizleniyor...');
+            StorageHelper.removeItem('chatSessions_guest');
+            
             updateUserUI();
 
             // Kullanıcıya özel sohbet geçmişini yükle
@@ -1663,13 +1663,13 @@ function displayComprehensiveResults(data, formData) {
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.15)); 
-                        border-left: 4px solid #667eea; 
-                        border-radius: 10px; 
-                        padding: 1.5rem; 
+            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+                        border: 2px solid #3b82f6; 
+                        border-radius: 16px; 
+                        padding: 2rem; 
                         margin-top: 2rem;
-                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);">
-                <div style="color: #0f172a; font-size: 1.05rem; line-height: 1.8; white-space: pre-line; font-weight: 500;">
+                        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);">
+                <div style="color: #1e293b; font-size: 1.1rem; line-height: 2; white-space: pre-line; font-weight: 500;">
                     ${data.recommendation}
                 </div>
             </div>
@@ -1733,7 +1733,12 @@ function displayComprehensiveResults(data, formData) {
 
     } else {
         // Durum kartını ekle
-        const statusCard = createStatusCard(formData.dreamDept, aytRanking);
+        const statusCard = createStatusCard(
+            formData.dreamDept, 
+            aytRanking, 
+            data.highestAcceptedRanking, 
+            data.rankingType
+        );
         infoGridContainer.appendChild(statusCard);
 
         if (data.alternatives && data.alternatives.length > 0) {
@@ -2943,7 +2948,7 @@ function createSuccessCard(dreamDept) {
 }
 
 // Create Status Card (returns element)
-function createStatusCard(dreamDept, aytRanking) {
+function createStatusCard(dreamDept, aytRanking, lowestRanking = null, rankingType = 'AYT') {
     const statusCard = document.createElement('div');
     statusCard.className = 'result-card';
     statusCard.style.cssText = `
@@ -2967,9 +2972,20 @@ function createStatusCard(dreamDept, aytRanking) {
         <p style="color: var(--text-primary); font-size: 0.85rem; line-height: 1.3; margin-bottom: 0.3rem;">
             <strong>${dreamDept}</strong> için yetmiyor
         </p>
-        <p style="color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 0.8rem;">
-            AYT: <strong>${aytRanking.toLocaleString('tr-TR').replace(/,/g, '.')}</strong>
+        <p style="color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 0.3rem;">
+            ${rankingType || 'AYT'}: <strong>${aytRanking.toLocaleString('tr-TR').replace(/,/g, '.')}</strong>
         </p>
+        ${lowestRanking ? `
+        <div style="background: rgba(239, 68, 68, 0.1); padding: 0.6rem; border-radius: 8px; border: 1px solid #ef4444; margin-bottom: 0.8rem;">
+            <p style="color: #ef4444; font-size: 0.7rem; margin: 0; line-height: 1.4;">
+                📊 <strong>${dreamDept}</strong> en yüksek kabul edilen sıralama:<br>
+                <span style="font-size: 0.85rem; font-weight: 800;">${lowestRanking.toLocaleString('tr-TR').replace(/,/g, '.')}</span>
+                <span style="font-size: 0.65rem; display: block; margin-top: 0.2rem; color: #dc2626;">
+                    (Bu sıralamanın altında giremezsiniz)
+                </span>
+            </p>
+        </div>
+        ` : ''}
         <div style="background: rgba(16, 163, 127, 0.1); padding: 0.7rem; border-radius: 8px; border: 2px dashed #10a37f;">
             <p style="color: #10a37f; font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem;">
                 😊 Umut Var!
@@ -4459,7 +4475,7 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                         </div>
                     </div>
                     
-                    <!-- Google Maps -->
+                    <!-- Google Maps (Her zaman sağda) -->
                     <div style="
                         background: #0f172a;
                         border-radius: 15px;
@@ -4506,33 +4522,6 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                             </iframe>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-                            <div style="
-                                background: rgba(102, 126, 234, 0.1);
-                                padding: 12px;
-                                border-radius: 8px;
-                                border-left: 4px solid #667eea;
-                                text-align: center;
-                            ">
-                                <p style="color: #e2e8f0; margin: 0; font-size: 12px;">
-                                    🔍 <strong>Yakınlaştır</strong><br>
-                                    <span style="color: #94a3b8;">Detayları görmek için</span>
-                                </p>
-                            </div>
-                            <div style="
-                                background: rgba(102, 126, 234, 0.1);
-                                padding: 12px;
-                                border-radius: 8px;
-                                border-left: 4px solid #667eea;
-                                text-align: center;
-                            ">
-                                <p style="color: #e2e8f0; margin: 0; font-size: 12px;">
-                                    📍 <strong>Kampüs Konumu</strong><br>
-                                    <span style="color: #94a3b8;">Haritada görüntüle</span>
-                                </p>
-                            </div>
-                        </div>
-                        
                         <!-- Ulaşım Rotası Planlayın Butonu -->
                         <button 
                             id="planRouteBtn"
@@ -4565,11 +4554,36 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
                         </p>
                     </div>
                 </div>
+                
+                ${uniType === 'Vakıf' ? `
+                <!-- Ücret Bilgileri (ÖSYM'nin altında, tam genişlik) -->
+                <div style="padding: 0 30px 30px 30px;">
+                    <div id="tuitionInfoContainer" style="
+                        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+                        border-radius: 15px;
+                        padding: 25px;
+                        border: 2px solid #f59e0b;
+                    ">
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loading-spinner" style="display: inline-block;"></div>
+                            <p style="color: #f59e0b; margin-top: 15px; font-size: 1.1rem;">
+                                💰 Ücret bilgileri yükleniyor...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                </div>
             </div>
         </div>
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Vakıf üniversitesi için ücret bilgisini yükle
+    if (uniType === 'Vakıf') {
+        loadTuitionFee(uniName, window.currentDepartment || 'Bilgisayar Mühendisliği', 1);
+    }
 
     // Responsive grid kontrolü
     const modalContent = document.querySelector('#detailedConditionsModal .modal-content-grid');
@@ -5430,4 +5444,57 @@ function getSeviyeEmoji(seviye) {
         'Başlangıç': '💪'
     };
     return emojiMap[seviye] || '👍';
+}
+
+// ============================================
+// 💰 VAKIF ÜNİVERSİTESİ ÜCRET BİLGİSİ YÜKLEME
+// ============================================
+
+async function loadTuitionFee(university, department, preferenceOrder = null) {
+    console.log(`💰 Ücret bilgisi yükleniyor: ${university} - ${department}`);
+
+    const container = document.getElementById('tuitionInfoContainer');
+    if (!container) {
+        console.warn('⚠️ Ücret bilgisi container bulunamadı');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/tuition-fee`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ university, department, preferenceOrder })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.html) {
+            // HTML'i container'a yerleştir
+            container.innerHTML = data.html;
+            console.log('✅ Ücret bilgisi yüklendi');
+        } else {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <p style="color: #f59e0b; font-size: 1.1rem;">
+                        💡 Bu üniversite için ücret bilgisi bulunamadı
+                    </p>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 10px;">
+                        Güncel ücret bilgileri için üniversitenin resmi web sitesini ziyaret edebilirsiniz.
+                    </p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('❌ Ücret bilgisi yüklenirken hata:', error);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 30px;">
+                <p style="color: #ef4444; font-size: 1.1rem;">
+                    ❌ Ücret bilgisi yüklenemedi
+                </p>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 10px;">
+                    ${error.message || 'Bir hata oluştu'}
+                </p>
+            </div>
+        `;
+    }
 }
