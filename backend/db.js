@@ -2,24 +2,30 @@ const mysql = require('mysql2/promise');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// MySQL bağlantı havuzu
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'tercihAI',
+// Aiven gibi bulut sunucular için SSL ayarı şarttır.
+const dbConfig = {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    charset: 'utf8mb4'
-});
+    charset: 'utf8mb4',
+    // KRİTİK AYAR: SSL Bağlantısı
+    ssl: {
+        rejectUnauthorized: false
+    }
+};
+
+const pool = mysql.createPool(dbConfig);
 
 // Veritabanı bağlantısını test et
 async function testConnection() {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ MySQL bağlantısı başarılı');
+        console.log('✅ MySQL bağlantısı başarılı (Aiven/Cloud)');
         connection.release();
         return true;
     } catch (error) {
@@ -28,14 +34,14 @@ async function testConnection() {
     }
 }
 
-// Veritabanı tablolarını oluştur
+// Veritabanı tablolarını kontrol et (CREATE DATABASE kaldırıldı, Cloud'da zaten var)
 async function initDatabase() {
     try {
         const connection = await pool.getConnection();
 
-        // Veritabanını oluştur
-        await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'tercihAI'} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-        await connection.query(`USE ${process.env.DB_NAME || 'tercihAI'}`);
+        // Not: Cloud sunucularda 'CREATE DATABASE' genelde yetki hatası verir
+        // veya zaten 'defaultdb' adında bir veritabanı vardır.
+        // O yüzden sadece tabloları oluşturuyoruz.
 
         // Kullanıcılar tablosu
         await connection.query(`
@@ -74,7 +80,7 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        // Üniversiteler tablosu (zaten var, sadece yoksa oluştur)
+        // Üniversiteler tablosu
         await connection.query(`
             CREATE TABLE IF NOT EXISTS universities (
                 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -119,40 +125,23 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        // Admin kullanıcısı ekle (şifre: admin123)
-        const bcrypt = require('bcryptjs');
-        const hashedPassword = await bcrypt.hash('admin123', 10);
-        await connection.query(`
-            INSERT IGNORE INTO users (username, password, email, name, role) 
-            VALUES ('admin', ?, 'admin@tercihAI.com', 'Admin', 'admin')
-        `, [hashedPassword]);
-
-        // Örnek üniversite verileri ekle
-        const sampleUniversities = [
-            ['Boğaziçi Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Bebek Kampüsü', 3000, 80, 'Devlet', 2024],
-            ['İstanbul Teknik Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Maslak Kampüsü', 5000, 100, 'Devlet', 2024],
-            ['Orta Doğu Teknik Üniversitesi', 'Ankara', 'Bilgisayar Mühendisliği', 'Merkez Kampüs', 8000, 120, 'Devlet', 2024],
-            ['Hacettepe Üniversitesi', 'Ankara', 'Bilgisayar Mühendisliği', 'Beytepe Kampüsü', 15000, 90, 'Devlet', 2024],
-            ['Koç Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Rumeli Feneri Kampüsü', 2000, 50, 'Vakıf', 2024],
-            ['Sabancı Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Tuzla Kampüsü', 4000, 60, 'Vakıf', 2024],
-            ['Bilkent Üniversitesi', 'Ankara', 'Bilgisayar Mühendisliği', 'Merkez Kampüs', 7000, 70, 'Vakıf', 2024],
-            ['Ege Üniversitesi', 'İzmir', 'Bilgisayar Mühendisliği', 'Bornova Kampüsü', 40000, 85, 'Devlet', 2024],
-            ['Ankara Üniversitesi', 'Ankara', 'Bilgisayar Mühendisliği', 'Tandoğan Kampüsü', 35000, 75, 'Devlet', 2024],
-            ['Marmara Üniversitesi', 'İstanbul', 'Bilgisayar Mühendisliği', 'Göztepe Kampüsü', 65000, 95, 'Devlet', 2024]
-        ];
-
-        for (const uni of sampleUniversities) {
+        // Admin kullanıcısı (Sadece yoksa ekler)
+        const [rows] = await connection.query("SELECT * FROM users WHERE username = 'admin'");
+        if (rows.length === 0) {
+            const bcrypt = require('bcryptjs');
+            const hashedPassword = await bcrypt.hash('admin123', 10);
             await connection.query(`
-                INSERT IGNORE INTO universities (name, city, department, campus, ranking, minRanking, quota, type, year) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [uni[0], uni[1], uni[2], uni[3], uni[4], uni[4], uni[5], uni[6], uni[7]]);
+                INSERT INTO users (username, password, email, name, role) 
+                VALUES ('admin', ?, 'admin@tercihAI.com', 'Admin', 'admin')
+            `, [hashedPassword]);
+            console.log('✅ Admin kullanıcısı oluşturuldu.');
         }
 
         connection.release();
-        console.log('✅ Veritabanı tabloları oluşturuldu');
+        console.log('✅ Veritabanı tabloları senkronize edildi.');
         return true;
     } catch (error) {
-        console.error('❌ Veritabanı oluşturma hatası:', error.message);
+        console.error('❌ Veritabanı başlatma hatası:', error.message);
         return false;
     }
 }
