@@ -2,6 +2,8 @@
 const programData = require('./istanbul-bilgisayar-programciligi-data');
 const istanbulCSData = programData.bilgisayarProgramciligi;
 const istanbulElektrikData = programData.elektrik;
+const istanbulWebTasarimData = programData.webTasarim;
+const istanbulBilgisayarTeknolojisiData = programData.bilgisayarTeknolojisi;
 
 /**
  * Kullanıcının hayalindeki bölüme göre akıllı alternatifler öner
@@ -55,7 +57,8 @@ const DEPARTMENT_ALTERNATIVES = {
                 similarity: 60,
                 description: "Frontend ve backend web geliştirme, DGS ile 4 yıllığa geçiş",
                 dgsTarget: "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
-                dgsSuccessRate: 55
+                dgsSuccessRate: 55,
+                hasDataset: true // İstanbul verisi var
             },
             {
                 name: "Bilgisayar Teknolojileri",
@@ -63,7 +66,8 @@ const DEPARTMENT_ALTERNATIVES = {
                 similarity: 65,
                 description: "Genel bilgisayar teknolojileri, DGS fırsatı",
                 dgsTarget: "Bilgisayar ve Öğretim Teknolojileri",
-                dgsSuccessRate: 60
+                dgsSuccessRate: 60,
+                hasDataset: true // İstanbul verisi var
             }
         ]
     },
@@ -175,6 +179,10 @@ function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
                         istanbulUnis = getIstanbulUniversities(istanbulCSData, tytRanking, city);
                     } else if (alt.name === "Elektrik") {
                         istanbulUnis = getIstanbulUniversities(istanbulElektrikData, tytRanking, city);
+                    } else if (alt.name === "Web Tasarım ve Kodlama") {
+                        istanbulUnis = getIstanbulUniversities(istanbulWebTasarimData, tytRanking, city);
+                    } else if (alt.name === "Bilgisayar Teknolojileri") {
+                        istanbulUnis = getIstanbulUniversities(istanbulBilgisayarTeknolojisiData, tytRanking, city);
                     }
                     
                     if (istanbulUnis) {

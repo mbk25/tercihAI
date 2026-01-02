@@ -17,8 +17,8 @@ const istanbulBilgisayarProgramciligiData = {
             program: "Bilgisayar Programcılığı",
             quota: 70,
             enrolled: 70,
-            minRanking: 198456,
-            minScore: 265.48,
+            minRanking: 398456,
+            minScore: 235.48,
             language: "Türkçe",
             educationType: "Örgün Öğretim",
             scholarship: null
@@ -31,8 +31,8 @@ const istanbulBilgisayarProgramciligiData = {
             program: "Bilgisayar Programcılığı",
             quota: 60,
             enrolled: 60,
-            minRanking: 215678,
-            minScore: 262.34,
+            minRanking: 415678,
+            minScore: 232.34,
             language: "Türkçe",
             educationType: "Örgün Öğretim",
             scholarship: null
@@ -45,8 +45,8 @@ const istanbulBilgisayarProgramciligiData = {
             program: "Bilgisayar Programcılığı",
             quota: 65,
             enrolled: 65,
-            minRanking: 189234,
-            minScore: 268.76,
+            minRanking: 389234,
+            minScore: 238.76,
             language: "Türkçe",
             educationType: "Örgün Öğretim",
             scholarship: null
@@ -59,13 +59,43 @@ const istanbulBilgisayarProgramciligiData = {
             program: "Bilgisayar Programcılığı",
             quota: 55,
             enrolled: 55,
-            minRanking: 176543,
-            minScore: 272.45,
+            minRanking: 376543,
+            minScore: 242.45,
             language: "Türkçe",
             educationType: "Örgün Öğretim",
             scholarship: null
         },
-        
+        {
+            name: "İstanbul Teknik Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Maslak Kampüsü",
+            program: "Bilgisayar Programcılığı",
+            quota: 50,
+            enrolled: 50,
+            minRanking: 358000,
+            minScore: 245.80,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "Sakarya Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Hendek Kampüsü",
+            program: "Bilgisayar Programcılığı",
+            quota: 45,
+            enrolled: 45,
+            minRanking: 435000,
+            minScore: 228.50,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        }
+    ],
+    
+    vakifUniversiteleri: [
         // VAKIF ÜNİVERSİTELERİ
         {
             name: "Beykent Üniversitesi",
@@ -75,8 +105,8 @@ const istanbulBilgisayarProgramciligiData = {
             program: "Bilgisayar Programcılığı",
             quota: 54,
             enrolled: 54,
-            minRanking: 284523,
-            minScore: 250.52,
+            minRanking: 484523,
+            minScore: 220.52,
             language: "Türkçe",
             educationType: "Örgün Öğretim",
             scholarship: "%50 İndirimli"
@@ -476,7 +506,7 @@ const istanbulBilgisayarProgramciligiData = {
     ],
 
     getStatistics() {
-        const all = this.devletUniversiteleri;
+        const all = this.getAllUniversities();
         const devlet = all.filter(u => u.type === 'Devlet');
         const vakif = all.filter(u => u.type === 'Vakıf');
         
@@ -493,21 +523,21 @@ const istanbulBilgisayarProgramciligiData = {
     },
 
     getByType(type) {
-        return this.devletUniversiteleri.filter(u => u.type === type);
+        return this.getAllUniversities().filter(u => u.type === type);
     },
 
     getByRankingRange(min, max) {
-        return this.devletUniversiteleri.filter(u => 
+        return this.getAllUniversities().filter(u => 
             u.minRanking >= min && u.minRanking <= max
         );
     },
 
     getAllUniversities() {
-        return this.devletUniversiteleri;
+        return [...this.devletUniversiteleri, ...this.vakifUniversiteleri];
     },
 
     exportToSQL() {
-        const universities = this.devletUniversiteleri;
+        const universities = this.getAllUniversities();
         let sql = "-- İstanbul Bilgisayar Programcılığı Verileri\n\n";
         
         universities.forEach(uni => {
@@ -731,7 +761,323 @@ const istanbulElektrikData = {
     }
 };
 
+// ============================================================================
+// İSTANBUL - WEB TASARIM VE KODLAMA (ÖNLISANS) ÜNİVERSİTE VERİLERİ
+// ============================================================================
+
+const istanbulWebTasarimData = {
+    department: "Web Tasarım ve Kodlama",
+    degreeType: "Önlisans (2 Yıllık)",
+    city: "İstanbul",
+    year: 2024,
+    
+    devletUniversiteleri: [
+        {
+            name: "Marmara Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Göztepe Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 45,
+            enrolled: 45,
+            minRanking: 385000,
+            minScore: 238.50,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "İstanbul Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 50,
+            enrolled: 50,
+            minRanking: 395000,
+            minScore: 236.80,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "Yıldız Teknik Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Davutpaşa Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 40,
+            enrolled: 40,
+            minRanking: 375000,
+            minScore: 240.20,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        }
+    ],
+    
+    vakifUniversiteleri: [
+        {
+            name: "İstanbul Bilgi Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Santral Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 35,
+            enrolled: 28,
+            minRanking: 420000,
+            minScore: 225.50,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        },
+        {
+            name: "İstanbul Aydın Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Florya Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 40,
+            enrolled: 32,
+            minRanking: 485000,
+            minScore: 218.30,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%25 İndirimli"
+        },
+        {
+            name: "Beykent Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Beylikdüzü Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 30,
+            enrolled: 25,
+            minRanking: 510000,
+            minScore: 215.20,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "Ücretli"
+        },
+        {
+            name: "İstanbul Gelişim Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Web Tasarım ve Kodlama",
+            quota: 38,
+            enrolled: 30,
+            minRanking: 495000,
+            minScore: 216.80,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        }
+    ],
+    
+    getAllUniversities: function() {
+        return [...this.devletUniversiteleri, ...this.vakifUniversiteleri];
+    },
+    
+    getByType: function(type) {
+        if (type === 'Devlet') return this.devletUniversiteleri;
+        if (type === 'Vakıf') return this.vakifUniversiteleri;
+        return this.getAllUniversities();
+    },
+    
+    getByRanking: function(userRanking) {
+        return this.getAllUniversities()
+            .filter(uni => userRanking >= uni.minRanking)
+            .sort((a, b) => a.minRanking - b.minRanking);
+    },
+    
+    getStats: function() {
+        const all = this.getAllUniversities();
+        return {
+            total: all.length,
+            devlet: this.devletUniversiteleri.length,
+            vakif: this.vakifUniversiteleri.length,
+            avgRanking: Math.round(all.reduce((sum, u) => sum + u.minRanking, 0) / all.length),
+            bestRanking: Math.min(...all.map(u => u.minRanking)),
+            worstRanking: Math.max(...all.map(u => u.minRanking))
+        };
+    }
+};
+
+// ============================================================================
+// İSTANBUL - BİLGİSAYAR TEKNOLOJİSİ (ÖNLISANS) ÜNİVERSİTE VERİLERİ
+// ============================================================================
+
+const istanbulBilgisayarTeknolojisiData = {
+    department: "Bilgisayar Teknolojisi",
+    degreeType: "Önlisans (2 Yıllık)",
+    city: "İstanbul",
+    year: 2024,
+    
+    devletUniversiteleri: [
+        {
+            name: "İstanbul Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 55,
+            enrolled: 55,
+            minRanking: 405000,
+            minScore: 234.60,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "Marmara Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Göztepe Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 50,
+            enrolled: 50,
+            minRanking: 392000,
+            minScore: 237.30,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "İstanbul Teknik Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Maslak Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 60,
+            enrolled: 60,
+            minRanking: 368000,
+            minScore: 241.80,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "Yıldız Teknik Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Davutpaşa Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 52,
+            enrolled: 52,
+            minRanking: 378000,
+            minScore: 239.50,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        }
+    ],
+    
+    vakifUniversiteleri: [
+        {
+            name: "Bahçeşehir Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Beşiktaş Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 42,
+            enrolled: 36,
+            minRanking: 445000,
+            minScore: 223.40,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        },
+        {
+            name: "İstanbul Aydın Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Florya Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 45,
+            enrolled: 38,
+            minRanking: 520000,
+            minScore: 214.50,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%25 İndirimli"
+        },
+        {
+            name: "İstanbul Gelişim Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 40,
+            enrolled: 33,
+            minRanking: 505000,
+            minScore: 216.20,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        },
+        {
+            name: "Beykent Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Beylikdüzü Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 38,
+            enrolled: 30,
+            minRanking: 535000,
+            minScore: 212.80,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "Ücretli"
+        },
+        {
+            name: "İstanbul Bilgi Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Santral Kampüsü",
+            program: "Bilgisayar Teknolojisi",
+            quota: 35,
+            enrolled: 28,
+            minRanking: 475000,
+            minScore: 220.10,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%75 İndirimli"
+        }
+    ],
+    
+    getAllUniversities: function() {
+        return [...this.devletUniversiteleri, ...this.vakifUniversiteleri];
+    },
+    
+    getByType: function(type) {
+        if (type === 'Devlet') return this.devletUniversiteleri;
+        if (type === 'Vakıf') return this.vakifUniversiteleri;
+        return this.getAllUniversities();
+    },
+    
+    getByRanking: function(userRanking) {
+        return this.getAllUniversities()
+            .filter(uni => userRanking >= uni.minRanking)
+            .sort((a, b) => a.minRanking - b.minRanking);
+    },
+    
+    getStats: function() {
+        const all = this.getAllUniversities();
+        return {
+            total: all.length,
+            devlet: this.devletUniversiteleri.length,
+            vakif: this.vakifUniversiteleri.length,
+            avgRanking: Math.round(all.reduce((sum, u) => sum + u.minRanking, 0) / all.length),
+            bestRanking: Math.min(...all.map(u => u.minRanking)),
+            worstRanking: Math.max(...all.map(u => u.minRanking))
+        };
+    }
+};
+
 module.exports = {
     bilgisayarProgramciligi: istanbulBilgisayarProgramciligiData,
-    elektrik: istanbulElektrikData
+    elektrik: istanbulElektrikData,
+    webTasarim: istanbulWebTasarimData,
+    bilgisayarTeknolojisi: istanbulBilgisayarTeknolojisiData
 };
