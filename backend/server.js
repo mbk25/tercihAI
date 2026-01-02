@@ -7,7 +7,6 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { pool, testConnection, initDatabase } = require('./db');
 const { scrapeYokAtlasReal, scrapeYokAtlasSimple, generateMockData } = require('./yokAtlasScraper');
-const { connectMongoDB, University, User, Analysis, ChatHistory } = require('./mongodb');
 const { chatWithAI, analyzeDepartment } = require('./openai-service');
 const { chatWithGemini, analyzeDepartmentWithGemini } = require('./gemini-service');
 const { chatWithGroq, analyzeDepartmentWithGroq } = require('./groq-service');
@@ -909,10 +908,119 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
             };
 
         } else {
-            // ❌ YETMİYOR - Alternatif bölümler öner
-            console.log(`❌ ${dreamDept}'ne yetmiyor, alternatifler aranıyor...`);
+            // ❌ YETMİYOR - AKILLI ALTERNATİF SİSTEMİ DEVREYE GİRİYOR
+            console.log(`❌ ${dreamDept}'ne yetmiyor, akıllı alternatif sistemi çalışıyor...`);
 
-            const alternatives = await findAlternatives(dreamDept, aytRank, tytRank);
+            // Smart Alternatives sistemini kullan
+            const smartAlternatives = findSmartAlternatives(dreamDept, aytRank, tytRank, city);
+            console.log('🔍 Smart Alternatives sonucu:', {
+                found: smartAlternatives.found,
+                twoYear: smartAlternatives.twoYearOptions?.length || 0,
+                fourYear: smartAlternatives.fourYearOptions?.length || 0
+            });
+            
+            if (smartAlternatives.found && (smartAlternatives.twoYearOptions.length > 0 || smartAlternatives.fourYearOptions.length > 0)) {
+                // ✅ SMART ALTERNATIVES BULUNDU!
+                console.log(`✅ Smart Alternatives bulundu: ${smartAlternatives.twoYearOptions.length} 2-yıllık, ${smartAlternatives.fourYearOptions.length} 4-yıllık`);
+                
+                const strategy = generateStrategy(smartAlternatives);
+                const smartPrompt = formatForAI(smartAlternatives, strategy) + `
+
+🎯 GÖREVİNİZ:
+Yukarıdaki verileri kullanarak kullanıcıya:
+
+1. **Durum Değerlendirmesi:** ${dreamDept} için sıralamasının yetip yetmediğini açıkla
+2. **4 Yıllık Alternatifler:** AYT sıralamasına göre hangi benzer bölümlere girebilir?
+3. **2 Yıllık + DGS Yolu:** TYT sıralamasına göre hangi 2 yıllık programlar uygun? DGS ile nasıl hedef bölüme ulaşabilir?
+4. **Tercih Stratejisi:** 24 tercihi nasıl dağıtmalı? Hangi sırayla tercih yapmalı?
+5. **Motivasyon:** Kullanıcıyı motive et, başarı hikayeleri paylaş
+
+⚠️ ÖNEMLİ:
+- Yukarıdaki GERÇEK YÖK ATLAS VERİLERİNİ kullan
+- Üniversite isimlerini, taban sıralamalarını TAM OLARAK kullan
+- ${smartAlternatives.twoYearOptions.filter(opt => opt.universities && opt.universities.length > 0).map(opt => `${opt.name} için ${opt.stats?.totalEligible || 0} üniversite var`).join(', ')}
+- Her öneriyi gerekçelendir
+- Olumlu ve destekleyici bir dil kullan
+
+Cinsiyet: ${gender || 'Belirtilmemiş'}
+Tercih Şehirleri: ${city || 'Tüm Türkiye'}
+Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
+`;
+
+                let aiRecommendation = '';
+                try {
+                    if (AI_PROVIDER === 'groq') {
+                        const aiResponse = await chatWithGroq(smartPrompt, []);
+                        aiRecommendation = aiResponse.text;
+                    } else if (AI_PROVIDER === 'gemini') {
+                        const aiResponse = await chatWithGemini(smartPrompt, []);
+                        aiRecommendation = aiResponse.text;
+                    } else {
+                        const aiResponse = await chatWithAI(smartPrompt, []);
+                        aiRecommendation = aiResponse.text;
+                    }
+                    console.log('✅ Smart AI önerisi oluşturuldu');
+                } catch (aiError) {
+                    console.warn('⚠️ AI hatası:', aiError.message);
+                    aiRecommendation = `${dreamDept} için sıralamanız yeterli değil. Ancak size alternatif öneriler sunuyoruz!`;
+                }
+
+                // Smart alternatives formatında sonuç döndür
+                // Frontend için eski formata da dönüştür
+                const alternativesForFrontend = [
+                    // 4 yıllık alternatifler
+                    ...smartAlternatives.fourYearOptions.map(opt => ({
+                        dept: opt.name,
+                        type: '4 Yıllık',
+                        threshold: opt.threshold,
+                        description: opt.description,
+                        universities: [], // YÖK'ten çekilecek
+                        available: opt.eligible,
+                        dgs: false
+                    })),
+                    // 2 yıllık alternatifler
+                    ...smartAlternatives.twoYearOptions.map(opt => ({
+                        dept: opt.name,
+                        type: '2 Yıllık',
+                        threshold: opt.threshold,
+                        description: opt.description,
+                        universities: opt.universities || [],
+                        available: opt.eligible,
+                        dgs: true,
+                        dgsTarget: opt.dgsTarget,
+                        dgsSuccessRate: opt.dgsSuccessRate
+                    }))
+                ];
+
+                results = {
+                    isEligible: false,
+                    status: 'smart_alternatives',
+                    message: `${dreamDept} için sıralamanız yeterli değil`,
+                    dreamDepartment: dreamDept,
+                    userRanking: rankToUse,
+                    highestAcceptedRanking: allUniversities.length > 0 
+                        ? Math.max(...allUniversities.map(u => u.ranking || u.minRanking || 0).filter(r => r > 0))
+                        : null,
+                    rankingType: is2Year ? 'TYT' : 'AYT',
+                    alternatives: alternativesForFrontend, // Frontend için eski format
+                    smartAlternatives: smartAlternatives, // Yeni format
+                    strategy: strategy,
+                    aiRecommendation: aiRecommendation,
+                    dgsInfo: {
+                        available: smartAlternatives.twoYearOptions.length > 0,
+                        description: "2 yıllık ön lisans programlarından mezun olduktan sonra DGS (Dikey Geçiş Sınavı) ile 4 yıllık lisans programlarına geçiş yapabilirsiniz.",
+                        advantages: [
+                            "Sektöre 2 yıl erken giriş",
+                            "Pratik iş deneyimi kazanma",
+                            "DGS ile ikinci bir şans",
+                            "Çalışırken 4 yıllık tamamlama"
+                        ]
+                    }
+                };
+            } else {
+                // Eski sistem - Smart alternatives bulunamadı
+                console.log('⚠️ Smart alternatives bulunamadı, eski sisteme geçiliyor...');
+                const alternatives = await findAlternatives(dreamDept, aytRank, tytRank);
 
             // Alternatifler için de üniversite bilgisi ekle
             const alternativesWithDetails = await Promise.all(
@@ -1197,7 +1305,8 @@ ${i + 1}. 🎓 ${alt.dept.toUpperCase()} (Ön Lisans)
                     ]
                 }
             };
-        }
+            } // Eski sistem bloğunu kapat
+        } // Ana else bloğunu kapat
 
         // Veritabanına kaydet
         try {

@@ -1,0 +1,1294 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-01-02T13:05:00+03:00",
+    "academicYears": [
+      "2024-2025",
+      "2025-2026"
+    ],
+    "completedUniversities": 6,
+    "totalUniversities": 16,
+    "dataSource": "official_university_websites"
+  },
+  "universities": {
+    "ISTANBUL_AYDIN": {
+      "name": "İstanbul Aydın Üniversitesi",
+      "academicYear": "2024-2025",
+      "sourceUrl": "https://tercihfuari.com/wp-content/uploads/2024/07/Istanbul-Aydin-Universitesi-Egitim-Ucretleri-ve-Burslari-2024-2025.pdf",
+      "currency": "TL",
+      "defaultScholarshipType": "50% İndirimli (Most programs)",
+      "departments": {
+        "tip": {
+          "name": "Tıp (Türkçe & İngilizce)",
+          "faculty": "Tıp Fakültesi",
+          "fee_50_percent": 275000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "dis_hekimligi": {
+          "name": "Diş Hekimliği (Türkçe & İngilizce)",
+          "faculty": "Diş Hekimliği Fakültesi",
+          "fee_50_percent": 275000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "eczacilik": {
+          "name": "Eczacılık",
+          "faculty": "Eczacılık Fakültesi",
+          "fee_50_percent": 200000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "hukuk": {
+          "name": "Hukuk",
+          "faculty": "Hukuk Fakültesi",
+          "fee_50_percent": 175000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "bilgisayar_muhendisligi": {
+          "name": "Bilgisayar Mühendisliği (İngilizce)",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 200000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "yazilim_muhendisligi": {
+          "name": "Yazılım Mühendisliği (İngilizce)",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 200000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "elektrik_elektronik": {
+          "name": "Elektrik-Elektronik Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 185000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "endustri_muhendisligi": {
+          "name": "Endüstri Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 185000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "insaat_muhendisligi": {
+          "name": "İnşaat Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 185000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "makine_muhendisligi": {
+          "name": "Makine Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_percent": 185000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "psikoloji": {
+          "name": "Psikoloji",
+          "faculty": "Fen Edebiyat Fakültesi",
+          "fee_full": 225000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "egitim_fakultesi": {
+          "name": "Eğitim Fakültesi (Tüm Bölümler)",
+          "faculty": "Eğitim Fakültesi",
+          "fee_50_percent": 160000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "isletme": {
+          "name": "İşletme (İngilizce)",
+          "faculty": "İktisadi ve İdari Bilimler Fakültesi",
+          "fee_50_percent": 170000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "hemsirelik": {
+          "name": "Hemşirelik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_25_percent": 165000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ],
+          "note": "25% indirim uygulanır"
+        },
+        "fizyoterapi": {
+          "name": "Fizyoterapi ve Rehabilitasyon",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_percent": 150000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "beslenme": {
+          "name": "Beslenme ve Diyetetik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_percent": 150000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "mimarlik": {
+          "name": "Mimarlık",
+          "faculty": "Mimarlık ve Tasarım Fakültesi",
+          "fee_50_percent": 195000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "ic_mimarlik": {
+          "name": "İç Mimarlık",
+          "faculty": "Mimarlık ve Tasarım Fakültesi",
+          "fee_50_percent": 195000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "iletisim": {
+          "name": "İletişim Fakültesi",
+          "faculty": "İletişim Fakültesi",
+          "fee_50_percent": 150000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "bilgisayar_programciligi": {
+          "name": "Bilgisayar Programcılığı (Önlisans)",
+          "faculty": "Meslek Yüksekokulu",
+          "fee_50_percent": 110000,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "onlisans_genel": {
+          "name": "Önlisans Programları (Genel)",
+          "faculty": "Meslek Yüksekokulu",
+          "fee_50_percent": 90000,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        },
+        "hazirlik": {
+          "name": "İngilizce Hazırlık",
+          "faculty": "Hazırlık Okulu",
+          "fee_undergraduate": 150000,
+          "fee_associate": 90000,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ]
+        }
+      },
+      "paymentOptions": {
+        "installments": [
+          {
+            "count": 9,
+            "description": "9-10 taksit imkanı"
+          }
+        ],
+        "banks": [
+          "Anlaşmalı bankalar",
+          "Kredi kartı"
+        ],
+        "onlinePayment": true
+      },
+      "scholarships": {
+        "types": [
+          {
+            "name": "Tercih Bursu",
+            "description": "İlk tercihine yerleşen öğrencilere özel burs"
+          },
+          {
+            "name": "Onur Bursu",
+            "description": "Başarılı öğrencilere verilen burs"
+          },
+          {
+            "name": "Spor/Sanat Bursu",
+            "description": "Spor ve sanat alanında başarılı öğrencilere verilen burs"
+          }
+        ],
+        "defaultRates": [
+          0,
+          25,
+          50,
+          75,
+          100
+        ]
+      },
+      "notes": [
+        "Belirtilen fiyatlar %50 indirimli kontenjana göredir",
+        "KDV dahildir",
+        "Uçuş eğitim ücreti ayrıca alınır (Pilotluk programı)"
+      ]
+    },
+    "BAHCESEHIR": {
+      "name": "Bahçeşehir Üniversitesi",
+      "academicYear": "2025-2026",
+      "sourceUrl": "https://aday.bau.edu.tr/onlisans-ve-lisans-ucretler-2025-2026/",
+      "currency": "TL",
+      "defaultScholarshipType": "50% Burslu",
+      "departments": {
+        "tip": {
+          "name": "Tıp",
+          "faculty": "Tıp Fakültesi",
+          "fee_50_cash": 966000,
+          "fee_50_installment": 1050000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "dis_hekimligi": {
+          "name": "Diş Hekimliği",
+          "faculty": "Diş Hekimliği Fakültesi",
+          "fee_50_cash": 814200,
+          "fee_50_installment": 885000,
+          "fee_full_cash": 1628400,
+          "fee_full_installment": 1770000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "muhendislik": {
+          "name": "Mühendislik Fakültesi",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50_cash": 667000,
+          "fee_50_installment": 725000,
+          "fee_full_cash": 1334000,
+          "fee_full_installment": 1450000,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ],
+          "kdv": true
+        },
+        "hukuk": {
+          "name": "Hukuk",
+          "faculty": "Hukuk Fakültesi",
+          "fee_50_cash": 667000,
+          "fee_50_installment": 725000,
+          "fee_full_cash": 1334000,
+          "fee_full_installment": 1450000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "mimarlik": {
+          "name": "Mimarlık",
+          "faculty": "Mimarlık ve Tasarım Fakültesi",
+          "fee_50_cash": 667000,
+          "fee_50_installment": 725000,
+          "fee_25_cash": 1000500,
+          "fee_25_installment": 1087500,
+          "fee_full_cash": 1334000,
+          "fee_full_installment": 1450000,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ],
+          "kdv": true
+        },
+        "isletme": {
+          "name": "İşletme",
+          "faculty": "İdari Bilimler Fakültesi",
+          "fee_50_cash": 667000,
+          "fee_50_installment": 725000,
+          "fee_full_cash": 1334000,
+          "fee_full_installment": 1450000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "iletisim": {
+          "name": "İletişim Fakültesi",
+          "faculty": "İletişim Fakültesi",
+          "fee_50_cash": 586500,
+          "fee_50_installment": 637500,
+          "fee_full_cash": 1173000,
+          "fee_full_installment": 1275000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "saglik_bilimleri": {
+          "name": "Sağlık Bilimleri Fakültesi",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_cash": 588800,
+          "fee_50_installment": 640000,
+          "fee_full_cash": 1177600,
+          "fee_full_installment": 1280000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "egitim_bilimleri": {
+          "name": "Eğitim Bilimleri Fakültesi",
+          "faculty": "Eğitim Bilimleri Fakültesi",
+          "fee_50_cash": 563500,
+          "fee_50_installment": 612500,
+          "fee_full_cash": 1127000,
+          "fee_full_installment": 1225000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "meslek_yuksekokulu": {
+          "name": "Meslek Yüksekokulu (SHMYO)",
+          "faculty": "Meslek Yüksekokulu",
+          "fee_50_cash": 356500,
+          "fee_50_installment": 387500,
+          "fee_full_cash": 713000,
+          "fee_full_installment": 775000,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "kdv": true
+        },
+        "hazirlik": {
+          "name": "İngilizce Hazırlık",
+          "faculty": "Hazırlık Okulu",
+          "fee_50_cash": 563500,
+          "fee_50_installment": 612500,
+          "fee_25_cash": 845250,
+          "fee_25_installment": 918750,
+          "fee_full_cash": 1127000,
+          "fee_full_installment": 1225000,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ],
+          "kdv": true
+        }
+      },
+      "paymentOptions": {
+        "cashDiscount": true,
+        "installments": [
+          {
+            "bank": "Denizbank",
+            "description": "1 peşin + 3 taksit"
+          },
+          {
+            "bank": "Vakıfbank VİNOV",
+            "description": "1 peşin + 5 taksit"
+          }
+        ]
+      },
+      "scholarships": {
+        "types": [
+          {
+            "name": "ApplyBAU",
+            "description": "YKS öncesi başvuru ile kazanılan burs. Kişisel projeler, sosyal aktiviteler ve hedefler değerlendirilir."
+          },
+          {
+            "name": "Nakdi Eğitim Desteği",
+            "description": "YKS sıralamasına göre aylık nakit destek",
+            "details": [
+              {
+                "program": "Tıp",
+                "rank": "İlk 3.000",
+                "amount": 20000,
+                "duration": "9 ay"
+              },
+              {
+                "program": "Tıp",
+                "rank": "3.001-8.000",
+                "amount": 15000,
+                "duration": "9 ay"
+              },
+              {
+                "program": "Diğer Fakülteler",
+                "rank": "İlk 1.000",
+                "amount": 20000,
+                "duration": "9 ay"
+              }
+            ]
+          }
+        ],
+        "defaultRates": [
+          0,
+          25,
+          50,
+          100
+        ]
+      },
+      "specialPrograms": {
+        "pilotluk": {
+          "name": "Pilotluk",
+          "extraFee": "70.000 EURO + KDV",
+          "description": "Uçuş eğitim ücreti ayrıca alınır",
+          "installments": "4 taksit (1. sınıftan itibaren)"
+        }
+      },
+      "notes": [
+        "Tüm fiyatlara %10 KDV dahildir",
+        "Peşin ödemede indirim uygulanır",
+        "ApplyBAU bursu için YKS öncesi başvuru gereklidir"
+      ]
+    },
+    "ISTANBUL_BILGI": {
+      "name": "İstanbul Bilgi Üniversitesi",
+      "academicYear": "2025-2026",
+      "sourceUrl": "https://www.bilgi.edu.tr/media/uploads/2025/08/19/2025-2026_akademik_yili_ucret_ve_odeme_bilgileri.pdf",
+      "currency": "TL",
+      "defaultScholarshipType": "50% İndirimli",
+      "departments": {
+        "hukuk": {
+          "name": "Hukuk",
+          "faculty": "Hukuk Fakültesi",
+          "fee_50_cash": 697500,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "psikoloji": {
+          "name": "Psikoloji",
+          "faculty": "Sosyal Bilimler Fakültesi",
+          "fee_50_cash": 625000,
+          "fee_full_cash": 1250000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "bilgisayar_muhendisligi": {
+          "name": "Bilgisayar Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 625000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "elektrik_elektronik": {
+          "name": "Elektrik-Elektronik Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 625000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "endustri_muhendisligi": {
+          "name": "Endüstri Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 625000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "insaat_muhendisligi": {
+          "name": "İnşaat Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 595000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "makine_muhendisligi": {
+          "name": "Makine Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 595000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "mekatronik": {
+          "name": "Mekatronik Mühendisliği",
+          "faculty": "Mühendislik ve Doğa Bilimleri Fakültesi",
+          "fee_50_cash": 595000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "mimarlik": {
+          "name": "Mimarlık",
+          "faculty": "Mimarlık Fakültesi",
+          "fee_50_cash": 597500,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "isletme": {
+          "name": "İşletme",
+          "faculty": "İktisadi İdari ve Sosyal Bilimler Fakültesi",
+          "fee_50_cash": 595000,
+          "fee_full_cash": 1190000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "iletisim": {
+          "name": "İletişim Fakültesi (Çoğu Bölüm)",
+          "faculty": "İletişim Fakültesi",
+          "fee_50_cash": 595000,
+          "fee_full_cash": 1190000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "muzik": {
+          "name": "Müzik",
+          "faculty": "Sanat ve Tasarım Fakültesi",
+          "fee_50_cash": 480000,
+          "fee_full_cash": 960000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "sahne_sanatlari": {
+          "name": "Sahne Sanatları",
+          "faculty": "Sanat ve Tasarım Fakültesi",
+          "fee_50_cash": 480000,
+          "fee_full_cash": 960000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "havacilik_yonetimi": {
+          "name": "Havacılık Yönetimi",
+          "faculty": "Uygulamalı Bilimler Fakültesi",
+          "fee_50_cash": 480000,
+          "fee_full_cash": 960000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "beslenme": {
+          "name": "Beslenme ve Diyetetik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_cash": 545000,
+          "fee_full_cash": 1090000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "gastronomi": {
+          "name": "Gastronomi ve Mutfak Sanatları",
+          "faculty": "Uygulamalı Bilimler Fakültesi",
+          "fee_50_cash": 545000,
+          "fee_full_cash": 1090000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "fizyoterapi": {
+          "name": "Fizyoterapi ve Rehabilitasyon",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_cash": 520000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "hemsirelik": {
+          "name": "Hemşirelik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_cash": 520000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "cocuk_gelisimi": {
+          "name": "Çocuk Gelişimi",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_50_cash": 520000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "onlisans": {
+          "name": "Önlisans Programları",
+          "faculty": "Meslek Yüksekokulları",
+          "fee_50_cash_min": 235000,
+          "fee_50_cash_max": 310000,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "hazirlik": {
+          "name": "İngilizce Hazırlık Programı",
+          "faculty": "Hazırlık Okulu",
+          "fee_50_cash": 595000,
+          "fee_full_cash": 1190000,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        }
+      },
+      "paymentOptions": {
+        "cashDiscount": true,
+        "installmentSurcharge": 10,
+        "banks": [
+          "Yapı Kredi Bankası"
+        ],
+        "onlinePayment": true,
+        "description": "Taksitli ödemelerde peşin fiyatın üzerine %10 vade farkı eklenir"
+      },
+      "scholarships": {
+        "types": [
+          {
+            "name": "Başarı Destek Bursu",
+            "description": "İlk 5 tercihine yazıp yerleşen öğrencilere %15 ekstra indirim",
+            "discount": 15,
+            "condition": "Başarı sıralaması şartı bölümlere göre değişir"
+          },
+          {
+            "name": "ÖSYM Bursları",
+            "description": "%50 indirimli kontenjanlara yerleşen öğrencilerin bursları yasal süre boyunca kesintisiz devam eder"
+          }
+        ],
+        "defaultRates": [
+          0,
+          50,
+          100
+        ]
+      },
+      "notes": [
+        "Tüm fiyatlara KDV dahildir",
+        "Peşin ödeme fiyatları yukarıdaki tabloda belirtilmiştir",
+        "Taksitli ödemelerde %10 vade farkı uygulanır",
+        "Elden nakit ödeme kabul edilmez",
+        "Online ödeme sistemi (sis.bilgi.edu.tr) üzerinden kredi kartı ile ödeme yapılabilir"
+      ]
+    },
+    "ISTANBUL_KULTUR": {
+      "name": "İstanbul Kültür Üniversitesi",
+      "academicYear": "2025-2026",
+      "sourceUrl": "https://aday.iku.edu.tr/kontenjan-ve-puanlar",
+      "currency": "TL",
+      "defaultScholarshipType": "50% İndirimli",
+      "departments": {
+        "hukuk": {
+          "name": "Hukuk",
+          "faculty": "Hukuk Fakültesi",
+          "fee_full_installment": 895000,
+          "fee_full_firstChoice": 671250,
+          "fee_50_installment": 447500,
+          "fee_50_firstChoice": 335625,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "bilgisayar_muhendisligi": {
+          "name": "Bilgisayar Mühendisliği (İngilizce)",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 693750,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 346875,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "elektrik_elektronik": {
+          "name": "Elektrik-Elektronik Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 693750,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 346875,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "endustri_muhendisligi": {
+          "name": "Endüstri Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 693750,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 346875,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "insaat_muhendisligi": {
+          "name": "İnşaat Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 693750,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 346875,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "makine_muhendisligi": {
+          "name": "Makine Mühendisliği",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 693750,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 346875,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "mimarlik": {
+          "name": "Mimarlık (İngilizce)",
+          "faculty": "Mimarlık Fakültesi",
+          "fee_full_installment": 895000,
+          "fee_full_firstChoice": 671250,
+          "fee_50_installment": 447500,
+          "fee_50_firstChoice": 335625,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "psikoloji": {
+          "name": "Psikoloji",
+          "faculty": "Fen Edebiyat Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 786250,
+          "fee_25_installment": 693750,
+          "fee_25_firstChoice": 589687,
+          "firstChoiceDiscount": 15,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ]
+        },
+        "isletme": {
+          "name": "İşletme",
+          "faculty": "İktisadi İdari ve Sosyal Bilimler Fakültesi",
+          "fee_full_installment": 925000,
+          "fee_full_firstChoice": 786250,
+          "fee_50_installment": 462500,
+          "fee_50_firstChoice": 393125,
+          "firstChoiceDiscount": 15,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "hemsirelik": {
+          "name": "Hemşirelik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_full_installment": 765000,
+          "fee_full_firstChoice": 650250,
+          "fee_50_installment": 382500,
+          "fee_50_firstChoice": 325125,
+          "firstChoiceDiscount": 15,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "beslenme": {
+          "name": "Beslenme ve Diyetetik",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_full_installment": 765000,
+          "fee_full_firstChoice": 650250,
+          "fee_50_installment": 382500,
+          "fee_50_firstChoice": 325125,
+          "firstChoiceDiscount": 15,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "fizyoterapi": {
+          "name": "Fizyoterapi ve Rehabilitasyon",
+          "faculty": "Sağlık Bilimleri Fakültesi",
+          "fee_full_installment": 765000,
+          "fee_full_firstChoice": 650250,
+          "fee_50_installment": 382500,
+          "fee_50_firstChoice": 325125,
+          "firstChoiceDiscount": 15,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "onlisans": {
+          "name": "Önlisans Programları (MYO)",
+          "faculty": "Meslek Yüksekokulu",
+          "fee_full_installment": 505000,
+          "fee_full_firstChoice": 429250,
+          "fee_50_installment": 225000,
+          "fee_50_firstChoice": 191250,
+          "firstChoiceDiscount": 15,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        }
+      },
+      "paymentOptions": {
+        "cashDiscount": 10,
+        "installments": [
+          {
+            "description": "Taksitli ödeme seçeneği mevcuttur"
+          }
+        ],
+        "onlinePayment": true
+      },
+      "scholarships": {
+        "types": [
+          {
+            "name": "İlk Tercih İndirimi",
+            "description": "İlk tercihine yerleşen öğrencilere özel indirim",
+            "discount_engineering_law": 25,
+            "discount_other": 15
+          },
+          {
+            "name": "Kurumsal Anlaşma İndirimi",
+            "description": "Anlaşmalı kurumlardan gelen öğrencilere ek indirim"
+          },
+          {
+            "name": "Kardeş İndirimi",
+            "description": "İKÜ'de okuyan kardeş sayısına göre ek indirim"
+          }
+        ],
+        "defaultRates": [
+          0,
+          50,
+          100
+        ]
+      },
+      "notes": [
+        "Belirtilen fiyatlar taksitli ödeme içindir",
+        "Peşin ödemede %10 indirim uygulanır",
+        "İlk tercih indirimi: Mühendislik, Hukuk, Mimarlık için %25, diğer bölümler için %15",
+        "Tüm fiyatlar KDV dahildir"
+      ]
+    },
+    "ISTANBUL_OKAN": {
+      "name": "İstanbul Okan Üniversitesi",
+      "academicYear": "2025-2026",
+      "sourceUrl": "https://aday.okan.edu.tr/egitim-ucretleri/",
+      "currency": "TL",
+      "defaultScholarshipType": "50% İndirimli + Tercih İndirimi",
+      "departments": {
+        "tip": {
+          "name": "Tıp Fakültesi (Tr/İng)",
+          "faculty": "Tıp Fakültesi",
+          "fee_full": 1434125,
+          "fee_25_discount": 1075594,
+          "fee_50": 717063,
+          "fee_50_firstChoice_10": 645356,
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ]
+        },
+        "dis_hekimligi": {
+          "name": "Diş Hekimliği Fakültesi",
+          "faculty": "Diş Hekimliği Fakültesi",
+          "fee_full": 1361789,
+          "fee_25_discount": 1021342,
+          "fee_50": 680895,
+          "fee_50_firstChoice_10": 612805,
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ]
+        },
+        "eczacilik": {
+          "name": "Eczacılık Fakültesi",
+          "faculty": "Eczacılık Fakültesi",
+          "fee_full": 1275945,
+          "fee_25_discount": 956959,
+          "fee_50": 637973,
+          "fee_50_firstChoice_10": 574175,
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ]
+        },
+        "hukuk": {
+          "name": "Hukuk Fakültesi",
+          "faculty": "Hukuk Fakültesi",
+          "fee_50": 506550,
+          "fee_50_firstChoice_25": 379913,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "psikoloji": {
+          "name": "Psikoloji (Tr/İng)",
+          "faculty": "Fen Edebiyat Fakültesi",
+          "fee_full": 1013100,
+          "fee_25_discount": 759825,
+          "fee_50": 506550,
+          "fee_50_firstChoice_10": 455895,
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            50,
+            25,
+            0
+          ]
+        },
+        "muhendislik": {
+          "name": "Mühendislik Fakültesi (İngilizce)",
+          "faculty": "Mühendislik Fakültesi",
+          "fee_50": 492525,
+          "fee_50_firstChoice_25": 369394,
+          "firstChoiceDiscount": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ],
+          "note": "Tüm mühendislik programları için geçerlidir"
+        },
+        "isletme": {
+          "name": "İşletme / Ekonomi (İng)",
+          "faculty": "İktisadi ve İdari Bilimler Fakültesi",
+          "fee_50": 460845,
+          "fee_50_firstChoice_10": 414761,
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "gastronomi": {
+          "name": "Gastronomi (Tr/İng)",
+          "faculty": "Uygulamalı Bilimler Fakültesi",
+          "fee_50_tr": 460845,
+          "fee_50_tr_firstChoice": 414761,
+          "fee_50_ing": 460845,
+          "fee_50_ing_firstChoice_25": 345634,
+          "firstChoiceDiscount_tr": 10,
+          "firstChoiceDiscount_ing": 25,
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "pilotaj": {
+          "name": "Pilotaj (İng)",
+          "faculty": "Sivil Havacılık Yüksekokulu",
+          "fee_full": 921690,
+          "fee_full_firstChoice_10": 829521,
+          "extraFee": "22,000 EUR/yıl (Uçuş eğitimi - 4 yıl)",
+          "firstChoiceDiscount": 10,
+          "scholarshipRates": [
+            100,
+            0
+          ]
+        },
+        "meslek_yuksekokulu": {
+          "name": "Meslek Yüksekokulu (MYO)",
+          "faculty": "Meslek Yüksekokulu",
+          "fee_50_min": 219423,
+          "fee_50_max": 233145,
+          "fee_50_firstChoice_min": 197000,
+          "fee_50_firstChoice_max": 210000,
+          "firstChoiceDiscount": 10,
+          "programType": "associate",
+          "scholarshipRates": [
+            100,
+            50,
+            0
+          ]
+        },
+        "konservatuar": {
+          "name": "Konservatuvar (Müzik/Tiyatro)",
+          "faculty": "Konservatuvar",
+          "fee_full": 664290,
+          "scholarshipRates": [
+            100,
+            75,
+            50,
+            25,
+            0
+          ],
+          "note": "Burs oranı özel yetenek sınavı sonucuna göre belirlenir"
+        }
+      },
+      "paymentOptions": {
+        "cashDiscount": 5,
+        "minimumDownPayment": 25,
+        "installments": [
+          {
+            "type": "Kredi Kartı",
+            "cards": [
+              "Maximum",
+              "Bonus",
+              "World",
+              "Cardfinans",
+              "Axess",
+              "Paraf"
+            ],
+            "description": "Taksit imkanı mevcuttur"
+          },
+          {
+            "type": "Banka Kredisi (KMH)",
+            "description": "Anlaşmalı bankalar aracılığıyla kredili mevduat hesabı",
+            "note": "Taksitli ödemelerde vade farkı uygulanır"
+          }
+        ],
+        "onlinePayment": true
+      },
+      "scholarships": {
+        "types": [
+          {
+            "name": "Tercih İndirimi",
+            "description": "İlk 3 tercihe yazılanlara özel indirim",
+            "discount_options": [
+              10,
+              25
+            ],
+            "note": "İndirim oranı programa göre değişir"
+          },
+          {
+            "name": "Kardeş İndirimi",
+            "description": "Aynı anda okuyan kardeşler için ek indirim"
+          },
+          {
+            "name": "Kurum İndirimi",
+            "description": "Anlaşmalı kurum mezunları veya çalışanları için özel indirim"
+          }
+        ],
+        "defaultRates": [
+          0,
+          25,
+          50,
+          75,
+          100
+        ]
+      },
+      "notes": [
+        "Tüm fiyatlara KDV dahildir",
+        "Tercih indirimi ilk 3 tercihe yazanlara uygulanır",
+        "Pilotluk programı için ek uçuş eğitim ücreti 4 yıl boyunca yıllık 22.000 EUR'dur",
+        "Taksitli ödemelerde minimum %25 peşinat alınır",
+        "Peşin ödemelerde yaklaşık %5 indirim uygulanabilir"
+      ]
+    }
+  },
+  "remainingUniversities": [
+    "Yeditepe Üniversitesi",
+    "MEF Üniversitesi",
+    "İstanbul Gelişim Üniversitesi",
+    "İstinye Üniversitesi",
+    "Beykent Üniversitesi",
+    "Maltepe Üniversitesi",
+    "Atlas Üniversitesi",
+    "Fenerbahçe Üniversitesi",
+    "İstanbul Arel Üniversitesi",
+    "İstanbul Esenyurt Üniversitesi",
+    "Üsküdar Üniversitesi"
+  ]
+}

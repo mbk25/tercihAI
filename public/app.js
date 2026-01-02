@@ -5,14 +5,14 @@ const API_URL = window.location.hostname === 'localhost'
 let conversationHistory = [];
 let currentSession = {
     id: Date.now(),
-    messages: []
+    messages: [],
+    selectedUniversities: [] // Her sohbetin kendi seçimleri
 };
 let chatSessions = []; // Tüm sohbet oturumlarını sakla
 let userProfile = null;
 let selectedChats = new Set(); // Seçilen sohbetler
 let isSelectionMode = false; // Seçim modu aktif mi?
 let currentDepartment = null; // Analiz edilen bölümü sakla
-let globalSelectedUniversities = []; // TÜM programlardan seçilen üniversiteler (Google Sheets için)
 let aiInitialized = false;
 let currentEligibleUniversities = []; // Uygun üniversiteleri sakla
 let selectedUniversities = new Set(); // Seçilen üniversiteler
@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectionsBtn) {
         selectionsBtn.addEventListener('click', showSelectionsModal);
     }
+
+    // Başlangıçta buton durumunu ayarla
+    updateSelectionButton();
 
     // AI'ı başlat
     initializeAI();
@@ -282,8 +285,12 @@ function startNewChat() {
     conversationHistory = [];
     currentSession = {
         id: Date.now(),
-        messages: []
+        messages: [],
+        selectedUniversities: [] // Yeni sohbet için boş seçim listesi
     };
+
+    // Seçimler butonunu gizle
+    updateSelectionButton();
 
     // History'yi güncelle ki aktif sohbet gösterilsin
     updateChatHistory();
@@ -961,8 +968,14 @@ function loadChatSession(sessionIndex) {
     }
 
     // Seçilen sohbeti yükle
-    currentSession = { ...session };
+    currentSession = { 
+        ...session,
+        selectedUniversities: session.selectedUniversities || [] // Eski sohbetlerle uyumluluk
+    };
     conversationHistory = session.conversationHistory || [];
+
+    // Seçimler butonunu güncelle
+    updateSelectionButton();
 
     // Mesajları göster
     if (chatMessages) {
@@ -971,6 +984,7 @@ function loadChatSession(sessionIndex) {
             welcomeScreen.style.display = 'none';
         }
 
+        // Mesajları olduğu gibi göster (timestamp sırası zaten doğru kaydedilmiş)
         session.messages.forEach(msg => {
             // Eğer analiz sonucu mesajıysa, kartları yeniden oluştur
             if (msg.isAnalysisResult && msg.analysisData) {
@@ -1541,18 +1555,20 @@ async function performDetailedAnalysis(formData) {
 // Kaydedilmiş analiz verilerinden kartları yeniden oluştur
 function displayComprehensiveResultsFromSaved(analysisData) {
     console.log('🔄 Kaydedilmiş analiz yeniden yükleniyor:', analysisData);
+    console.log('⏱️ isReloading=true olarak çağrılıyor - timeout\'lar atlanacak');
     const { formData, tytRanking, aytRanking, ...data } = analysisData;
     console.log('📊 FormData:', formData);
     console.log('📊 Data:', data);
-    displayComprehensiveResults(data, formData);
+    displayComprehensiveResults(data, formData, true); // isReloading=true parametresi ekle
 }
 
-function displayComprehensiveResults(data, formData) {
+function displayComprehensiveResults(data, formData, isReloading = false) {
     console.log('🎨 displayComprehensiveResults called with:', {
         dataKeys: Object.keys(data),
         formDataKeys: Object.keys(formData),
         tytRanking: formData.tytRanking || data.tytRanking,
-        aytRanking: formData.aytRanking || data.aytRanking
+        aytRanking: formData.aytRanking || data.aytRanking,
+        isReloading: isReloading
     });
 
     // Kullanıcı verilerini global olarak kaydet (butonlar için)
@@ -1729,9 +1745,17 @@ function displayComprehensiveResults(data, formData) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         // Üniversite özet kartını göster (TÜM üniversiteleri gönder, sadece özet gösterilecek)
-        setTimeout(() => {
+        if (isReloading) {
+            // Sohbet yükleniyorsa, timeout olmadan hemen ekle
+            console.log('⚡ Sohbet yükleme modu - Üniversite kartları hemen ekleniyor');
             addUniversityCardsInBoxes(data.universities, formData);
-        }, 500);
+        } else {
+            // İlk kez gösteriliyorsa, animasyon için timeout kullan
+            console.log('🎬 İlk gösterim - 500ms animasyon beklemesi');
+            setTimeout(() => {
+                addUniversityCardsInBoxes(data.universities, formData);
+            }, 500);
+        }
 
     } else {
         // Durum kartını ekle
@@ -1755,9 +1779,13 @@ function displayComprehensiveResults(data, formData) {
             console.log('2 yıllık detay:', twoYear);
 
             if (fourYear.length > 0) {
-                setTimeout(() => {
+                if (isReloading) {
                     addAlternativeCards(fourYear, 'Size Uygun 4 Yıllık Lisans Programları', '#60a5fa', '📚');
-                }, 500);
+                } else {
+                    setTimeout(() => {
+                        addAlternativeCards(fourYear, 'Size Uygun 4 Yıllık Lisans Programları', '#60a5fa', '📚');
+                    }, 500);
+                }
             }
 
             // 2 yıllık alternatifler + DGS yolu
@@ -1820,9 +1848,13 @@ function displayComprehensiveResults(data, formData) {
                 chatMessages.appendChild(infoGridContainer);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                setTimeout(() => {
+                if (isReloading) {
                     addAlternativeCards(twoYear, 'Size Uygun 2 Yıllık Önlisans Programları', '#f59e0b', '🎓');
-                }, 1000);
+                } else {
+                    setTimeout(() => {
+                        addAlternativeCards(twoYear, 'Size Uygun 2 Yıllık Önlisans Programları', '#f59e0b', '🎓');
+                    }, 1000);
+                }
             }
         }
 
@@ -2683,7 +2715,15 @@ function loadChatHistory() {
         if (savedSessions) {
             chatSessions = JSON.parse(savedSessions);
             console.log(`✅ ${chatSessions.length} sohbet oturumu yüklendi`);
+            
+            // Eski sohbetlerle uyumluluk - selectedUniversities yoksa boş array ekle
+            chatSessions = chatSessions.map(session => ({
+                ...session,
+                selectedUniversities: session.selectedUniversities || []
+            }));
+            
             updateChatHistory();
+            updateSelectionButton(); // Buton durumunu güncelle
         } else {
             console.log('ℹ️ Kaydedilmiş sohbet bulunamadı');
             chatSessions = [];
@@ -3512,16 +3552,16 @@ function showUniversityModal(deptName, universities) {
         if (selectedFromThisModal.length > 0) {
             // Global listeye ekle (tekrar eklemeden önce kontrol et)
             selectedFromThisModal.forEach(uni => {
-                const exists = globalSelectedUniversities.find(u =>
+                const exists = currentSession.selectedUniversities.find(u =>
                     u.name === uni.name && u.department === uni.department
                 );
                 if (!exists) {
-                    globalSelectedUniversities.push(uni);
+                    currentSession.selectedUniversities.push(uni);
                 }
             });
 
             // Kullanıcıya bilgi ver
-            addMessage(`✅ ${selectedFromThisModal.length} üniversite seçim listenize eklendi!\n\nToplam seçili: ${globalSelectedUniversities.length} üniversite\n\n💡 Sol üst köşedeki "📋 Seçimlerim (${globalSelectedUniversities.length})" butonuna tıklayarak tüm seçimlerinizi görüntüleyebilir ve Google Sheets'e aktarabilirsiniz.`, 'ai');
+            addMessage(`✅ ${selectedFromThisModal.length} üniversite seçim listenize eklendi!\n\nToplam seçili: ${currentSession.selectedUniversities.length} üniversite\n\n💡 Sol üst köşedeki "📋 Seçimlerim (${currentSession.selectedUniversities.length})" butonuna tıklayarak tüm seçimlerinizi görüntüleyebilir ve Google Sheets'e aktarabilirsiniz.`, 'ai');
 
             // Modal'ı kapat
             modal.remove();
@@ -3627,9 +3667,9 @@ function updateSelectionButton() {
     const selectionCount = document.getElementById('selectionCount');
 
     if (selectionsBtn && selectionCount) {
-        selectionCount.textContent = globalSelectedUniversities.length;
+        selectionCount.textContent = currentSession.selectedUniversities.length;
 
-        if (globalSelectedUniversities.length > 0) {
+        if (currentSession.selectedUniversities.length > 0) {
             selectionsBtn.style.display = 'flex';
         } else {
             selectionsBtn.style.display = 'none';
@@ -3639,7 +3679,7 @@ function updateSelectionButton() {
 
 // Seçimler modalını göster
 function showSelectionsModal() {
-    if (globalSelectedUniversities.length === 0) {
+    if (currentSession.selectedUniversities.length === 0) {
         addMessage('❌ Henüz hiç üniversite seçmediniz. Önce bir analiz yapıp üniversiteleri seçin.', 'ai');
         return;
     }
@@ -3662,7 +3702,7 @@ function showSelectionsModal() {
 
     // Bölümlere göre grupla
     const byDepartment = {};
-    globalSelectedUniversities.forEach(uni => {
+    currentSession.selectedUniversities.forEach(uni => {
         if (!byDepartment[uni.department]) {
             byDepartment[uni.department] = [];
         }
@@ -3716,7 +3756,7 @@ function showSelectionsModal() {
         
         <div style="background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), rgba(16, 163, 127, 0.05)); padding: 1rem; border-radius: 12px; border: 2px solid #10a37f; margin-bottom: 2rem;">
             <div style="color: var(--text-secondary); font-size: 0.9rem;">Toplam Seçili Üniversite</div>
-            <div style="color: var(--primary); font-size: 2rem; font-weight: 800;">${globalSelectedUniversities.length}</div>
+            <div style="color: var(--primary); font-size: 2rem; font-weight: 800;">${currentSession.selectedUniversities.length}</div>
         </div>
         
         ${departmentSections}
@@ -3745,10 +3785,10 @@ function showSelectionsModal() {
 
 // Global seçimlerden kaldır
 function removeFromGlobalSelections(department, index) {
-    const filtered = globalSelectedUniversities.filter(u => u.department === department);
+    const filtered = currentSession.selectedUniversities.filter(u => u.department === department);
     const toRemove = filtered[index];
 
-    globalSelectedUniversities = globalSelectedUniversities.filter(u =>
+    currentSession.selectedUniversities = currentSession.selectedUniversities.filter(u =>
         !(u.name === toRemove.name && u.department === toRemove.department)
     );
 
@@ -3762,7 +3802,7 @@ function removeFromGlobalSelections(department, index) {
 // Tüm seçimleri temizle
 function clearAllSelections() {
     if (confirm('Tüm seçimlerinizi silmek istediğinizden emin misiniz?')) {
-        globalSelectedUniversities = [];
+        currentSession.selectedUniversities = [];
         updateSelectionButton();
         document.querySelector('.selections-modal-overlay')?.remove();
         addMessage('✅ Tüm seçimler temizlendi.', 'ai');
@@ -3771,8 +3811,8 @@ function clearAllSelections() {
 
 // Tüm seçimleri Sheets'e aktar
 function exportAllSelectionsToSheets() {
-    if (globalSelectedUniversities.length > 0) {
-        exportToGoogleSheets(globalSelectedUniversities);
+    if (currentSession.selectedUniversities.length > 0) {
+        exportToGoogleSheets(currentSession.selectedUniversities);
         document.querySelector('.selections-modal-overlay')?.remove();
     }
 }

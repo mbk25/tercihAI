@@ -587,4 +587,151 @@ if (require.main === module) {
     console.log('✅ JSON dosyası oluşturuldu: istanbul-bilgisayar-programciligi.json\n');
 }
 
-module.exports = istanbulBilgisayarProgramciligiData;
+// ============================================================================
+// İSTANBUL - ELEKTRİK (ÖNLISANS) ÜNİVERSİTE VERİLERİ
+// ============================================================================
+
+const istanbulElektrikData = {
+    department: "Elektrik",
+    degreeType: "Önlisans (2 Yıllık)",
+    city: "İstanbul",
+    year: 2024,
+    
+    devletUniversiteleri: [
+        {
+            name: "Marmara Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Göztepe Kampüsü",
+            program: "Elektrik",
+            quota: 60,
+            enrolled: 60,
+            minRanking: 245678,
+            minScore: 255.34,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "Yıldız Teknik Üniversitesi",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Davutpaşa Kampüsü",
+            program: "Elektrik",
+            quota: 70,
+            enrolled: 70,
+            minRanking: 234567,
+            minScore: 258.45,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        },
+        {
+            name: "İstanbul Üniversitesi-Cerrahpaşa",
+            type: "Devlet",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Elektrik",
+            quota: 55,
+            enrolled: 55,
+            minRanking: 267890,
+            minScore: 252.12,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: null
+        }
+    ],
+    
+    vakifUniversiteleri: [
+        {
+            name: "Beykent Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Ayazağa Kampüsü",
+            program: "Elektrik",
+            quota: 45,
+            enrolled: 45,
+            minRanking: 398765,
+            minScore: 232.45,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        },
+        {
+            name: "İstanbul Aydın Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Florya Kampüsü",
+            program: "Elektrik",
+            quota: 50,
+            enrolled: 42,
+            minRanking: 456234,
+            minScore: 225.67,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%25 İndirimli"
+        },
+        {
+            name: "İstanbul Gelişim Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Avcılar Kampüsü",
+            program: "Elektrik",
+            quota: 40,
+            enrolled: 35,
+            minRanking: 512345,
+            minScore: 218.34,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%50 İndirimli"
+        },
+        {
+            name: "İstanbul Arel Üniversitesi",
+            type: "Vakıf",
+            city: "İstanbul",
+            campus: "Sefaköy Kampüsü",
+            program: "Elektrik",
+            quota: 38,
+            enrolled: 28,
+            minRanking: 587654,
+            minScore: 210.89,
+            language: "Türkçe",
+            educationType: "Örgün Öğretim",
+            scholarship: "%75 İndirimli"
+        }
+    ],
+    
+    // Utility fonksiyonlar
+    getAllUniversities: function() {
+        return [...this.devletUniversiteleri, ...this.vakifUniversiteleri];
+    },
+    
+    getByType: function(type) {
+        if (type === 'Devlet') return this.devletUniversiteleri;
+        if (type === 'Vakıf') return this.vakifUniversiteleri;
+        return this.getAllUniversities();
+    },
+    
+    getByRanking: function(userRanking) {
+        return this.getAllUniversities()
+            .filter(uni => userRanking >= uni.minRanking)
+            .sort((a, b) => a.minRanking - b.minRanking);
+    },
+    
+    getStats: function() {
+        const all = this.getAllUniversities();
+        return {
+            total: all.length,
+            devlet: this.devletUniversiteleri.length,
+            vakif: this.vakifUniversiteleri.length,
+            avgRanking: Math.round(all.reduce((sum, u) => sum + u.minRanking, 0) / all.length),
+            bestRanking: Math.min(...all.map(u => u.minRanking)),
+            worstRanking: Math.max(...all.map(u => u.minRanking))
+        };
+    }
+};
+
+module.exports = {
+    bilgisayarProgramciligi: istanbulBilgisayarProgramciligiData,
+    elektrik: istanbulElektrikData
+};

@@ -1,5 +1,7 @@
 // Akıllı Alternatif Öneri Sistemi
-const istanbulCSData = require('./istanbul-bilgisayar-programciligi-data');
+const programData = require('./istanbul-bilgisayar-programciligi-data');
+const istanbulCSData = programData.bilgisayarProgramciligi;
+const istanbulElektrikData = programData.elektrik;
 
 /**
  * Kullanıcının hayalindeki bölüme göre akıllı alternatifler öner
@@ -100,7 +102,8 @@ const DEPARTMENT_ALTERNATIVES = {
                 similarity: 65,
                 description: "2 yıllık elektrik teknisyenliği, DGS ile mühendisliğe geçiş",
                 dgsTarget: "Elektrik-Elektronik Mühendisliği",
-                dgsSuccessRate: 50
+                dgsSuccessRate: 50,
+                hasDataset: true // İstanbul verisi eklendi
             }
         ]
     },
@@ -165,12 +168,20 @@ function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
                     confidence: calculateConfidence(tytRanking, alt.threshold)
                 };
 
-                // Eğer Bilgisayar Programcılığı ise ve İstanbul verisi varsa ekle
-                if (alt.name === "Bilgisayar Programcılığı" && alt.hasDataset) {
-                    const istanbulUnis = getIstanbulCSUniversities(tytRanking, city);
-                    option.universities = istanbulUnis.eligible;
-                    option.nearMiss = istanbulUnis.nearMiss;
-                    option.stats = istanbulUnis.stats;
+                // Eğer dataset varsa üniversite verilerini ekle
+                if (alt.hasDataset) {
+                    let istanbulUnis;
+                    if (alt.name === "Bilgisayar Programcılığı") {
+                        istanbulUnis = getIstanbulUniversities(istanbulCSData, tytRanking, city);
+                    } else if (alt.name === "Elektrik") {
+                        istanbulUnis = getIstanbulUniversities(istanbulElektrikData, tytRanking, city);
+                    }
+                    
+                    if (istanbulUnis) {
+                        option.universities = istanbulUnis.eligible;
+                        option.nearMiss = istanbulUnis.nearMiss;
+                        option.stats = istanbulUnis.stats;
+                    }
                 }
 
                 return option;
@@ -182,18 +193,19 @@ function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
 }
 
 /**
- * İstanbul Bilgisayar Programcılığı üniversitelerini getir
+ * İstanbul üniversitelerini getir (herhangi bir program için)
  */
-function getIstanbulCSUniversities(tytRanking, city = null) {
-    const allUnis = istanbulCSData.getAllUniversities();
+function getIstanbulUniversities(dataSource, tytRanking, city = null) {
+    const allUnis = dataSource.getAllUniversities();
     
-    // Kullanıcı sıralamasına uygun olanlar (kullanıcı sırası >= taban sırası = girebilir)
-    const eligible = allUnis.filter(uni => tytRanking >= uni.minRanking);
+    // Kullanıcı sıralamasına uygun olanlar (kullanıcı sırası <= taban sırası = girebilir)
+    // DİKKAT: Düşük sıralama daha iyidir! (1. > 1.000.000.)
+    const eligible = allUnis.filter(uni => tytRanking <= uni.minRanking);
     
-    // Yakın kaçanlar (±10% tolerans)
+    // Yakın kaçanlar (kullanıcı sırası taban sırasından biraz daha kötü)
     const nearMiss = allUnis.filter(uni => {
-        const gap = tytRanking - uni.minRanking;
-        return gap > 0 && gap <= uni.minRanking * 0.1;
+        const gap = uni.minRanking - tytRanking;
+        return gap < 0 && Math.abs(gap) <= uni.minRanking * 0.1;
     });
 
     // Şehir filtresi uygula
@@ -398,7 +410,7 @@ ${strategy.dgsPath.map(s => `   • ${s.department} → ${s.dgsTarget} (Başarı
 
 module.exports = {
     findSmartAlternatives,
-    getIstanbulCSUniversities,
+    getIstanbulUniversities,
     generateStrategy,
     formatForAI,
     DEPARTMENT_ALTERNATIVES
