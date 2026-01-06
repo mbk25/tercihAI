@@ -1,5 +1,5 @@
-const API_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
+const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
     : window.location.origin;
 
 let conversationHistory = [];
@@ -129,17 +129,17 @@ function setupGoogleLoginButton() {
         googleBtn.style.background = '#ea4335';
         googleBtn.onclick = () => {
             console.log('🚪 Çıkış yapılıyor...');
-            
+
             // NOT: Kullanıcı sohbetlerini SİLMİYORUZ - sadece session'ı temizliyoruz
             // Tekrar giriş yaptığında sohbetler geri gelecek
             console.log('ℹ️ Kullanıcı sohbetleri korunuyor (tekrar giriş için)');
-            
+
             // Sadece profil ve token'ı temizle
             StorageHelper.removeItem('userProfile');
             StorageHelper.removeItem('authToken');
             console.log('✅ Profil ve token temizlendi');
             console.log('✅ Sohbet geçmişi korundu - Tekrar giriş yaptığınızda geri gelecek');
-            
+
             // Sayfayı yenile - misafir moduna dön
             window.location.reload();
         };
@@ -462,7 +462,7 @@ function startNewChat() {
 
         // Event listener'ları yeniden bağla
         setupAnalysisChoiceCards();
-        
+
         const quickForm = document.getElementById('quickAnalysisForm');
         if (quickForm) {
             quickForm.addEventListener('submit', handleQuickStart);
@@ -968,7 +968,7 @@ function loadChatSession(sessionIndex) {
     }
 
     // Seçilen sohbeti yükle
-    currentSession = { 
+    currentSession = {
         ...session,
         selectedUniversities: session.selectedUniversities || [] // Eski sohbetlerle uyumluluk
     };
@@ -1183,7 +1183,7 @@ async function handleAnalysis(formData) {
             resultText += `🎓 **Size Uygun Üniversiteler:**\n\n`;
             data.universities.slice(0, 5).forEach((uni, index) => {
                 resultText += `${index + 1}. ${uni.name}\n`;
-                resultText += `   📍 ${uni.city} - ${uni.campus}\n`;
+                resultText += `   📍 ${uni.city || 'Şehir bilgisi yok'} - ${uni.campus}\n`;
                 resultText += `   🎯 Taban Sıralama: ~${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}\n`;
                 resultText += `   👥 Kontenjan: ${uni.quota}\n`;
 
@@ -1320,16 +1320,16 @@ function checkUserProfile() {
         if (profile) {
             userProfile = JSON.parse(profile);
             console.log('👤 Kullanıcı profili yüklendi:', userProfile.name || userProfile.email);
-            
+
             // Google ID'yi kontrol et
             if (userProfile.googleId) {
                 console.log('🔑 Google ID:', userProfile.googleId);
             }
-            
+
             // MİSAFİR SOHBETLERİNİ TEMİZLE
             console.log('🗑️ Misafir sohbetleri temizleniyor...');
             StorageHelper.removeItem('chatSessions_guest');
-            
+
             updateUserUI();
 
             // Kullanıcıya özel sohbet geçmişini yükle
@@ -1338,7 +1338,7 @@ function checkUserProfile() {
         } else {
             console.log('👤 Misafir kullanıcı - Guest mode');
             userProfile = null;
-            
+
             // Misafir için misafir sohbetlerini yükle
             console.log('📂 Misafir sohbet geçmişi yükleniyor...');
             loadChatHistory();
@@ -1414,7 +1414,7 @@ function openAnalysisForm() {
                     resultText += `🎓 **Size Uygun Üniversiteler:**\n\n`;
                     data.universities.slice(0, 10).forEach((uni, index) => {
                         resultText += `${index + 1}. ${uni.name}\n`;
-                        resultText += `   📍 ${uni.city} - ${uni.campus}\n`;
+                        resultText += `   📍 ${uni.city || 'Şehir bilgisi yok'} - ${uni.campus}\n`;
                         resultText += `   🎯 Taban Sıralama: ~${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}\n`;
                         resultText += `   👥 Kontenjan: ${uni.quota}\n`;
 
@@ -1760,9 +1760,9 @@ function displayComprehensiveResults(data, formData, isReloading = false) {
     } else {
         // Durum kartını ekle
         const statusCard = createStatusCard(
-            formData.dreamDept, 
-            aytRanking, 
-            data.highestAcceptedRanking, 
+            formData.dreamDept,
+            aytRanking,
+            data.highestAcceptedRanking,
             data.rankingType
         );
         infoGridContainer.appendChild(statusCard);
@@ -2215,11 +2215,13 @@ function showAlternativesModal() {
                             </div>
                             
                             <div style="display: grid; gap: 8px; font-size: 15px; color: #e2e8f0; margin-bottom: 15px;">
-                                <div>📍 ${uni.city}</div>
+                                <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                 <div>🏫 ${uni.campus || 'Merkez Kampüs'}</div>
                                 <div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>
                                 <div>👥 Kontenjan: ${uni.quota || 'N/A'}</div>
-                                ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: ${(uni.type === 'Özel' || uni.type === 'Vakıf' || uni.type === 'VAKIF') ? '#f59e0b' : '#10a37f'}; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                <div style="color: ${(uni.type === 'Özel' || uni.type === 'Vakıf' || uni.type === 'VAKIF') ? '#f59e0b' : '#10a37f'}; font-weight: 600;">
+                                    📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}
+                                </div>
                             </div>
                             
                             ${uni.type === 'Özel' && uni.scholarship ? `
@@ -2396,11 +2398,11 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                             </div>
                             
                             <div style="display: grid; gap: 8px; font-size: 15px; color: #e2e8f0; margin-bottom: 15px;">
-                                <div>📍 ${uni.city}</div>
+                                <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                 <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                                 <div>📊 Taban Sıralama: ${program?.minRanking?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                                 <div>👥 Kontenjan: ${program?.quota || 'N/A'}</div>
-                                ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                <div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                             </div>
                             
                             <button onclick="showUniversityDetailModal(${JSON.stringify(uni).replace(/"/g, '&quot;')}, ${JSON.stringify(program || {}).replace(/"/g, '&quot;')})" 
@@ -2433,11 +2435,11 @@ async function displayUniversitiesList(dreamDept, aytRanking, selectedCities, ed
                             </div>
                             
                             <div style="display: grid; gap: 8px; font-size: 15px; color: #e2e8f0; margin-bottom: 15px;">
-                                <div>📍 ${uni.city}</div>
+                                <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                 <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                                 <div>📊 Taban Sıralama: ${program?.minRanking?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                                 <div>👥 Kontenjan: ${program?.quota || 'N/A'}</div>
-                                ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                <div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                             </div>
                             
                             <button onclick="showUniversityDetailModal(${JSON.stringify(uni).replace(/"/g, '&quot;')}, ${JSON.stringify(program || {}).replace(/"/g, '&quot;')})" 
@@ -2562,11 +2564,11 @@ async function displayAlternativeUniversities(data, selectedCities) {
                                         </div>
                                         
                                         <div style="display: grid; gap: 6px; font-size: 14px; color: #e2e8f0; margin-bottom: 12px;">
-                                            <div>📍 ${uni.city}</div>
+                                            <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                                             <div>🎯 Taban Sıralama: ${uni.ranking?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                                             <div>👥 Kontenjan: ${uni.quota || 'N/A'}</div>
-                                            ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: ${(uni.type === 'Devlet' || uni.type === 'DEVLET') ? '#10a37f' : '#f59e0b'}; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                            <div style="color: ${(uni.type === 'Devlet' || uni.type === 'DEVLET') ? '#10a37f' : '#f59e0b'}; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                                         </div>
                                         
                                         ${uni.scholarship ? `
@@ -2652,7 +2654,7 @@ async function displayAlternativeUniversities(data, selectedCities) {
                                         </div>
                                         
                                         <div style="display: grid; gap: 6px; font-size: 14px; color: #e2e8f0; margin-bottom: 12px;">
-                                            <div>📍 ${uni.city}</div>
+                                            <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                                             <div>🎯 Taban Sıralama: ${uni.ranking?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                                             <div>👥 Kontenjan: ${uni.quota || 'N/A'}</div>
@@ -2715,13 +2717,13 @@ function loadChatHistory() {
         if (savedSessions) {
             chatSessions = JSON.parse(savedSessions);
             console.log(`✅ ${chatSessions.length} sohbet oturumu yüklendi`);
-            
+
             // Eski sohbetlerle uyumluluk - selectedUniversities yoksa boş array ekle
             chatSessions = chatSessions.map(session => ({
                 ...session,
                 selectedUniversities: session.selectedUniversities || []
             }));
-            
+
             updateChatHistory();
             updateSelectionButton(); // Buton durumunu güncelle
         } else {
@@ -3217,18 +3219,23 @@ function showEligibleUniversityModal(deptName, universities) {
                         </label>
                         <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem; padding-right: 70px;">${uni.name}</div>
                         <div style="display: grid; gap: 0.5rem; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                            <div>📍 ${uni.city}</div>
+                            <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                             <div>🎯 Taban Sıralama: ${(uni.ranking || uni.minRanking)?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                             <div>👥 Kontenjan: ${uni.quota}</div>
-                            ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
+                        ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `
+                        <div style="background: linear-gradient(135deg, rgba(16, 163, 127, 0.15), rgba(16, 163, 127, 0.05)); border-left: 3px solid #10a37f; padding: 10px 12px; border-radius: 8px; margin-bottom: 1rem;">
+                            <div style="color: #10a37f; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">📋 Özel Şartlar</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Madde: ${uni.conditionNumbers}</div>
+                        </div>
+                        ` : ''}
                         <button 
                             data-uni-name="${uni.name}" 
-                            data-uni-city="${uni.city}" 
+                            data-uni-city="${uni.city || 'Şehir bilgisi yok'}" 
                             data-uni-campus="${uni.campus || 'Ana Kampüs'}" 
                             data-uni-type="Devlet" 
-                            data-uni-condition-numbers="${uni.conditionNumbers || ''}" 
+                            data-uni-condition-numbers="${uni.conditionNumbers || ''}"
                             onclick="
                                 event.stopPropagation(); 
                                 console.log('🎯 BUTONA TIKLANDI!', event.currentTarget.dataset);
@@ -3273,15 +3280,20 @@ function showEligibleUniversityModal(deptName, universities) {
                         </label>
                         <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; font-size: 1.1rem; padding-right: 70px;">${uni.name}</div>
                         <div style="display: grid; gap: 0.5rem; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                            <div>📍 ${uni.city}</div>
+                            <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                             <div>🏫 ${uni.campus || 'Ana Kampüs'}</div>
                             <div>🎯 Taban Sıralama: ${(uni.ranking || uni.minRanking)?.toLocaleString('tr-TR').replace(/,/g, '.') || 'N/A'}</div>
                             <div>👥 Kontenjan: ${uni.quota}</div>
-                            ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
                         </div>
-                        <button 
+                        ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `
+                        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 8px; margin-bottom: 1rem;">
+                            <div style="color: #f59e0b; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">📋 Özel Şartlar</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Madde: ${uni.conditionNumbers}</div>
+                        </div>
+                        ` : ''}
+                        <button
                             data-uni-name="${uni.name}" 
-                            data-uni-city="${uni.city}" 
+                            data-uni-city="${uni.city || 'Şehir bilgisi yok'}"
                             data-uni-campus="${uni.campus || 'Ana Kampüs'}" 
                             data-uni-type="Vakıf" 
                             data-uni-condition-numbers="${uni.conditionNumbers || ''}" 
@@ -3417,7 +3429,7 @@ function showUniversityModal(deptName, universities) {
                         <div style="display: flex; align-items: start; gap: 1rem;">
                             <input type="checkbox" class="uni-checkbox" data-uni-id="devlet-${idx}" 
                                 data-uni-name="${uni.name}" 
-                                data-uni-city="${uni.city}" 
+                                data-uni-city="${uni.city || 'Şehir bilgisi yok'}" 
                                 data-uni-campus="${uni.campus || 'Ana Kampüs'}"
                                 data-uni-ranking="${uni.ranking || ''}"
                                 data-uni-quota="${uni.quota || ''}"
@@ -3427,15 +3439,15 @@ function showUniversityModal(deptName, universities) {
                             <div style="flex: 1;">
                                 <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
                                 <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                                    <div>📍 ${uni.city}</div>
+                                    <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                     ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
                                     ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
-                                    ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                    <div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                                 </div>
-                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Devlet" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Devlet" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'"
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
                                     🔍 ÖSYM Şartları ve Harita Detayı
                                 </button>
@@ -3458,7 +3470,7 @@ function showUniversityModal(deptName, universities) {
                         <div style="display: flex; align-items: start; gap: 1rem;">
                             <input type="checkbox" class="uni-checkbox" data-uni-id="vakif-${idx}" 
                                 data-uni-name="${uni.name}" 
-                                data-uni-city="${uni.city}" 
+                                data-uni-city="${uni.city || 'Şehir bilgisi yok'}" 
                                 data-uni-campus="${uni.campus || 'Ana Kampüs'}"
                                 data-uni-ranking="${uni.ranking || ''}"
                                 data-uni-quota="${uni.quota || ''}"
@@ -3468,15 +3480,15 @@ function showUniversityModal(deptName, universities) {
                             <div style="flex: 1;">
                                 <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">${uni.name}</div>
                                 <div style="display: grid; gap: 0.3rem; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                                    <div>📍 ${uni.city}</div>
+                                    <div>📍 ${uni.city || 'Şehir bilgisi yok'}</div>
                                     ${uni.campus ? `<div>🏫 ${uni.campus}</div>` : ''}
                                     ${uni.ranking ? `<div>📊 Taban Sıralama: ${uni.ranking.toLocaleString('tr-TR').replace(/,/g, '.')}</div>` : ''}
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
-                                    ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `<div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: Madde ${uni.conditionNumbers}</div>` : ''}
+                                    <div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                                 </div>
-                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Vakıf" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Vakıf" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'" 
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'"
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
                                     🔍 ÖSYM Şartları ve Harita Detayı
                                 </button>
@@ -3733,7 +3745,7 @@ function showSelectionsModal() {
                         <div style="flex: 1;">
                             <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem;">${uni.name}</div>
                             <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap;">
-                                <span>📍 ${uni.city}</span>
+                                <span>📍 ${uni.city || 'Şehir bilgisi yok'}</span>
                                 <span>🏫 ${uni.campus}</span>
                                 <span>🏢 ${uni.type}</span>
                                 ${uni.ranking ? `<span>📊 ${uni.ranking}</span>` : ''}
@@ -3974,7 +3986,7 @@ function showUniversityDetailModal(uni, program) {
                         <div style="flex: 1; padding-right: 120px;">
                             <h2 style="color: white; margin: 0 0 8px 0; font-size: 1.8rem; font-weight: 800;">${uni.name}</h2>
                             <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 1rem;">
-                                📍 ${uni.city} • ${uni.campus || 'Ana Kampüs'}
+                                📍 ${uni.city || 'Şehir bilgisi yok'} • ${uni.campus || 'Ana Kampüs'}
                             </p>
                         </div>
                     </div>
@@ -4052,7 +4064,7 @@ function showUniversityDetailModal(uni, program) {
                                     ÖSYM 2025 Tercih Şartları
                                 </h3>
                             </div>
-                            <button data-uni-name="${uni.name}" data-uni-city="${uni.city}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="${uni.type}" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                            <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="${uni.type}" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
                                 style="
                                     background: ${uni.type === 'Devlet' ? '#10a37f' : '#f59e0b'};
                                     color: white;
@@ -5127,7 +5139,7 @@ function showAytNets() {
             <small>Ondalıklı net girebilirsiniz (örn: 15.25, 20.5)</small>
         `;
         aytNetsContainer.appendChild(formGroup);
-        
+
         // Dinamik validasyon ekle
         const input = formGroup.querySelector('input');
         input.addEventListener('input', (e) => {
@@ -5160,7 +5172,7 @@ function showToast(message) {
         animation: slideInRight 0.3s ease;
     `;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOutToTop 0.3s ease';
         setTimeout(() => toast.remove(), 300);
@@ -5213,10 +5225,10 @@ async function handleHedefAnalysis(e) {
     // Kullanıcı mesajını göster
     const totalTytNet = (tytNets.turkce + tytNets.mat + tytNets.sosyal + tytNets.fen).toFixed(2);
     const totalAytNet = Object.values(aytNets).reduce((a, b) => a + b, 0).toFixed(2);
-    
-    const alanIsim = aytAlan === 'sayisal' ? 'Sayısal (MF)' : 
-                     aytAlan === 'esit' ? 'Eşit Ağırlık (TM)' : 
-                     'Sözel (TS)';
+
+    const alanIsim = aytAlan === 'sayisal' ? 'Sayısal (MF)' :
+        aytAlan === 'esit' ? 'Eşit Ağırlık (TM)' :
+            'Sözel (TS)';
 
     const userMessage = `
 🚀 **Hedef Analizi İsteği**
@@ -5232,18 +5244,18 @@ async function handleHedefAnalysis(e) {
 
 📗 **AYT Alanım:** ${alanIsim}
 ${Object.entries(aytNets).map(([key, val]) => {
-    const labels = {
-        mat: 'Matematik',
-        fen: 'Fen Bilimleri',
-        edebiyat: 'Türk Dili ve Edebiyatı',
-        sosyal: 'Sosyal Bilimler',
-        tarih: 'Tarih',
-        cografya: 'Coğrafya',
-        felsefe: 'Felsefe',
-        din: 'Din Kültürü'
-    };
-    return `• ${labels[key] || key}: ${val.toFixed(2)}`;
-}).join('\n')}
+        const labels = {
+            mat: 'Matematik',
+            fen: 'Fen Bilimleri',
+            edebiyat: 'Türk Dili ve Edebiyatı',
+            sosyal: 'Sosyal Bilimler',
+            tarih: 'Tarih',
+            cografya: 'Coğrafya',
+            felsefe: 'Felsefe',
+            din: 'Din Kültürü'
+        };
+        return `• ${labels[key] || key}: ${val.toFixed(2)}`;
+    }).join('\n')}
 **Toplam AYT Net: ${totalAytNet}**
     `.trim();
 
@@ -5265,7 +5277,7 @@ ${Object.entries(aytNets).map(([key, val]) => {
         if (data.success) {
             // Yeni formatı kullan
             const formattedHTML = formatHedefAnalysisResult(data.data, data.message);
-            
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message ai';
             messageDiv.innerHTML = `
@@ -5333,10 +5345,10 @@ function setupNetValidation(inputId, maxValue) {
 
     input.addEventListener('input', (e) => {
         let value = parseFloat(e.target.value);
-        
+
         // Değer kontrolü
         if (isNaN(value)) return;
-        
+
         if (value > maxValue) {
             e.target.value = maxValue;
             showToast(`⚠️ Maksimum ${maxValue} net girebilirsiniz`);
@@ -5344,7 +5356,7 @@ function setupNetValidation(inputId, maxValue) {
             e.target.value = 0;
             showToast(`⚠️ Net değeri negatif olamaz`);
         }
-        
+
         // 2 ondalık basamağa yuvarla
         if (value.toString().includes('.')) {
             const parts = value.toString().split('.');
@@ -5380,7 +5392,7 @@ function setupNetValidation(inputId, maxValue) {
 function formatHedefAnalysisResult(data, aiText) {
     // Mesajı parse et
     const lines = aiText.split('\n').filter(line => line.trim());
-    
+
     // Seviye class belirleme
     const seviyeClassMap = {
         'Mükemmel': 'seviye-mukemmel',
@@ -5389,9 +5401,9 @@ function formatHedefAnalysisResult(data, aiText) {
         'Orta': 'seviye-orta',
         'Başlangıç': 'seviye-gelistirilmeli'
     };
-    
+
     const seviyeClass = seviyeClassMap[data.seviye] || 'seviye-iyi';
-    
+
     return `
         <div class="hedef-sonuc-container">
             <!-- Başlık Kartı -->
@@ -5427,13 +5439,13 @@ function formatHedefAnalysisResult(data, aiText) {
                 <h3>🤖 Kişisel Değerlendirmeniz</h3>
                 <div class="ai-analiz-content">
                     ${aiText.split('\n').map(line => {
-                        line = line.trim();
-                        if (line.startsWith('━')) return '';
-                        if (line.includes('**') || line.length > 0) {
-                            return `<p>${line.replace(/\*\*/g, '<strong>').replace(/\*/g, '')}</p>`;
-                        }
-                        return '';
-                    }).filter(l => l).join('')}
+        line = line.trim();
+        if (line.startsWith('━')) return '';
+        if (line.includes('**') || line.length > 0) {
+            return `<p>${line.replace(/\*\*/g, '<strong>').replace(/\*/g, '')}</p>`;
+        }
+        return '';
+    }).filter(l => l).join('')}
                 </div>
             </div>
 

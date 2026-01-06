@@ -1,0 +1,2146 @@
+{
+  "isEligible": false,
+  "status": "smart_alternatives",
+  "message": "Bilgisayar Mühendisliği için sıralamanız yeterli değil",
+  "dreamDepartment": "Bilgisayar Mühendisliği",
+  "userRanking": 400000,
+  "highestAcceptedRanking": 125000,
+  "rankingType": "AYT",
+  "alternatives": [
+    {
+      "dept": "Yazılım Mühendisliği",
+      "type": "4 Yıllık",
+      "threshold": 50000,
+      "description": "Yazılım geliştirme odaklı, Bilgisayar Mühendisliğine çok benzer kariyer fırsatları",
+      "universities": [],
+      "available": false,
+      "dgs": false
+    },
+    {
+      "dept": "Bilgisayar Teknolojisi ve Bilişim Sistemleri",
+      "type": "4 Yıllık",
+      "threshold": 180000,
+      "description": "Uygulamalı bilgisayar teknolojileri, sistem yönetimi",
+      "universities": [],
+      "available": false,
+      "dgs": false
+    },
+    {
+      "dept": "Bilgisayar ve Öğretim Teknolojileri",
+      "type": "4 Yıllık",
+      "threshold": 120000,
+      "description": "Teknoloji ve eğitim, hem yazılım hem öğretmenlik seçeneği",
+      "universities": [],
+      "available": false,
+      "dgs": false
+    },
+    {
+      "dept": "Yönetim Bilişim Sistemleri",
+      "type": "4 Yıllık",
+      "threshold": 150000,
+      "description": "İş dünyası + teknoloji, yönetim ve yazılım birleşimi",
+      "universities": [],
+      "available": false,
+      "dgs": false
+    },
+    {
+      "dept": "Bilgisayar Programcılığı",
+      "type": "2 Yıllık",
+      "threshold": 450000,
+      "description": "2 yıllık programcılık eğitimi, DGS ile Bilgisayar Mühendisliğine geçiş",
+      "universities": [
+        {
+          "name": "Yeditepe Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Ataşehir Kampüsü",
+          "minRanking": 325678,
+          "quota": 30,
+          "enrolled": 30,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 25678,
+          "safetyLevel": {
+            "level": "moderate",
+            "label": "🟡 Makul",
+            "description": "İyi bir şans"
+          }
+        },
+        {
+          "name": "İstanbul Teknik Üniversitesi",
+          "type": "Devlet",
+          "campus": "Maslak Kampüsü",
+          "minRanking": 358000,
+          "quota": 50,
+          "enrolled": 50,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 58000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Yıldız Teknik Üniversitesi",
+          "type": "Devlet",
+          "campus": "Davutpaşa Kampüsü",
+          "minRanking": 376543,
+          "quota": 55,
+          "enrolled": 55,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 76543,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Bilgi Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Santral Kampüsü",
+          "minRanking": 380567,
+          "quota": 40,
+          "enrolled": 28,
+          "scholarship": "%100 Burslu",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 80567,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Marmara Üniversitesi",
+          "type": "Devlet",
+          "campus": "Göztepe Kampüsü",
+          "minRanking": 389234,
+          "quota": 65,
+          "enrolled": 65,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 89234,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Maltepe Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Maltepe Kampüsü",
+          "minRanking": 398234,
+          "quota": 54,
+          "enrolled": 54,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 98234,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Üniversitesi",
+          "type": "Devlet",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 398456,
+          "quota": 70,
+          "enrolled": 70,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 98456,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "MEF Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Maslak Kampüsü",
+          "minRanking": 398765,
+          "quota": 40,
+          "enrolled": 38,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 98765,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Ticaret Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Küçükyalı Kampüsü",
+          "minRanking": 412345,
+          "quota": 54,
+          "enrolled": 48,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 112345,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Üniversitesi-Cerrahpaşa",
+          "type": "Devlet",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 415678,
+          "quota": 60,
+          "enrolled": 60,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 115678,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Üsküdar Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Altunizade Kampüsü",
+          "minRanking": 423789,
+          "quota": 54,
+          "enrolled": 54,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 123789,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Aydın Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Florya Kampüsü",
+          "minRanking": 425673,
+          "quota": 54,
+          "enrolled": 54,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 125673,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Sakarya Üniversitesi",
+          "type": "Devlet",
+          "campus": "Hendek Kampüsü",
+          "minRanking": 435000,
+          "quota": 45,
+          "enrolled": 45,
+          "scholarship": null,
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 135000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Medipol Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Kavacık Kampüsü",
+          "minRanking": 445123,
+          "quota": 60,
+          "enrolled": 58,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 145123,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Gelişim Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 445678,
+          "quota": 54,
+          "enrolled": 54,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 145678,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstinye Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Topkapı Kampüsü",
+          "minRanking": 456234,
+          "quota": 45,
+          "enrolled": 40,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 156234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Bezmialem Vakıf Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Fatih Kampüsü",
+          "minRanking": 456789,
+          "quota": 45,
+          "enrolled": 42,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 156789,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Haliç Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Şişli Kampüsü",
+          "minRanking": 467234,
+          "quota": 54,
+          "enrolled": 48,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 167234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Nişantaşı Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Maslak Kampüsü",
+          "minRanking": 476543,
+          "quota": 54,
+          "enrolled": 46,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 176543,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Biruni Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Topkapı Kampüsü",
+          "minRanking": 478234,
+          "quota": 50,
+          "enrolled": 45,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 178234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Beykent Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Ayazağa Kampüsü",
+          "minRanking": 484523,
+          "quota": 54,
+          "enrolled": 54,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 184523,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Aydın Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Florya Kampüsü",
+          "minRanking": 485234,
+          "quota": 45,
+          "enrolled": 40,
+          "scholarship": "Ücretli",
+          "program": "Bilgisayar Programcılığı (İÖ)",
+          "rankingDiff": 185234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Sabahattin Zaim Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Halkalı Kampüsü",
+          "minRanking": 487654,
+          "quota": 54,
+          "enrolled": 49,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 187654,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Doğuş Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Acıbadem Kampüsü",
+          "minRanking": 489123,
+          "quota": 48,
+          "enrolled": 44,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 189123,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Bilgi Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Santral Kampüsü",
+          "minRanking": 498234,
+          "quota": 35,
+          "enrolled": 35,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı (%50 İndirimli)",
+          "rankingDiff": 198234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Gedik Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Gedikpaşa Kampüsü",
+          "minRanking": 498567,
+          "quota": 54,
+          "enrolled": 50,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 198567,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Fenerbahçe Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Ataşehir Kampüsü",
+          "minRanking": 512345,
+          "quota": 40,
+          "enrolled": 35,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 212345,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Esenyurt Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Esenyurt Kampüsü",
+          "minRanking": 520145,
+          "quota": 60,
+          "enrolled": 55,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 220145,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Okan Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Tuzla Kampüsü",
+          "minRanking": 523456,
+          "quota": 54,
+          "enrolled": 47,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 223456,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Topkapı Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Topkapı Kampüsü",
+          "minRanking": 528567,
+          "quota": 54,
+          "enrolled": 45,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 228567,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Piri Reis Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Tuzla Kampüsü",
+          "minRanking": 534567,
+          "quota": 35,
+          "enrolled": 30,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 234567,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Gelişim Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 535892,
+          "quota": 40,
+          "enrolled": 32,
+          "scholarship": "Ücretli",
+          "program": "Bilgisayar Programcılığı (İÖ)",
+          "rankingDiff": 235892,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Arel Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Sefaköy Kampüsü",
+          "minRanking": 542891,
+          "quota": 85,
+          "enrolled": 38,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 242891,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Kent Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Tuzla Kampüsü",
+          "minRanking": 558234,
+          "quota": 54,
+          "enrolled": 41,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 258234,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Rumeli Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Silivri Kampüsü",
+          "minRanking": 567123,
+          "quota": 54,
+          "enrolled": 38,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Programcılığı",
+          "rankingDiff": 267123,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        }
+      ],
+      "available": true,
+      "dgs": true,
+      "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+      "dgsSuccessRate": 65
+    },
+    {
+      "dept": "Bilgisayar Teknolojileri",
+      "type": "2 Yıllık",
+      "threshold": 520000,
+      "description": "Genel bilgisayar teknolojileri, DGS fırsatı",
+      "universities": [
+        {
+          "name": "İstanbul Teknik Üniversitesi",
+          "type": "Devlet",
+          "campus": "Maslak Kampüsü",
+          "minRanking": 368000,
+          "quota": 60,
+          "enrolled": 60,
+          "scholarship": null,
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 68000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Yıldız Teknik Üniversitesi",
+          "type": "Devlet",
+          "campus": "Davutpaşa Kampüsü",
+          "minRanking": 378000,
+          "quota": 52,
+          "enrolled": 52,
+          "scholarship": null,
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 78000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Marmara Üniversitesi",
+          "type": "Devlet",
+          "campus": "Göztepe Kampüsü",
+          "minRanking": 392000,
+          "quota": 50,
+          "enrolled": 50,
+          "scholarship": null,
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 92000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Üniversitesi",
+          "type": "Devlet",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 405000,
+          "quota": 55,
+          "enrolled": 55,
+          "scholarship": null,
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 105000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Bahçeşehir Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Beşiktaş Kampüsü",
+          "minRanking": 445000,
+          "quota": 42,
+          "enrolled": 36,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 145000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Bilgi Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Santral Kampüsü",
+          "minRanking": 475000,
+          "quota": 35,
+          "enrolled": 28,
+          "scholarship": "%75 İndirimli",
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 175000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Gelişim Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 505000,
+          "quota": 40,
+          "enrolled": 33,
+          "scholarship": "%50 İndirimli",
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 205000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Aydın Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Florya Kampüsü",
+          "minRanking": 520000,
+          "quota": 45,
+          "enrolled": 38,
+          "scholarship": "%25 İndirimli",
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 220000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Beykent Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Beylikdüzü Kampüsü",
+          "minRanking": 535000,
+          "quota": 38,
+          "enrolled": 30,
+          "scholarship": "Ücretli",
+          "program": "Bilgisayar Teknolojisi",
+          "rankingDiff": 235000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        }
+      ],
+      "available": true,
+      "dgs": true,
+      "dgsTarget": "Bilgisayar ve Öğretim Teknolojileri",
+      "dgsSuccessRate": 60
+    },
+    {
+      "dept": "Web Tasarım ve Kodlama",
+      "type": "2 Yıllık",
+      "threshold": 500000,
+      "description": "Frontend ve backend web geliştirme, DGS ile 4 yıllığa geçiş",
+      "universities": [
+        {
+          "name": "Yıldız Teknik Üniversitesi",
+          "type": "Devlet",
+          "campus": "Davutpaşa Kampüsü",
+          "minRanking": 375000,
+          "quota": 40,
+          "enrolled": 40,
+          "scholarship": null,
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 75000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "Marmara Üniversitesi",
+          "type": "Devlet",
+          "campus": "Göztepe Kampüsü",
+          "minRanking": 385000,
+          "quota": 45,
+          "enrolled": 45,
+          "scholarship": null,
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 85000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Üniversitesi",
+          "type": "Devlet",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 395000,
+          "quota": 50,
+          "enrolled": 50,
+          "scholarship": null,
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 95000,
+          "safetyLevel": {
+            "level": "safe",
+            "label": "🟢 Güvenli",
+            "description": "Yüksek kazanma şansı"
+          }
+        },
+        {
+          "name": "İstanbul Bilgi Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Santral Kampüsü",
+          "minRanking": 420000,
+          "quota": 35,
+          "enrolled": 28,
+          "scholarship": "%50 İndirimli",
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 120000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Aydın Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Florya Kampüsü",
+          "minRanking": 485000,
+          "quota": 40,
+          "enrolled": 32,
+          "scholarship": "%25 İndirimli",
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 185000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "İstanbul Gelişim Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Avcılar Kampüsü",
+          "minRanking": 495000,
+          "quota": 38,
+          "enrolled": 30,
+          "scholarship": "%50 İndirimli",
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 195000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        },
+        {
+          "name": "Beykent Üniversitesi",
+          "type": "Vakıf",
+          "campus": "Beylikdüzü Kampüsü",
+          "minRanking": 510000,
+          "quota": 30,
+          "enrolled": 25,
+          "scholarship": "Ücretli",
+          "program": "Web Tasarım ve Kodlama",
+          "rankingDiff": 210000,
+          "safetyLevel": {
+            "level": "very_safe",
+            "label": "🟢🟢 Çok Güvenli",
+            "description": "Kesinlikle kazanırsınız"
+          }
+        }
+      ],
+      "available": true,
+      "dgs": true,
+      "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+      "dgsSuccessRate": 55
+    }
+  ],
+  "smartAlternatives": {
+    "found": true,
+    "dreamDepartment": "Bilgisayar Mühendisliği",
+    "aytRanking": 400000,
+    "tytRanking": 300000,
+    "fourYearOptions": [
+      {
+        "name": "Yazılım Mühendisliği",
+        "threshold": 50000,
+        "similarity": 95,
+        "description": "Yazılım geliştirme odaklı, Bilgisayar Mühendisliğine çok benzer kariyer fırsatları",
+        "eligible": false,
+        "rankingGap": 350000,
+        "confidence": {
+          "level": "very_low",
+          "label": "🔴 Çok Düşük",
+          "percentage": 15
+        }
+      },
+      {
+        "name": "Bilgisayar Teknolojisi ve Bilişim Sistemleri",
+        "threshold": 180000,
+        "similarity": 85,
+        "description": "Uygulamalı bilgisayar teknolojileri, sistem yönetimi",
+        "eligible": false,
+        "rankingGap": 220000,
+        "confidence": {
+          "level": "very_low",
+          "label": "🔴 Çok Düşük",
+          "percentage": 15
+        }
+      },
+      {
+        "name": "Bilgisayar ve Öğretim Teknolojileri",
+        "threshold": 120000,
+        "similarity": 80,
+        "description": "Teknoloji ve eğitim, hem yazılım hem öğretmenlik seçeneği",
+        "eligible": false,
+        "rankingGap": 280000,
+        "confidence": {
+          "level": "very_low",
+          "label": "🔴 Çok Düşük",
+          "percentage": 15
+        }
+      },
+      {
+        "name": "Yönetim Bilişim Sistemleri",
+        "threshold": 150000,
+        "similarity": 75,
+        "description": "İş dünyası + teknoloji, yönetim ve yazılım birleşimi",
+        "eligible": false,
+        "rankingGap": 250000,
+        "confidence": {
+          "level": "very_low",
+          "label": "🔴 Çok Düşük",
+          "percentage": 15
+        }
+      }
+    ],
+    "twoYearOptions": [
+      {
+        "name": "Bilgisayar Programcılığı",
+        "threshold": 450000,
+        "similarity": 70,
+        "description": "2 yıllık programcılık eğitimi, DGS ile Bilgisayar Mühendisliğine geçiş",
+        "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "dgsSuccessRate": 65,
+        "hasDataset": true,
+        "eligible": true,
+        "rankingGap": -150000,
+        "confidence": {
+          "level": "very_high",
+          "label": "🟢 Çok Yüksek",
+          "percentage": 95
+        },
+        "universities": [
+          {
+            "name": "Yeditepe Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Ataşehir Kampüsü",
+            "minRanking": 325678,
+            "quota": 30,
+            "enrolled": 30,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 25678,
+            "safetyLevel": {
+              "level": "moderate",
+              "label": "🟡 Makul",
+              "description": "İyi bir şans"
+            }
+          },
+          {
+            "name": "İstanbul Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 358000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 58000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 376543,
+            "quota": 55,
+            "enrolled": 55,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 76543,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 380567,
+            "quota": 40,
+            "enrolled": 28,
+            "scholarship": "%100 Burslu",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 80567,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 389234,
+            "quota": 65,
+            "enrolled": 65,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 89234,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Maltepe Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Maltepe Kampüsü",
+            "minRanking": 398234,
+            "quota": 54,
+            "enrolled": 54,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 98234,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 398456,
+            "quota": 70,
+            "enrolled": 70,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 98456,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "MEF Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 398765,
+            "quota": 40,
+            "enrolled": 38,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 98765,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Ticaret Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Küçükyalı Kampüsü",
+            "minRanking": 412345,
+            "quota": 54,
+            "enrolled": 48,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 112345,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi-Cerrahpaşa",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 415678,
+            "quota": 60,
+            "enrolled": 60,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 115678,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Üsküdar Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Altunizade Kampüsü",
+            "minRanking": 423789,
+            "quota": 54,
+            "enrolled": 54,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 123789,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Aydın Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Florya Kampüsü",
+            "minRanking": 425673,
+            "quota": 54,
+            "enrolled": 54,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 125673,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Sakarya Üniversitesi",
+            "type": "Devlet",
+            "campus": "Hendek Kampüsü",
+            "minRanking": 435000,
+            "quota": 45,
+            "enrolled": 45,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 135000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Medipol Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Kavacık Kampüsü",
+            "minRanking": 445123,
+            "quota": 60,
+            "enrolled": 58,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 145123,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Gelişim Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 445678,
+            "quota": 54,
+            "enrolled": 54,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 145678,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstinye Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Topkapı Kampüsü",
+            "minRanking": 456234,
+            "quota": 45,
+            "enrolled": 40,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 156234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Bezmialem Vakıf Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Fatih Kampüsü",
+            "minRanking": 456789,
+            "quota": 45,
+            "enrolled": 42,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 156789,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Haliç Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Şişli Kampüsü",
+            "minRanking": 467234,
+            "quota": 54,
+            "enrolled": 48,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 167234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Nişantaşı Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 476543,
+            "quota": 54,
+            "enrolled": 46,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 176543,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Biruni Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Topkapı Kampüsü",
+            "minRanking": 478234,
+            "quota": 50,
+            "enrolled": 45,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 178234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Beykent Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Ayazağa Kampüsü",
+            "minRanking": 484523,
+            "quota": 54,
+            "enrolled": 54,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 184523,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Aydın Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Florya Kampüsü",
+            "minRanking": 485234,
+            "quota": 45,
+            "enrolled": 40,
+            "scholarship": "Ücretli",
+            "program": "Bilgisayar Programcılığı (İÖ)",
+            "rankingDiff": 185234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Sabahattin Zaim Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Halkalı Kampüsü",
+            "minRanking": 487654,
+            "quota": 54,
+            "enrolled": 49,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 187654,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Doğuş Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Acıbadem Kampüsü",
+            "minRanking": 489123,
+            "quota": 48,
+            "enrolled": 44,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 189123,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 498234,
+            "quota": 35,
+            "enrolled": 35,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı (%50 İndirimli)",
+            "rankingDiff": 198234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Gedik Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Gedikpaşa Kampüsü",
+            "minRanking": 498567,
+            "quota": 54,
+            "enrolled": 50,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 198567,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Fenerbahçe Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Ataşehir Kampüsü",
+            "minRanking": 512345,
+            "quota": 40,
+            "enrolled": 35,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 212345,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Esenyurt Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Esenyurt Kampüsü",
+            "minRanking": 520145,
+            "quota": 60,
+            "enrolled": 55,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 220145,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Okan Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Tuzla Kampüsü",
+            "minRanking": 523456,
+            "quota": 54,
+            "enrolled": 47,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 223456,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Topkapı Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Topkapı Kampüsü",
+            "minRanking": 528567,
+            "quota": 54,
+            "enrolled": 45,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 228567,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Piri Reis Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Tuzla Kampüsü",
+            "minRanking": 534567,
+            "quota": 35,
+            "enrolled": 30,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 234567,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Gelişim Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 535892,
+            "quota": 40,
+            "enrolled": 32,
+            "scholarship": "Ücretli",
+            "program": "Bilgisayar Programcılığı (İÖ)",
+            "rankingDiff": 235892,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Arel Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Sefaköy Kampüsü",
+            "minRanking": 542891,
+            "quota": 85,
+            "enrolled": 38,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 242891,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Kent Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Tuzla Kampüsü",
+            "minRanking": 558234,
+            "quota": 54,
+            "enrolled": 41,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 258234,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Rumeli Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Silivri Kampüsü",
+            "minRanking": 567123,
+            "quota": 54,
+            "enrolled": 38,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 267123,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          }
+        ],
+        "nearMiss": [],
+        "stats": {
+          "totalEligible": 35,
+          "devletCount": 6,
+          "vakifCount": 29,
+          "averageRanking": 460867,
+          "bestRanking": 325678,
+          "worstRanking": 567123
+        }
+      },
+      {
+        "name": "Bilgisayar Teknolojileri",
+        "threshold": 520000,
+        "similarity": 65,
+        "description": "Genel bilgisayar teknolojileri, DGS fırsatı",
+        "dgsTarget": "Bilgisayar ve Öğretim Teknolojileri",
+        "dgsSuccessRate": 60,
+        "hasDataset": true,
+        "eligible": true,
+        "rankingGap": -220000,
+        "confidence": {
+          "level": "very_high",
+          "label": "🟢 Çok Yüksek",
+          "percentage": 95
+        },
+        "universities": [
+          {
+            "name": "İstanbul Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 368000,
+            "quota": 60,
+            "enrolled": 60,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 68000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 378000,
+            "quota": 52,
+            "enrolled": 52,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 78000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 392000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 92000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 405000,
+            "quota": 55,
+            "enrolled": 55,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 105000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Bahçeşehir Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Beşiktaş Kampüsü",
+            "minRanking": 445000,
+            "quota": 42,
+            "enrolled": 36,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 145000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 475000,
+            "quota": 35,
+            "enrolled": 28,
+            "scholarship": "%75 İndirimli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 175000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Gelişim Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 505000,
+            "quota": 40,
+            "enrolled": 33,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 205000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Aydın Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Florya Kampüsü",
+            "minRanking": 520000,
+            "quota": 45,
+            "enrolled": 38,
+            "scholarship": "%25 İndirimli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 220000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Beykent Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Beylikdüzü Kampüsü",
+            "minRanking": 535000,
+            "quota": 38,
+            "enrolled": 30,
+            "scholarship": "Ücretli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 235000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          }
+        ],
+        "nearMiss": [],
+        "stats": {
+          "totalEligible": 9,
+          "devletCount": 4,
+          "vakifCount": 5,
+          "averageRanking": 447000,
+          "bestRanking": 368000,
+          "worstRanking": 535000
+        }
+      },
+      {
+        "name": "Web Tasarım ve Kodlama",
+        "threshold": 500000,
+        "similarity": 60,
+        "description": "Frontend ve backend web geliştirme, DGS ile 4 yıllığa geçiş",
+        "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "dgsSuccessRate": 55,
+        "hasDataset": true,
+        "eligible": true,
+        "rankingGap": -200000,
+        "confidence": {
+          "level": "very_high",
+          "label": "🟢 Çok Yüksek",
+          "percentage": 95
+        },
+        "universities": [
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 375000,
+            "quota": 40,
+            "enrolled": 40,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 75000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 385000,
+            "quota": 45,
+            "enrolled": 45,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 85000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 395000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 95000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 420000,
+            "quota": 35,
+            "enrolled": 28,
+            "scholarship": "%50 İndirimli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 120000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Aydın Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Florya Kampüsü",
+            "minRanking": 485000,
+            "quota": 40,
+            "enrolled": 32,
+            "scholarship": "%25 İndirimli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 185000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Gelişim Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 495000,
+            "quota": 38,
+            "enrolled": 30,
+            "scholarship": "%50 İndirimli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 195000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Beykent Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Beylikdüzü Kampüsü",
+            "minRanking": 510000,
+            "quota": 30,
+            "enrolled": 25,
+            "scholarship": "Ücretli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 210000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          }
+        ],
+        "nearMiss": [],
+        "stats": {
+          "totalEligible": 7,
+          "devletCount": 3,
+          "vakifCount": 4,
+          "averageRanking": 437857,
+          "bestRanking": 375000,
+          "worstRanking": 510000
+        }
+      }
+    ]
+  },
+  "strategy": {
+    "recommended": [],
+    "safe": [],
+    "risky": [],
+    "dgsPath": [
+      {
+        "type": "2 Yıllık (DGS)",
+        "department": "Bilgisayar Programcılığı",
+        "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "successRate": "~%65",
+        "reason": "70% benzerlik, DGS ile Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "action": "Son 6-8 tercihte güvenli seçenek olarak ekleyin",
+        "universities": [
+          {
+            "name": "Yeditepe Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Ataşehir Kampüsü",
+            "minRanking": 325678,
+            "quota": 30,
+            "enrolled": 30,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 25678,
+            "safetyLevel": {
+              "level": "moderate",
+              "label": "🟡 Makul",
+              "description": "İyi bir şans"
+            }
+          },
+          {
+            "name": "İstanbul Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 358000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 58000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 376543,
+            "quota": 55,
+            "enrolled": 55,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 76543,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 380567,
+            "quota": 40,
+            "enrolled": 28,
+            "scholarship": "%100 Burslu",
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 80567,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 389234,
+            "quota": 65,
+            "enrolled": 65,
+            "scholarship": null,
+            "program": "Bilgisayar Programcılığı",
+            "rankingDiff": 89234,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          }
+        ]
+      },
+      {
+        "type": "2 Yıllık (DGS)",
+        "department": "Bilgisayar Teknolojileri",
+        "dgsTarget": "Bilgisayar ve Öğretim Teknolojileri",
+        "successRate": "~%60",
+        "reason": "65% benzerlik, DGS ile Bilgisayar ve Öğretim Teknolojileri",
+        "action": "Son 6-8 tercihte güvenli seçenek olarak ekleyin",
+        "universities": [
+          {
+            "name": "İstanbul Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Maslak Kampüsü",
+            "minRanking": 368000,
+            "quota": 60,
+            "enrolled": 60,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 68000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 378000,
+            "quota": 52,
+            "enrolled": 52,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 78000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 392000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 92000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 405000,
+            "quota": 55,
+            "enrolled": 55,
+            "scholarship": null,
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 105000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "Bahçeşehir Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Beşiktaş Kampüsü",
+            "minRanking": 445000,
+            "quota": 42,
+            "enrolled": 36,
+            "scholarship": "%50 İndirimli",
+            "program": "Bilgisayar Teknolojisi",
+            "rankingDiff": 145000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          }
+        ]
+      },
+      {
+        "type": "2 Yıllık (DGS)",
+        "department": "Web Tasarım ve Kodlama",
+        "dgsTarget": "Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "successRate": "~%55",
+        "reason": "60% benzerlik, DGS ile Bilgisayar Mühendisliği, Yazılım Mühendisliği",
+        "action": "Son 6-8 tercihte güvenli seçenek olarak ekleyin",
+        "universities": [
+          {
+            "name": "Yıldız Teknik Üniversitesi",
+            "type": "Devlet",
+            "campus": "Davutpaşa Kampüsü",
+            "minRanking": 375000,
+            "quota": 40,
+            "enrolled": 40,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 75000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "Marmara Üniversitesi",
+            "type": "Devlet",
+            "campus": "Göztepe Kampüsü",
+            "minRanking": 385000,
+            "quota": 45,
+            "enrolled": 45,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 85000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Üniversitesi",
+            "type": "Devlet",
+            "campus": "Avcılar Kampüsü",
+            "minRanking": 395000,
+            "quota": 50,
+            "enrolled": 50,
+            "scholarship": null,
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 95000,
+            "safetyLevel": {
+              "level": "safe",
+              "label": "🟢 Güvenli",
+              "description": "Yüksek kazanma şansı"
+            }
+          },
+          {
+            "name": "İstanbul Bilgi Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Santral Kampüsü",
+            "minRanking": 420000,
+            "quota": 35,
+            "enrolled": 28,
+            "scholarship": "%50 İndirimli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 120000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          },
+          {
+            "name": "İstanbul Aydın Üniversitesi",
+            "type": "Vakıf",
+            "campus": "Florya Kampüsü",
+            "minRanking": 485000,
+            "quota": 40,
+            "enrolled": 32,
+            "scholarship": "%25 İndirimli",
+            "program": "Web Tasarım ve Kodlama",
+            "rankingDiff": 185000,
+            "safetyLevel": {
+              "level": "very_safe",
+              "label": "🟢🟢 Çok Güvenli",
+              "description": "Kesinlikle kazanırsınız"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "aiRecommendation": "Merhaba! 🙋‍♂️\n\n**Durum Değerlendirmesi:** \nBilgisayar Mühendisliği için AYT sıralamanız 400.000, maalesef yetmiyor. 😔\n\n**4 Yıllık Alternatifler:** \nAYT sıralamanıza göre benzer bölümler:\n1. Yazılım Mühendisliği (Benzerlik: %95)\n2. Bilgisayar Teknolojisi ve Bilişim Sistemleri (Benzerlik: %85)\n3. Bilgisayar ve Öğretim Teknolojileri (Benzerlik: %80)\nMaalesef, bu bölümlere de yetmiyor. 😔\n\n**2 Yıllık + DGS Yolu:** \nTYT sıralamanıza göre uygun 2 yıllık programlar:\n1. Bilgisayar Programcılığı (35 üniversite, en iyi taban: 325.678)\n2. Bilgisayar Teknolojileri (9 üniversite, en iyi taban: 368.000)\n3. Web Tasarım ve Kodlama (7 üniversite, en iyi taban: 375.000)\nDGS ile Bilgisayar Mühendisliği veya Yazılım Mühendisliği hedefleyebilirsiniz. 🎯\n\n**Tercih Stratejisi:** \n24 tercihinizi şöyle dağıtmalısınız:\n- İlk 5 tercih: En iyi 2 yıllık programları (Bilgisayar Programcılığı, Bilgisayar Teknolojileri, Web Tasarım ve Kodlama)\n- Sonraki 10 tercih: Diğer 2 yıllık programlar\n- Son 9 tercih: 4 yıllık benzer bölümler\n\n**Motivasyon:** \nSen yapabilirsin! 🎉 DGS ile hedef bölüme ulaşabilirsin. Çalışkanlık ve azimle başarabilirsin. İyi şans! 🤞",
+  "dgsInfo": {
+    "available": true,
+    "description": "2 yıllık ön lisans programlarından mezun olduktan sonra DGS (Dikey Geçiş Sınavı) ile 4 yıllık lisans programlarına geçiş yapabilirsiniz.",
+    "advantages": [
+      "Sektöre 2 yıl erken giriş",
+      "Pratik iş deneyimi kazanma",
+      "DGS ile ikinci bir şans",
+      "Çalışırken 4 yıllık tamamlama"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+[dotenv@17.2.3] injecting env (15) from backend\.env -- tip: ÔÜÖ´©Å  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ­şæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ­şùé´©Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Ô£à audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ÔÜÖ´©Å  load multiple .env files with { path: ['.env.local', '.env'] }
+­şôè T├╝m veriler MySQL'de saklanacak (Y├ûK verileri nadiren de─şi┼şiyor)
+
+­şÄô ==========================================
+­şÜÇ Tercih AI Backend ba┼şlat─▒l─▒yor...
+==========================================
+
+Ô£à MySQL ba─şlant─▒s─▒ ba┼şar─▒l─▒ (Localhost)
+Ô£à Veritaban─▒ tablolar─▒ senkronize edildi.
+­şôï ├ûSYM ┼şart maddesi tablolar─▒ olu┼şturuluyor...
+Ô£à ┼Şart maddesi tablolar─▒ olu┼şturuldu
+
+­şÄô ==========================================
+Ô£à Tercih AI Backend ├ğal─▒┼ş─▒yor!
+­şôí Ana Sayfa: http://localhost:3000
+­şôè Admin Panel: http://localhost:3000/admin
+­şöÉ Google OAuth: http://localhost:3000/auth/google
+­şÆ¥ Veritaban─▒: MySQL (tercihai)
+­şôï ├ûSYM ┼Şart Maddesi Sistemi: Aktif
+==========================================
+
+­şöä ├ûSYM verileri y├╝kleniyor (arka planda)...
+­şöä ├ûSYM verileri g├╝ncelleniyor...
+Ô£à ┼Şart maddesi tablolar─▒ olu┼şturuldu
+Ô£à 25 ┼şart tan─▒m─▒ veritaban─▒na eklendi
+­şöı "Bilgisayar M├╝hendisli─şi" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "Yaz─▒l─▒m M├╝hendisli─şi" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "Elektrik-Elektronik M├╝hendisli─şi" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "Makine M├╝hendisli─şi" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "End├╝stri M├╝hendisli─şi" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "T─▒p" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "Hukuk" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "─░┼şletme" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 85 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+­şöı "Bilgisayar Programc─▒l─▒─ş─▒" i├ğin ├ûSYM ┼şart maddelerini topluyorum...
+Ô£à 34 program-┼şart e┼şle┼şmesi veritaban─▒na eklendi
+Ô£à T├╝m ├ûSYM verileri g├╝ncellendi
+Ô£à ├ûSYM verileri haz─▒r!

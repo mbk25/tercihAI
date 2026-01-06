@@ -4,6 +4,81 @@ const istanbulCSData = programData.bilgisayarProgramciligi;
 const istanbulElektrikData = programData.elektrik;
 const istanbulWebTasarimData = programData.webTasarim;
 const istanbulBilgisayarTeknolojisiData = programData.bilgisayarTeknolojisi;
+const fs = require('fs');
+const path = require('path');
+
+// Özel şartları JSON dosyasından getir
+let specialConditionsCache = null;
+function loadSpecialConditions() {
+    if (specialConditionsCache) {
+        return specialConditionsCache;
+    }
+
+    try {
+        const filePath = path.join(__dirname, 'special_conditions.json');
+        const data = fs.readFileSync(filePath, 'utf8');
+        specialConditionsCache = JSON.parse(data);
+        console.log(`📦 ${specialConditionsCache.length} özel şart kaydı yüklendi (smart-alternatives)`);
+        return specialConditionsCache;
+    } catch (error) {
+        console.error('❌ special_conditions.json yüklenirken hata:', error.message);
+        return [];
+    }
+}
+
+// Türkçe karakterleri normalize et
+function normalizeTurkish(str) {
+    return str
+        .toUpperCase()
+        .trim()
+        .replace(/İ/g, 'I')
+        .replace(/I/g, 'I')
+        .replace(/Ğ/g, 'G')
+        .replace(/Ü/g, 'U')
+        .replace(/Ş/g, 'S')
+        .replace(/Ö/g, 'O')
+        .replace(/Ç/g, 'C');
+}
+
+// Üniversite için özel şartları bul
+function getSpecialConditionsForUniversity(universityName, programName) {
+    const allConditions = loadSpecialConditions();
+
+    const normalizedUniName = normalizeTurkish(universityName);
+    const normalizedProgramName = normalizeTurkish(programName);
+
+    const matches = allConditions.filter(cond => {
+        const condUniName = normalizeTurkish(cond.universityName);
+        const condProgName = normalizeTurkish(cond.programName);
+
+        const uniMatch = condUniName === normalizedUniName || condUniName.includes(normalizedUniName) || normalizedUniName.includes(condUniName);
+        const progMatch = condProgName === normalizedProgramName || condProgName.includes(normalizedProgramName) || normalizedProgramName.includes(condProgName);
+
+        return uniMatch && progMatch;
+    });
+
+    if (matches.length > 0) {
+        const allArticleNumbers = new Set();
+        matches.forEach(match => {
+            if (match.articleNumbers && Array.isArray(match.articleNumbers)) {
+                match.articleNumbers.forEach(num => allArticleNumbers.add(num));
+            }
+        });
+
+        const articleNumbersArray = Array.from(allArticleNumbers).sort((a, b) => a - b);
+        return {
+            found: true,
+            conditionNumbers: articleNumbersArray.join(', '),
+            articleNumbers: articleNumbersArray
+        };
+    }
+
+    return {
+        found: false,
+        conditionNumbers: '',
+        articleNumbers: []
+    };
+}
 
 /**
  * Kullanıcının hayalindeki bölüme göre akıllı alternatifler öner
@@ -130,7 +205,7 @@ const DEPARTMENT_ALTERNATIVES = {
  */
 function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
     const alternatives = DEPARTMENT_ALTERNATIVES[dreamDept];
-    
+
     if (!alternatives) {
         return {
             found: false,
@@ -176,15 +251,15 @@ function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
                 if (alt.hasDataset) {
                     let istanbulUnis;
                     if (alt.name === "Bilgisayar Programcılığı") {
-                        istanbulUnis = getIstanbulUniversities(istanbulCSData, tytRanking, city);
+                        istanbulUnis = getIstanbulUniversities(istanbulCSData, tytRanking, city, alt.name);
                     } else if (alt.name === "Elektrik") {
-                        istanbulUnis = getIstanbulUniversities(istanbulElektrikData, tytRanking, city);
+                        istanbulUnis = getIstanbulUniversities(istanbulElektrikData, tytRanking, city, alt.name);
                     } else if (alt.name === "Web Tasarım ve Kodlama") {
-                        istanbulUnis = getIstanbulUniversities(istanbulWebTasarimData, tytRanking, city);
+                        istanbulUnis = getIstanbulUniversities(istanbulWebTasarimData, tytRanking, city, alt.name);
                     } else if (alt.name === "Bilgisayar Teknolojileri") {
-                        istanbulUnis = getIstanbulUniversities(istanbulBilgisayarTeknolojisiData, tytRanking, city);
+                        istanbulUnis = getIstanbulUniversities(istanbulBilgisayarTeknolojisiData, tytRanking, city, alt.name);
                     }
-                    
+
                     if (istanbulUnis) {
                         option.universities = istanbulUnis.eligible;
                         option.nearMiss = istanbulUnis.nearMiss;
@@ -203,13 +278,13 @@ function findSmartAlternatives(dreamDept, aytRanking, tytRanking, city = null) {
 /**
  * İstanbul üniversitelerini getir (herhangi bir program için)
  */
-function getIstanbulUniversities(dataSource, tytRanking, city = null) {
+function getIstanbulUniversities(dataSource, tytRanking, city = null, programName = '') {
     const allUnis = dataSource.getAllUniversities();
-    
+
     // Kullanıcı sıralamasına uygun olanlar (kullanıcı sırası <= taban sırası = girebilir)
     // DİKKAT: Düşük sıralama daha iyidir! (1. > 1.000.000.)
     const eligible = allUnis.filter(uni => tytRanking <= uni.minRanking);
-    
+
     // Yakın kaçanlar (kullanıcı sırası taban sırasından biraz daha kötü)
     const nearMiss = allUnis.filter(uni => {
         const gap = uni.minRanking - tytRanking;
@@ -218,17 +293,17 @@ function getIstanbulUniversities(dataSource, tytRanking, city = null) {
 
     // Şehir filtresi uygula
     let filteredEligible = eligible;
-    
+
     // Sadece İstanbul verisi var, bu yüzden:
     // - Şehir boş ise veya İstanbul içeriyorsa -> Göster
     // - Başka şehir istiyorsa -> Gösterme
     if (city && city.trim() !== '') {
         const cityLower = city.toLowerCase().trim();
         const istanbulKeywords = ['istanbul', 'İstanbul', 'ıstanbul', 'ISTANBUL'];
-        const hasIstanbul = istanbulKeywords.some(keyword => 
+        const hasIstanbul = istanbulKeywords.some(keyword =>
             cityLower.includes(keyword.toLowerCase())
         );
-        
+
         if (!hasIstanbul) {
             // Kullanıcı İstanbul dışı şehir istedi, bizim sadece İstanbul verimiz var
             filteredEligible = [];
@@ -236,26 +311,33 @@ function getIstanbulUniversities(dataSource, tytRanking, city = null) {
     }
 
     return {
-        eligible: filteredEligible.map(uni => ({
-            name: uni.name,
-            type: uni.type,
-            campus: uni.campus,
-            minRanking: uni.minRanking,
-            quota: uni.quota,
-            enrolled: uni.enrolled,
-            scholarship: uni.scholarship,
-            program: uni.program,
-            rankingDiff: uni.minRanking - tytRanking,
-            safetyLevel: calculateSafetyLevel(tytRanking, uni.minRanking)
-        })).sort((a, b) => a.minRanking - b.minRanking),
-        
+        eligible: filteredEligible.map(uni => {
+            // Özel şartları al
+            const specialConds = getSpecialConditionsForUniversity(uni.name, programName);
+
+            return {
+                name: uni.name,
+                city: uni.city || "İSTANBUL", // City bilgisini ekle, varsayılan İSTANBUL
+                type: uni.type,
+                campus: uni.campus,
+                minRanking: uni.minRanking,
+                quota: uni.quota,
+                enrolled: uni.enrolled,
+                scholarship: uni.scholarship,
+                program: uni.program,
+                rankingDiff: uni.minRanking - tytRanking,
+                safetyLevel: calculateSafetyLevel(tytRanking, uni.minRanking),
+                conditionNumbers: specialConds.conditionNumbers
+            };
+        }).sort((a, b) => a.minRanking - b.minRanking),
+
         nearMiss: nearMiss.map(uni => ({
             name: uni.name,
             type: uni.type,
             minRanking: uni.minRanking,
             gap: tytRanking - uni.minRanking
         })),
-        
+
         stats: filteredEligible.length > 0 ? {
             totalEligible: filteredEligible.length,
             devletCount: filteredEligible.filter(u => u.type === 'Devlet').length,
@@ -282,7 +364,7 @@ function getIstanbulUniversities(dataSource, tytRanking, city = null) {
 function calculateConfidence(userRanking, threshold) {
     const diff = threshold - userRanking;
     const percentage = (diff / threshold) * 100;
-    
+
     if (percentage >= 20) return { level: 'very_high', label: '🟢 Çok Yüksek', percentage: 95 };
     if (percentage >= 10) return { level: 'high', label: '🟢 Yüksek', percentage: 85 };
     if (percentage >= 0) return { level: 'medium', label: '🟡 Orta', percentage: 65 };
@@ -295,7 +377,7 @@ function calculateConfidence(userRanking, threshold) {
  */
 function calculateSafetyLevel(userRanking, uniRanking) {
     const diff = uniRanking - userRanking;
-    
+
     if (diff > 100000) return { level: 'very_safe', label: '🟢🟢 Çok Güvenli', description: 'Kesinlikle kazanırsınız' };
     if (diff > 50000) return { level: 'safe', label: '🟢 Güvenli', description: 'Yüksek kazanma şansı' };
     if (diff > 20000) return { level: 'moderate', label: '🟡 Makul', description: 'İyi bir şans' };
@@ -391,9 +473,9 @@ ${i + 1}. ${opt.name}
    • En İyi Taban: ${opt.stats.bestRanking?.toLocaleString()}
    
    İlk 5 Seçenek:
-   ${opt.universities.slice(0, 5).map((u, idx) => 
-     `   ${idx + 1}) ${u.name} (${u.type}) - Taban: ${u.minRanking.toLocaleString()} - ${u.safetyLevel.label}`
-   ).join('\n')}` : ''}
+   ${opt.universities.slice(0, 5).map((u, idx) =>
+        `   ${idx + 1}) ${u.name} (${u.type}) - Taban: ${u.minRanking.toLocaleString()} - ${u.safetyLevel.label}`
+    ).join('\n')}` : ''}
 `).join('\n')}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
