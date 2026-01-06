@@ -12,6 +12,7 @@ const { chatWithGemini, analyzeDepartmentWithGemini } = require('./gemini-servic
 const { chatWithGroq, analyzeDepartmentWithGroq } = require('./groq-service');
 const { findSmartAlternativesV2, generateStrategy, formatForAI } = require('./smart-alternatives-v2');
 const { getUniversityConditions, createConditionsTable, refreshAllData } = require('./osym-guide-scraper');
+const specialConditionsService = require('./special-conditions-service');
 const { createSpreadsheet, appendToSpreadsheet } = require('./google-sheets-service');
 const { getTuitionInfo, formatTuitionInfoHTML } = require('./vakif-ucret-scraper');
 const fs = require('fs');
@@ -281,24 +282,57 @@ function getSpecialConditionsForUniversity(universityName, programName) {
 }
 
 // YÖK Atlas Scraper - Sadece MySQL (veriler yılda 1 kez değişiyor)
-async function scrapeYokAtlas(department, year = 2024) {
+async function scrapeYokAtlas(department, year = 2024, programType = null, cities = null) {
     const normalizedDept = normalizeDepName(department);
-    console.log(`🔍 YÖK Atlas veri çekiliyor: "${department}" → "${normalizedDept}" (${year})`);
+    const typeFilter = programType ? ` (${programType})` : '';
+    const cityFilter = cities && cities.length > 0 ? ` şehir: ${cities.join(', ')}` : '';
+    console.log(`🔍 YÖK Atlas veri çekiliyor: "${department}" → "${normalizedDept}" (${year})${typeFilter}${cityFilter}`);
 
     try {
         // MySQL'den kontrol et - önce tam eşleşme
         const connection = await pool.getConnection();
-        let [dbData] = await connection.query(
-            'SELECT * FROM universities WHERE department = ? AND year = ? ORDER BY COALESCE(ranking, 999999) DESC',
-            [normalizedDept, year]
-        );
+        
+        let query = 'SELECT * FROM universities WHERE department = ? AND year = ?';
+        let params = [normalizedDept, year];
+        
+        // Program türü filtresi ekle
+        if (programType) {
+            query += ' AND programType = ?';
+            params.push(programType);
+        }
+        
+        // Şehir filtresi ekle (database seviyesinde)
+        if (cities && cities.length > 0) {
+            const cityPlaceholders = cities.map(() => '?').join(', ');
+            query += ` AND city IN (${cityPlaceholders})`;
+            params.push(...cities);
+        }
+        
+        query += ' ORDER BY COALESCE(ranking, 999999) DESC';
+        
+        let [dbData] = await connection.query(query, params);
 
         // Eğer bulunamazsa, LIKE ile ara
         if (dbData.length === 0) {
-            [dbData] = await connection.query(
-                'SELECT * FROM universities WHERE department LIKE ? AND year = ? ORDER BY COALESCE(ranking, 999999) DESC',
-                [`%${department}%`, year]
-            );
+            query = 'SELECT * FROM universities WHERE department LIKE ? AND year = ?';
+            params = [`%${department}%`, year];
+            
+            if (programType) {
+                query += ' AND programType = ?';
+                params.push(programType);
+            }
+            
+            // Şehir filtresi ekle (LIKE sorgusunda da)
+            if (cities && cities.length > 0) {
+                const cityPlaceholders = cities.map(() => '?').join(', ');
+                query += ` AND city IN (${cityPlaceholders})`;
+                params.push(...cities);
+            }
+            
+            query += ' ORDER BY COALESCE(ranking, 999999) DESC';
+            
+            [dbData] = await connection.query(query, params);
+            
             if (dbData.length > 0) {
                 console.log(`ℹ️ LIKE ile ${dbData.length} sonuç bulundu (arama: "%${department}%")`);
             }
@@ -395,20 +429,13 @@ app.post('/api/recommendations', async (req, res) => {
             return res.status(400).json({ error: 'Sıralama ve bölüm bilgisi gerekli' });
         }
 
-        // 1️⃣ YÖK Atlas'tan hedef bölüm verilerini çek
-        const allDeptUnis = await scrapeYokAtlas(dreamDept, 2024);
+        // 1️⃣ YÖK Atlas'tan hedef bölüm verilerini çek (şehir filtresi ile)
+        const cityArray = city && city.length > 0 ? city.split(',').map(c => c.trim()) : null;
+        const allDeptUnis = await scrapeYokAtlas(dreamDept, 2024, null, cityArray);
         console.log(`📚 "${dreamDept}" için ${allDeptUnis.length} üniversite bulundu`);
 
-        // 2️⃣ Şehir ve eğitim türü filtresi uygula
+        // 2️⃣ Eğitim türü filtresi uygula
         let filteredUnis = allDeptUnis;
-        if (city && city.length > 0) {
-            const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
-            filteredUnis = filteredUnis.filter(uni => {
-                if (!uni.city) return false;
-                const uniCity = uni.city.toLocaleLowerCase('tr-TR');
-                return selectedCities.some(sc => uniCity.includes(sc) || uniCity.includes(sc.replace('i', 'İ')));
-            });
-        }
         if (educationType && educationType !== 'Tümü') {
             filteredUnis = filteredUnis.filter(uni => uni.type === educationType);
         }
@@ -503,18 +530,11 @@ app.post('/api/recommendations', async (req, res) => {
                 alternatives4y
                     .filter(a => a.type === '4 Yıllık')
                     .map(async (alt) => {
-                        const altUnis = await scrapeYokAtlas(alt.dept, 2024);
+                        const altUnis = await scrapeYokAtlas(alt.dept, 2024, null, cityArray);
                         let eligible = altUnis.filter(u => {
                             const uniRank = u.ranking || u.minRanking || 0;
                             return uniRank > 0 && aytRanking <= uniRank;
                         });
-
-                        if (city) {
-                            const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
-                            eligible = eligible.filter(u =>
-                                selectedCities.some(sc => u.city.toLocaleLowerCase('tr-TR').includes(sc))
-                            );
-                        }
                         if (educationType && educationType !== 'Tümü') {
                             eligible = eligible.filter(u => u.type === educationType);
                         }
@@ -545,18 +565,11 @@ app.post('/api/recommendations', async (req, res) => {
                 alternatives4y
                     .filter(a => a.type === '2 Yıllık' && a.dgs)
                     .map(async (alt) => {
-                        const altUnis = await scrapeYokAtlas(alt.dept, 2024);
+                        const altUnis = await scrapeYokAtlas(alt.dept, 2024, 'Önlisans', cityArray);
                         let eligible = altUnis.filter(u => {
                             const uniRank = u.ranking || u.minRanking || 0;
                             return uniRank > 0 && tytRanking <= uniRank;
                         });
-
-                        if (city) {
-                            const selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
-                            eligible = eligible.filter(u =>
-                                selectedCities.some(sc => u.city.toLocaleLowerCase('tr-TR').includes(sc))
-                            );
-                        }
 
                         return {
                             department: alt.dept,
@@ -897,26 +910,20 @@ app.post('/api/analyze', async (req, res) => {
             });
         }
 
-        // 1️⃣ YÖK Atlas'tan GÜNCEL veri çek (4 yıllık)
-        const allUniversities = await scrapeYokAtlas(dreamDept, 2024);
+        // 1️⃣ YÖK Atlas'tan GÜNCEL veri çek (4 yıllık) - şehir filtresi ile
+        let selectedCities = [];
+        let cityArray = null;
+        if (city && city.length > 0 && city.toLowerCase() !== 'fark etmez' && city.toLowerCase() !== 'farketmez') {
+            selectedCities = city.split(',').map(c => c.trim());
+            cityArray = selectedCities;
+            console.log(`🔍 Kullanıcının tercih ettiği şehirler: "${city}"`);
+        }
+        
+        const allUniversities = await scrapeYokAtlas(dreamDept, 2024, null, cityArray);
         console.log(`✅ ${allUniversities.length} üniversite verisi YÖK Atlas'tan alındı`);
 
-        // 2️⃣ Seçilen şehirlere göre filtrele
+        // 2️⃣ Veritabanından gelen veriler zaten şehir filtresine göre
         let universities = allUniversities;
-        let selectedCities = [];
-        if (city && city.length > 0 && city.toLowerCase() !== 'fark etmez' && city.toLowerCase() !== 'farketmez') {
-            selectedCities = city.split(',').map(c => c.trim().toLocaleLowerCase('tr-TR'));
-            console.log(`🔍 Kullanıcının tercih ettiği şehirler: "${city}"`);
-            console.log(`🔍 Normalize edilmiş şehirler:`, selectedCities);
-            universities = allUniversities.filter(uni =>
-                selectedCities.some(selectedCity =>
-                    uni.city.toLocaleLowerCase('tr-TR').includes(selectedCity)
-                )
-            );
-            console.log(`🏙️ ${selectedCities.join(', ')} şehirlerinde ${universities.length} ${dreamDept} programı bulundu`);
-        } else if (city) {
-            console.log(`ℹ️ Şehir filtresi atlandı: "${city}"`);
-        }
 
         // 2.5️⃣ Eğitim türüne göre filtrele (Devlet/Vakıf)
         if (educationType && educationType !== 'Tümü') {
@@ -1186,8 +1193,8 @@ Lütfen aşağıdaki başlıkları detaylı şekilde ele alın:
             // ❌ YETMİYOR - AKILLI ALTERNATİF SİSTEMİ DEVREYE GİRİYOR
             console.log(`❌ ${dreamDept}'ne yetmiyor, akıllı alternatif sistemi çalışıyor...`);
 
-            // Smart Alternatives sistemini kullan
-            const smartAlternatives = findSmartAlternatives(dreamDept, aytRank, tytRank, city);
+            // Smart Alternatives V2 sistemini kullan
+            const smartAlternatives = await findSmartAlternativesV2(dreamDept, aytRank, tytRank, city, scrapeYokAtlas);
             console.log('🔍 Smart Alternatives sonucu:', {
                 found: smartAlternatives.found,
                 twoYear: smartAlternatives.twoYearOptions?.length || 0,
@@ -1249,7 +1256,7 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
                         type: '4 Yıllık',
                         threshold: opt.threshold,
                         description: opt.description,
-                        universities: [], // YÖK'ten çekilecek
+                        universities: opt.universities || [], // YÖK'ten çekilen üniversiteler
                         available: opt.eligible,
                         dgs: false
                     })),
@@ -1303,8 +1310,12 @@ Eğitim Tercihi: ${educationType || 'Devlet + Vakıf'}
                         console.log(`\n🔍 Alternatif bölüm analizi: "${alt.dept}"`);
 
                         let altUnis;
-                        // Tüm alternatif bölümler için YÖK'ten veri çek (şehir filtresini doğru uygulamak için)
-                        altUnis = await scrapeYokAtlas(alt.dept, 2024);
+                        // Şehir filtresi ile alternatif bölümler için YÖK'ten veri çek
+                        const altCityArray = city && city.length > 0 && city.toLowerCase() !== 'fark etmez' && city.toLowerCase() !== 'farketmez'
+                            ? city.split(',').map(c => c.trim())
+                            : null;
+                        const altProgramType = alt.type === '2 Yıllık' ? 'Önlisans' : null;
+                        altUnis = await scrapeYokAtlas(alt.dept, 2024, altProgramType, altCityArray);
                         console.log(`   📊 YÖK'ten ${altUnis.length} üniversite bulundu`);
 
                         // 4 yıllık için AYT, 2 yıllık için TYT sıralaması kullan
@@ -1684,21 +1695,12 @@ app.post('/api/universities', async (req, res) => {
 
         console.log('🏛️ Üniversite listesi istendi:', { department, ranking, cities, educationType });
 
-        // YÖK Atlas'tan tüm üniversiteleri çek
-        const allUniversities = await scrapeYokAtlas(department, 2024);
+        // YÖK Atlas'tan üniversiteleri çek (şehir filtresi ile)
+        const cityArray = cities && cities.length > 0 ? cities : null;
+        const allUniversities = await scrapeYokAtlas(department, 2024, null, cityArray);
         console.log(`✅ Toplam ${allUniversities.length} üniversite bulundu`);
 
         let filteredUniversities = allUniversities;
-
-        // Şehir filtreleme
-        if (cities && cities.length > 0) {
-            filteredUniversities = filteredUniversities.filter(uni =>
-                cities.some(city =>
-                    uni.city.toLocaleLowerCase('tr-TR').includes(city.toLocaleLowerCase('tr-TR'))
-                )
-            );
-            console.log(`📍 Şehir filtresi uygulandı: ${filteredUniversities.length} üniversite`);
-        }
 
         // Eğitim türü filtreleme
         if (educationType && educationType !== 'Tümü') {
@@ -2086,8 +2088,114 @@ app.get('/api/conditions/definitions', async (req, res) => {
 app.get('/api/conditions/:university/:program', async (req, res) => {
     try {
         const { university, program } = req.params;
-        const conditions = await getUniversityConditions(university, program, 2024);
-        res.json({ conditions });
+        
+        console.log(`🔍 ÖSYM Şartları isteniyor: ${university} - ${program}`);
+        
+        // special-conditions-service.js'den şartları al
+        const conditionData = specialConditionsService.getConditionsByUniversityAndProgram(university, program);
+        
+        if (conditionData && conditionData.specialConditions && conditionData.specialConditions.length > 0) {
+            console.log(`✅ ${conditionData.specialConditions.length} şart bulundu`);
+            
+            // Frontend'in beklediği formata dönüştür
+            const formattedConditions = conditionData.specialConditions.map(madde => ({
+                conditionNumber: madde.madde_no,
+                conditionText: madde.icerik,
+                category: madde.madde_kodu,
+                number: madde.madde_no,
+                text: madde.icerik
+            }));
+            
+            res.json({ 
+                conditions: formattedConditions,
+                university: conditionData.university,
+                program: conditionData.programName,
+                programCode: conditionData.programCode
+            });
+        } else {
+            // Program özel şartlarda yoksa, MySQL'den kontrol et
+            console.log(`⚠️ ${university} - ${program} için special_conditions2.json'da bulunamadı`);
+            console.log(`   MySQL'den conditionNumbers kontrol ediliyor...`);
+            
+            // MySQL'den üniversite ve program bilgilerini çek
+            const connection = await pool.getConnection();
+            
+            // Üniversite ve program için conditionNumbers'ı çek
+            const [programData] = await connection.query(
+                'SELECT name, type, city, campus, conditionNumbers FROM universities WHERE name LIKE ? AND department LIKE ? LIMIT 1',
+                [`%${university}%`, `%${program}%`]
+            );
+            
+            // ÖSYM madde açıklamalarını yükle
+            const maddeAciklamalari = specialConditionsService.loadOsymMaddeAciklamalari();
+            
+            if (programData.length > 0 && programData[0].conditionNumbers && programData[0].conditionNumbers.trim()) {
+                // MySQL'den gelen conditionNumbers var!
+                const conditionNumbersStr = programData[0].conditionNumbers;
+                console.log(`   ✅ MySQL'den conditionNumbers bulundu: ${conditionNumbersStr}`);
+                
+                // Madde numaralarını ayır (örn: "18, 21, 64" → [18, 21, 64])
+                const maddeNumbers = conditionNumbersStr.split(',')
+                    .map(num => parseInt(num.trim()))
+                    .filter(num => !isNaN(num))
+                    .sort((a, b) => a - b);
+                
+                // Her madde için açıklamayı osym_madde_aciklamalari.json'dan al
+                const conditions = maddeNumbers.map(maddeNo => {
+                    const madde = maddeAciklamalari[maddeNo.toString()];
+                    return {
+                        conditionNumber: maddeNo,
+                        conditionText: madde ? madde.icerik : `Madde ${maddeNo} açıklaması bulunamadı`,
+                        category: madde ? madde.madde_kodu : `Bk. ${maddeNo}`,
+                        number: maddeNo,
+                        text: madde ? madde.icerik : `Madde ${maddeNo} açıklaması bulunamadı`
+                    };
+                });
+                
+                connection.release();
+                
+                res.json({ 
+                    conditions: conditions,
+                    university: programData[0].name,
+                    program: program,
+                    source: 'MySQL database'
+                });
+                return;
+            }
+            
+            // MySQL'de de yoksa, üniversite türüne göre varsayılan şartları dön
+            const [uniData] = await connection.query(
+                'SELECT type FROM universities WHERE name LIKE ? LIMIT 1',
+                [`%${university}%`]
+            );
+            connection.release();
+            
+            const uniType = uniData.length > 0 ? uniData[0].type : 'Devlet';
+            console.log(`   Üniversite türü: ${uniType}`);
+            
+            // Varsayılan maddeler
+            const defaultMaddeNumbers = uniType === 'Vakıf'
+                ? [21, 22, 23, 24, 64] // Vakıf üniversiteleri için
+                : [18, 22, 23, 24];     // Devlet üniversiteleri için
+            
+            const defaultConditions = defaultMaddeNumbers.map(maddeNo => {
+                const madde = maddeAciklamalari[maddeNo.toString()];
+                return {
+                    conditionNumber: maddeNo,
+                    conditionText: madde ? madde.icerik : `Madde ${maddeNo} bilgisi mevcut değil`,
+                    category: madde ? madde.madde_kodu : `Bk. ${maddeNo}`,
+                    number: maddeNo,
+                    text: madde ? madde.icerik : `Madde ${maddeNo} bilgisi mevcut değil`
+                };
+            });
+            
+            res.json({ 
+                conditions: defaultConditions,
+                university: university,
+                program: program,
+                note: 'Varsayılan ÖSYM şartları gösteriliyor'
+            });
+        }
     } catch (error) {
         console.error('Üniversite şartları getirme hatası:', error);
         res.status(500).json({ error: 'Şartlar getirilemedi' });

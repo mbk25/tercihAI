@@ -4,69 +4,19 @@
 const fs = require('fs');
 const path = require('path');
 
-// Özel şartları JSON dosyasından getir
-let specialConditionsCache = null;
-function loadSpecialConditions() {
-    if (specialConditionsCache) {
-        return specialConditionsCache;
-    }
+// special-conditions-service.js modülünü import et
+const specialConditionsService = require('./special-conditions-service');
 
-    try {
-        const filePath = path.join(__dirname, 'special_conditions.json');
-        const data = fs.readFileSync(filePath, 'utf8');
-        specialConditionsCache = JSON.parse(data);
-        console.log(`📦 ${specialConditionsCache.length} özel şart kaydı yüklendi (smart-alternatives-v2)`);
-        return specialConditionsCache;
-    } catch (error) {
-        console.error('❌ special_conditions.json yüklenirken hata:', error.message);
-        return [];
-    }
-}
-
-// Türkçe karakterleri normalize et
-function normalizeTurkish(str) {
-    return str
-        .toUpperCase()
-        .trim()
-        .replace(/İ/g, 'I')
-        .replace(/I/g, 'I')
-        .replace(/Ğ/g, 'G')
-        .replace(/Ü/g, 'U')
-        .replace(/Ş/g, 'S')
-        .replace(/Ö/g, 'O')
-        .replace(/Ç/g, 'C');
-}
-
-// Üniversite için özel şartları bul
+// Üniversite için özel şartları bul - special-conditions-service kullan
 function getSpecialConditionsForUniversity(universityName, programName) {
-    const allConditions = loadSpecialConditions();
-
-    const normalizedUniName = normalizeTurkish(universityName);
-    const normalizedProgramName = normalizeTurkish(programName);
-
-    const matches = allConditions.filter(cond => {
-        const condUniName = normalizeTurkish(cond.universityName);
-        const condProgName = normalizeTurkish(cond.programName);
-
-        const uniMatch = condUniName === normalizedUniName || condUniName.includes(normalizedUniName) || normalizedUniName.includes(condUniName);
-        const progMatch = condProgName === normalizedProgramName || condProgName.includes(normalizedProgramName) || normalizedProgramName.includes(condProgName);
-
-        return uniMatch && progMatch;
-    });
-
-    if (matches.length > 0) {
-        const allArticleNumbers = new Set();
-        matches.forEach(match => {
-            if (match.articleNumbers && Array.isArray(match.articleNumbers)) {
-                match.articleNumbers.forEach(num => allArticleNumbers.add(num));
-            }
-        });
-
-        const articleNumbersArray = Array.from(allArticleNumbers).sort((a, b) => a - b);
+    const conditionData = specialConditionsService.getConditionsByUniversityAndProgram(universityName, programName);
+    
+    if (conditionData && conditionData.specialConditions && conditionData.specialConditions.length > 0) {
+        const maddeNumbers = conditionData.specialConditions.map(c => c.madde_no).sort((a, b) => a - b);
         return {
             found: true,
-            conditionNumbers: articleNumbersArray.join(', '),
-            articleNumbers: articleNumbersArray
+            conditionNumbers: maddeNumbers.join(', '),
+            articleNumbers: maddeNumbers
         };
     }
 
@@ -224,28 +174,35 @@ async function findSmartAlternativesV2(dreamDept, aytRanking, tytRanking, city =
         const fourYearOptions = await Promise.all(
             alternatives.fourYearAlternatives.map(async (alt) => {
                 try {
+                    // ÖNCE THRESHOLD KONTROLÜ YAP!
+                    if (aytRanking > alt.threshold) {
+                        console.log(`   ⏭️  ${alt.name} atlanıyor - Threshold: ${alt.threshold}, Kullanıcı AYT: ${aytRanking} (${aytRanking - alt.threshold} puan fark)`);
+                        return {
+                            ...alt,
+                            eligible: false,
+                            rankingGap: aytRanking - alt.threshold,
+                            confidence: 0,
+                            universities: [],
+                            stats: { totalEligible: 0, devletCount: 0, vakifCount: 0, bestRanking: 0, worstRanking: 0 }
+                        };
+                    }
+                    
+                    console.log(`   ✅ ${alt.name} uygun - Threshold: ${alt.threshold}, Kullanıcı AYT: ${aytRanking}`);
                     console.log(`   📚 ${alt.name} için veriler çekiliyor...`);
-                    // Veritabanından bu program için tüm üniversiteleri çek
-                    const allUnis = await scrapeYokAtlas(alt.name, 2024);
+                    // Veritabanından bu program için üniversiteleri çek (şehir filtresi ile)
+                    const allUnis = await scrapeYokAtlas(alt.name, 2024, null, result.selectedCities.length > 0 ? result.selectedCities : null);
                     console.log(`   ✅ ${allUnis.length} üniversite bulundu`);
 
-                    // Şehir filtresi uygula
-                    let filteredUnis = allUnis;
-                    if (normalizedCities.length > 0) {
-                        filteredUnis = allUnis.filter(uni => {
-                            if (!uni.city) return false;
-                            const uniCity = uni.city.toLocaleLowerCase('tr-TR');
-                            return normalizedCities.some(selectedCity =>
-                                uniCity.includes(selectedCity) || selectedCity.includes(uniCity)
-                            );
-                        });
-                        console.log(`   📍 Şehir filtresi sonrası: ${filteredUnis.length} üniversite`);
-                    }
-
                     // Kullanıcının sıralamasına uygun olanları filtrele
-                    const eligibleUnis = filteredUnis.filter(uni =>
-                        aytRanking <= (uni.ranking || uni.minRanking || 999999)
-                    );
+                    console.log(`   🔍 Sıralama kontrolü: Kullanıcı AYT = ${aytRanking}`);
+                    const eligibleUnis = allUnis.filter(uni => {
+                        const uniRank = uni.ranking || uni.minRanking || 999999;
+                        const isEligible = aytRanking <= uniRank;
+                        if (allUnis.indexOf(uni) < 3) { // İlk 3 üniversite için log
+                            console.log(`      ${uni.name}: Taban ${uniRank}, ${aytRanking} <= ${uniRank} ? ${isEligible ? '✅ UYGUN' : '❌ UYGUN DEĞİL'}`);
+                        }
+                        return isEligible;
+                    });
                     console.log(`   ✅ Sıralama filtresi sonrası: ${eligibleUnis.length} üniversite`);
 
                     return {
@@ -293,28 +250,35 @@ async function findSmartAlternativesV2(dreamDept, aytRanking, tytRanking, city =
         const twoYearOptions = await Promise.all(
             alternatives.twoYearAlternatives.map(async (alt) => {
                 try {
+                    // ÖNCE THRESHOLD KONTROLÜ YAP!
+                    if (tytRanking > alt.threshold) {
+                        console.log(`   ⏭️  ${alt.name} atlanıyor - Threshold: ${alt.threshold}, Kullanıcı TYT: ${tytRanking} (${tytRanking - alt.threshold} puan fark)`);
+                        return {
+                            ...alt,
+                            eligible: false,
+                            rankingGap: tytRanking - alt.threshold,
+                            confidence: 0,
+                            universities: [],
+                            stats: { totalEligible: 0, devletCount: 0, vakifCount: 0, bestRanking: 0, worstRanking: 0 }
+                        };
+                    }
+                    
+                    console.log(`   ✅ ${alt.name} uygun - Threshold: ${alt.threshold}, Kullanıcı TYT: ${tytRanking}`);
                     console.log(`   📚 ${alt.name} için veriler çekiliyor...`);
-                    // Veritabanından bu program için tüm üniversiteleri çek
-                    const allUnis = await scrapeYokAtlas(alt.name, 2024);
+                    // Veritabanından bu program için üniversiteleri çek (Önlisans + şehir filtresi ile)
+                    const allUnis = await scrapeYokAtlas(alt.name, 2024, 'Önlisans', result.selectedCities.length > 0 ? result.selectedCities : null);
                     console.log(`   ✅ ${allUnis.length} üniversite bulundu`);
 
-                    // Şehir filtresi uygula
-                    let filteredUnis = allUnis;
-                    if (normalizedCities.length > 0) {
-                        filteredUnis = allUnis.filter(uni => {
-                            if (!uni.city) return false;
-                            const uniCity = uni.city.toLocaleLowerCase('tr-TR');
-                            return normalizedCities.some(selectedCity =>
-                                uniCity.includes(selectedCity) || selectedCity.includes(uniCity)
-                            );
-                        });
-                        console.log(`   📍 Şehir filtresi sonrası: ${filteredUnis.length} üniversite`);
-                    }
-
                     // Kullanıcının sıralamasına uygun olanları filtrele
-                    const eligibleUnis = filteredUnis.filter(uni =>
-                        tytRanking <= (uni.ranking || uni.minRanking || 999999)
-                    );
+                    console.log(`   🔍 Sıralama kontrolü: Kullanıcı TYT = ${tytRanking}`);
+                    const eligibleUnis = allUnis.filter(uni => {
+                        const uniRank = uni.ranking || uni.minRanking || 999999;
+                        const isEligible = tytRanking <= uniRank;
+                        if (allUnis.indexOf(uni) < 3) { // İlk 3 üniversite için log
+                            console.log(`      ${uni.name}: Taban ${uniRank}, ${tytRanking} <= ${uniRank} ? ${isEligible ? '✅ UYGUN' : '❌ UYGUN DEĞİL'}`);
+                        }
+                        return isEligible;
+                    });
                     console.log(`   ✅ Sıralama filtresi sonrası: ${eligibleUnis.length} üniversite`);
 
                     return {

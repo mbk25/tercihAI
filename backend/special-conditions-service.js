@@ -4,10 +4,11 @@ const path = require('path');
 /**
  * ÖSYM Özel Şartlar Servisi
  * special_conditions2.json dosyasından program kodlarına göre şart maddelerini yönetir
+ * osym_madde_aciklamalari.json dosyasından madde içeriklerini çeker
  */
 
 let specialConditionsData = null;
-let legendData = null;
+let osmyMaddeAciklamalari = null;
 
 /**
  * special_conditions2.json dosyasını yükle
@@ -22,15 +23,45 @@ function loadSpecialConditionsData() {
         const rawData = fs.readFileSync(filePath, 'utf8');
         const jsonData = JSON.parse(rawData);
         
-        legendData = jsonData.legend || {};
         specialConditionsData = jsonData.programs || [];
         
         console.log(`✅ ${specialConditionsData.length} program için ÖSYM şart verileri yüklendi`);
-        console.log(`✅ ${Object.keys(legendData).length} şart maddesi tanımı yüklendi`);
         return specialConditionsData;
     } catch (error) {
         console.error('❌ special_conditions2.json yüklenemedi:', error.message);
         return [];
+    }
+}
+
+/**
+ * osym_madde_aciklamalari.json dosyasını yükle
+ */
+function loadOsymMaddeAciklamalari() {
+    if (osmyMaddeAciklamalari) {
+        return osmyMaddeAciklamalari;
+    }
+
+    try {
+        const filePath = path.join(__dirname, 'osym_madde_aciklamalari.json');
+        const rawData = fs.readFileSync(filePath, 'utf8');
+        const jsonData = JSON.parse(rawData);
+        
+        // Maddeleri madde_no'ya göre indexle
+        osmyMaddeAciklamalari = {};
+        if (jsonData.maddeler && Array.isArray(jsonData.maddeler)) {
+            jsonData.maddeler.forEach(madde => {
+                osmyMaddeAciklamalari[madde.madde_no.toString()] = {
+                    madde_kodu: madde.madde_kodu,
+                    icerik: madde.icerik
+                };
+            });
+        }
+        
+        console.log(`✅ ${Object.keys(osmyMaddeAciklamalari).length} ÖSYM madde açıklaması yüklendi`);
+        return osmyMaddeAciklamalari;
+    } catch (error) {
+        console.error('❌ osym_madde_aciklamalari.json yüklenemedi:', error.message);
+        return {};
     }
 }
 
@@ -41,6 +72,7 @@ function loadSpecialConditionsData() {
  */
 function getConditionsByProgramCode(programCode) {
     const data = loadSpecialConditionsData();
+    const maddeAciklamalari = loadOsymMaddeAciklamalari();
 
     if (!data || data.length === 0) {
         return null;
@@ -52,12 +84,36 @@ function getConditionsByProgramCode(programCode) {
         return null;
     }
 
+    // Madde numaralarını ÖSYM madde açıklamalarıyla birleştir
+    const detailedConditions = (program.specialConditions || []).map(condition => {
+        // Eğer condition bir object ise (code ve description varsa)
+        if (typeof condition === 'object' && condition.code) {
+            const maddeNo = condition.code.toString();
+            const osmyAciklama = maddeAciklamalari[maddeNo];
+            
+            return {
+                madde_no: parseInt(maddeNo),
+                madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+                icerik: osmyAciklama ? osmyAciklama.icerik : condition.description
+            };
+        }
+        
+        // Eğer sadece numara ise
+        const maddeNo = condition.toString();
+        const osmyAciklama = maddeAciklamalari[maddeNo];
+        
+        return {
+            madde_no: parseInt(maddeNo),
+            madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+            icerik: osmyAciklama ? osmyAciklama.icerik : 'Açıklama bulunamadı'
+        };
+    });
+
     return {
         programCode: program.programCode,
         university: program.university,
         programName: program.program,
-        specialConditions: program.specialConditions || [],
-        legend: legendData
+        specialConditions: detailedConditions
     };
 }
 
@@ -69,39 +125,90 @@ function getConditionsByProgramCode(programCode) {
  */
 function getConditionsByUniversityAndProgram(universityName, programName) {
     const data = loadSpecialConditionsData();
+    const maddeAciklamalari = loadOsymMaddeAciklamalari();
 
     if (!data || data.length === 0) {
         return null;
     }
 
-    // Normalize edilmiş arama
-    const normalizedUniName = universityName.toUpperCase().trim();
+    // Normalize edilmiş arama - Üniversitesi, Üniv. gibi kelimeleri kaldır
+    const cleanUniversityName = (name) => {
+        return name
+            .toUpperCase()
+            .trim()
+            .replace(/ÜNİVERSİTESİ/g, '')
+            .replace(/ÜNİV\./g, '')
+            .replace(/UNIVERSITY/g, '')
+            .trim();
+    };
+
+    const normalizedUniName = cleanUniversityName(universityName);
     const normalizedProgName = programName.toLowerCase().trim();
 
+    console.log(`🔍 Arama: "${normalizedUniName}" - "${normalizedProgName}"`);
+
     // Tam eşleşme ara
-    let program = data.find(p =>
-        p.university && p.university.toUpperCase().trim() === normalizedUniName &&
-        p.program && p.program.toLowerCase().includes(normalizedProgName)
-    );
+    let program = data.find(p => {
+        const cleanedDbName = cleanUniversityName(p.university || '');
+        return cleanedDbName === normalizedUniName &&
+            p.program && p.program.toLowerCase().includes(normalizedProgName);
+    });
 
     // Eğer bulunamazsa, kısmi eşleşme dene
     if (!program) {
-        program = data.find(p =>
-            p.university && p.university.toUpperCase().includes(normalizedUniName) &&
-            p.program && p.program.toLowerCase().includes(normalizedProgName)
-        );
+        program = data.find(p => {
+            const cleanedDbName = cleanUniversityName(p.university || '');
+            return cleanedDbName.includes(normalizedUniName) &&
+                p.program && p.program.toLowerCase().includes(normalizedProgName);
+        });
+    }
+
+    // Hala bulunamadıysa, daha gevşek arama
+    if (!program) {
+        program = data.find(p => {
+            const cleanedDbName = cleanUniversityName(p.university || '');
+            return normalizedUniName.includes(cleanedDbName) &&
+                p.program && p.program.toLowerCase().includes(normalizedProgName);
+        });
     }
 
     if (!program) {
+        console.log(`❌ Program bulunamadı: ${universityName} - ${programName}`);
         return null;
     }
+
+    console.log(`✅ Program bulundu: ${program.university} - ${program.program}`);
+
+    // Madde numaralarını ÖSYM madde açıklamalarıyla birleştir
+    const detailedConditions = (program.specialConditions || []).map(condition => {
+        // Eğer condition bir object ise (code ve description varsa)
+        if (typeof condition === 'object' && condition.code) {
+            const maddeNo = condition.code.toString();
+            const osmyAciklama = maddeAciklamalari[maddeNo];
+            
+            return {
+                madde_no: parseInt(maddeNo),
+                madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+                icerik: osmyAciklama ? osmyAciklama.icerik : condition.description
+            };
+        }
+        
+        // Eğer sadece numara ise
+        const maddeNo = condition.toString();
+        const osmyAciklama = maddeAciklamalari[maddeNo];
+        
+        return {
+            madde_no: parseInt(maddeNo),
+            madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+            icerik: osmyAciklama ? osmyAciklama.icerik : 'Açıklama bulunamadı'
+        };
+    });
 
     return {
         programCode: program.programCode,
         university: program.university,
         programName: program.program,
-        specialConditions: program.specialConditions || [],
-        legend: legendData
+        specialConditions: detailedConditions
     };
 }
 
@@ -112,6 +219,7 @@ function getConditionsByUniversityAndProgram(universityName, programName) {
  */
 function getAllProgramsByUniversity(universityName) {
     const data = loadSpecialConditionsData();
+    const maddeAciklamalari = loadOsymMaddeAciklamalari();
 
     if (!data || data.length === 0) {
         return [];
@@ -123,13 +231,39 @@ function getAllProgramsByUniversity(universityName) {
         p.university && p.university.toUpperCase().includes(normalizedUniName)
     );
 
-    return programs.map(p => ({
-        programCode: p.programCode,
-        university: p.university,
-        programName: p.program,
-        specialConditions: p.specialConditions || [],
-        legend: legendData
-    }));
+    return programs.map(p => {
+        // Madde numaralarını ÖSYM madde açıklamalarıyla birleştir
+        const detailedConditions = (p.specialConditions || []).map(condition => {
+            // Eğer condition bir object ise (code ve description varsa)
+            if (typeof condition === 'object' && condition.code) {
+                const maddeNo = condition.code.toString();
+                const osmyAciklama = maddeAciklamalari[maddeNo];
+                
+                return {
+                    madde_no: parseInt(maddeNo),
+                    madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+                    icerik: osmyAciklama ? osmyAciklama.icerik : condition.description
+                };
+            }
+            
+            // Eğer sadece numara ise
+            const maddeNo = condition.toString();
+            const osmyAciklama = maddeAciklamalari[maddeNo];
+            
+            return {
+                madde_no: parseInt(maddeNo),
+                madde_kodu: osmyAciklama ? osmyAciklama.madde_kodu : `Bk. ${maddeNo}`,
+                icerik: osmyAciklama ? osmyAciklama.icerik : 'Açıklama bulunamadı'
+            };
+        });
+
+        return {
+            programCode: p.programCode,
+            university: p.university,
+            programName: p.program,
+            specialConditions: detailedConditions
+        };
+    });
 }
 
 /**
@@ -142,13 +276,13 @@ function formatArticleNumbers(specialConditions) {
         return '';
     }
     
-    // Eğer eski format ise (sadece sayılar dizisi)
-    if (typeof specialConditions[0] === 'number' || typeof specialConditions[0] === 'string') {
-        return specialConditions.join(', ');
+    // Eğer detaylı format ise (object array)
+    if (typeof specialConditions[0] === 'object' && specialConditions[0].madde_no) {
+        return specialConditions.map(c => c.madde_no).join(', ');
     }
     
-    // Yeni format (object array)
-    return specialConditions.map(c => c.code).join(', ');
+    // Eski format (sadece sayılar dizisi)
+    return specialConditions.join(', ');
 }
 
 /**
@@ -162,18 +296,10 @@ function getConditionDescriptions(specialConditions) {
     }
     
     return specialConditions.map(c => ({
-        code: c.code,
-        description: c.description
+        madde_no: c.madde_no,
+        madde_kodu: c.madde_kodu,
+        icerik: c.icerik
     }));
-}
-
-/**
- * Legend verisini getir
- * @returns {object} - Legend objesi
- */
-function getLegend() {
-    loadSpecialConditionsData();
-    return legendData || {};
 }
 
 /**
@@ -181,16 +307,19 @@ function getLegend() {
  */
 function reloadData() {
     specialConditionsData = null;
-    return loadSpecialConditionsData();
+    osmyMaddeAciklamalari = null;
+    loadSpecialConditionsData();
+    loadOsymMaddeAciklamalari();
+    return true;
 }
 
 module.exports = {
     loadSpecialConditionsData,
+    loadOsymMaddeAciklamalari,
     getConditionsByProgramCode,
     getConditionsByUniversityAndProgram,
     getAllProgramsByUniversity,
     formatArticleNumbers,
     getConditionDescriptions,
-    getLegend,
     reloadData
 };

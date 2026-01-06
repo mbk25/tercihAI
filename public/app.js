@@ -3445,7 +3445,7 @@ function showUniversityModal(deptName, universities) {
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
                                     <div style="color: #10a37f; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                                 </div>
-                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Devlet" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Devlet" data-uni-condition-numbers="${uni.conditionNumbers || ''}" data-uni-dept="${deptName}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType, null, btn.dataset.uniDept)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'"
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
@@ -3486,7 +3486,7 @@ function showUniversityModal(deptName, universities) {
                                     ${uni.quota ? `<div>👥 Kontenjan: ${uni.quota}</div>` : ''}
                                     <div style="color: #f59e0b; font-weight: 600;">📋 ÖSYM Şartları: ${uni.conditionNumbers && uni.conditionNumbers.trim() ? `Madde ${uni.conditionNumbers}` : 'Şart bilgisi sisteme yükleniyor'}</div>
                                 </div>
-                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Vakıf" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                                <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="Vakıf" data-uni-condition-numbers="${uni.conditionNumbers || ''}" data-uni-dept="${deptName}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType, null, btn.dataset.uniDept)" 
                                     style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)'"
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)'">
@@ -4064,7 +4064,7 @@ function showUniversityDetailModal(uni, program) {
                                     ÖSYM 2025 Tercih Şartları
                                 </h3>
                             </div>
-                            <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="${uni.type}" data-uni-condition-numbers="${uni.conditionNumbers || ''}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType)" 
+                            <button data-uni-name="${uni.name}" data-uni-city="${uni.city || 'Şehir bilgisi yok'}" data-uni-campus="${uni.campus || 'Ana Kampüs'}" data-uni-type="${uni.type}" data-uni-condition-numbers="${uni.conditionNumbers || ''}" data-uni-dept="${program && program.name ? program.name : (window.currentDepartment || 'Bilgisayar Mühendisliği')}" onclick="const btn = event.currentTarget; showDetailedConditionsModal(btn.dataset.uniName, [], btn.dataset.uniConditionNumbers, btn.dataset.uniCity, btn.dataset.uniCampus, btn.dataset.uniType, null, btn.dataset.uniDept)" 
                                 style="
                                     background: ${uni.type === 'Devlet' ? '#10a37f' : '#f59e0b'};
                                     color: white;
@@ -4215,10 +4215,10 @@ function closeUniversityModal() {
 }
 
 // Detaylı ÖSYM Şartları ve Harita Modal
-async function showDetailedConditionsModal(uniName, conditions, conditionNumbers, city, campus, uniType, uni = null) {
+async function showDetailedConditionsModal(uniName, conditions, conditionNumbers, city, campus, uniType, uni = null, deptName = null) {
     console.log('🔥🔥🔥 BUTON ÇALIŞTI! showDetailedConditionsModal çağrıldı 🔥🔥🔥');
     console.log('📋 Detaylı Şartlar Modal Açılıyor:', uniName);
-    console.log('Parametreler:', { uniName, conditions, conditionNumbers, city, campus, uniType });
+    console.log('Parametreler:', { uniName, conditions, conditionNumbers, city, campus, uniType, deptName });
 
     // Loading modal göster
     showLoadingModal('ÖSYM şartları yükleniyor...');
@@ -4228,8 +4228,12 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
     let realConditions = [];
 
     try {
+        // DOĞRU BÖLÜM ADI: Eğer deptName parametresi varsa onu kullan, yoksa window.currentDepartment
+        const departmentToUse = deptName || window.currentDepartment || 'Bilgisayar Mühendisliği';
+        console.log(`🎯 ÖSYM şartları çekiliyor: Üniversite="${uniName}", Bölüm="${departmentToUse}"`);
+        
         // Backend'den gerçek ÖSYM şartlarını çek
-        const response = await fetch(`${API_URL}/api/conditions/${encodeURIComponent(uniName)}/${encodeURIComponent(window.currentDepartment || 'Bilgisayar Mühendisliği')}`);
+        const response = await fetch(`${API_URL}/api/conditions/${encodeURIComponent(uniName)}/${encodeURIComponent(departmentToUse)}`);
         if (response.ok) {
             const data = await response.json();
             realConditions = data.conditions || [];
@@ -4241,8 +4245,15 @@ async function showDetailedConditionsModal(uniName, conditions, conditionNumbers
 
     // Gerçek şartları kullan, yoksa mevcut şartları parse et
     if (realConditions.length > 0) {
-        parsedConditions = realConditions.map(c => c.conditionText || c.text || c);
-        conditionNumbers = realConditions.map(c => c.conditionNumber || c.number).join(', ');
+        // Yeni format: { madde_no, madde_kodu, icerik, conditionNumber, conditionText }
+        parsedConditions = realConditions.map(c => ({
+            conditionNumber: c.conditionNumber || c.madde_no || c.number,
+            conditionText: c.conditionText || c.icerik || c.text || c,
+            category: c.category || c.madde_kodu || '',
+            madde_kodu: c.madde_kodu || c.category || ''
+        }));
+        conditionNumbers = realConditions.map(c => c.conditionNumber || c.madde_no || c.number).join(', ');
+        console.log('✅ Şartlar formatlandı:', parsedConditions);
     } else {
         try {
             parsedConditions = typeof conditions === 'string' ? JSON.parse(conditions) : conditions;
